@@ -136,7 +136,7 @@ h1 .o{color:var(--hi)}
 @keyframes candle{50%{box-shadow:inset 0 0 0 3px var(--brass),inset 0 0 0 7px var(--wood-lo),0 18px 40px rgba(0,0,0,.65),0 0 80px rgba(255,154,60,.2)}}
 .rivet{position:absolute;width:7px;height:7px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#f3dc9a,var(--brass) 55%,#6e5420)}
 .rivet:nth-of-type(1){top:5px;left:5px}.rivet:nth-of-type(2){top:5px;right:5px}.rivet:nth-of-type(3){bottom:5px;left:5px}.rivet:nth-of-type(4){bottom:5px;right:5px}
-.row{display:grid;grid-template-columns:1fr 3.6em;align-items:center;gap:6px}
+.row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px}
 .row.last{grid-template-columns:1fr}
 .reel{--h:46px;--win:82px;position:relative;height:var(--win);overflow:hidden;background:var(--washi);border-radius:3px;box-shadow:inset 0 0 0 2px #0e0703,0 0 0 2px rgba(202,162,78,.5)}
 .reel::before,.reel::after{content:"";position:absolute;left:0;right:0;height:calc((var(--win) - var(--h)) / 2);z-index:2;pointer-events:none}
@@ -147,7 +147,7 @@ h1 .o{color:var(--hi)}
 .item{height:var(--h);display:flex;align-items:center;justify-content:flex-end;font-family:var(--print);font-size:clamp(17px,4.8vw,23px);white-space:nowrap;padding:0 12px;color:var(--ink)}
 .row.last .item{justify-content:center;font-size:clamp(13px,3.8vw,20px);padding:0 6px}
 .item.hit{color:var(--shu)}
-.tail{font-family:var(--brush);font-size:clamp(20px,5.4vw,26px);color:var(--brass);text-shadow:0 2px 0 #0e0703}
+.tail{white-space:nowrap;min-width:3.1em;font-family:var(--brush);font-size:clamp(20px,5.4vw,26px);color:var(--brass);text-shadow:0 2px 0 #0e0703}
 .reel.landed{animation:land .3s ease-out}
 @keyframes land{40%{transform:translateY(3px)}}
 .reel.armed{box-shadow:inset 0 0 0 2px #0e0703,0 0 0 2px var(--hitodama),0 0 18px rgba(143,224,208,.55)}
@@ -173,6 +173,16 @@ h1 .o{color:var(--hi)}
 .actions{display:flex;gap:10px;flex-wrap:wrap}
 .post{flex:1;min-width:140px;text-align:center;text-decoration:none;font:700 14px var(--ui);letter-spacing:.08em;color:var(--brass);border:1px solid rgba(202,162,78,.6);border-radius:4px;padding:10px;background:rgba(13,20,22,.5);cursor:pointer}
 .post[aria-disabled="true"]{opacity:.3;pointer-events:none}
+/* Xでおどす：結果が出たら一番目立つボタンにする */
+.actions .xbtn{flex:1 1 100%;display:flex;flex-direction:column;align-items:center;gap:2px;font-family:var(--brush);font-size:clamp(24px,6.6vw,30px);letter-spacing:.14em;text-indent:.14em;line-height:1.2;
+  color:var(--washi);background:linear-gradient(#6e2a20,#55201a 55%,#3f1712);border:2px solid #0e0703;border-radius:8px;padding:12px 14px 14px;
+  box-shadow:inset 0 0 0 1px rgba(202,162,78,.45),0 5px 0 #24100b,0 10px 22px rgba(0,0,0,.45);text-shadow:0 2px 0 #24100b;transition:transform .08s}
+.actions .xbtn small{font-family:var(--ui);font-weight:700;font-size:12px;letter-spacing:.08em;text-indent:0;color:#cdb8a0;text-shadow:none}
+.actions .xbtn:active{transform:translateY(4px);box-shadow:inset 0 0 0 1px rgba(202,162,78,.45),0 1px 0 #24100b}
+.actions .xbtn.pop{animation:xpop .45s cubic-bezier(.3,1.4,.5,1)}
+@keyframes xpop{from{transform:scale(.94);opacity:.4}}
+.actions .copy{flex:0 0 auto;min-width:0;align-self:center;margin:0 auto;border:0;background:none;text-decoration:underline;font-size:13px;padding:4px 8px}
+@media (prefers-reduced-motion:reduce){.actions .xbtn{animation:none!important}}
 
 /* おどし帳 */
 .cho{background:var(--washi);color:var(--ink);padding:14px 16px 10px;box-shadow:0 10px 30px rgba(0,0,0,.5);
@@ -269,12 +279,12 @@ body.reach .cabinet{position:relative;z-index:6}
   </div>
 
   <button class="plaque" id="go" type="button">回す</button>
-  <p class="hint">目押しできる。押した直後に線へ来た語で止まる（スペースキーでも可）<br>「お菓子・くれ・いたずら」をそろえると…</p>
-
   <div class="actions">
-    <a class="post" id="post" href="#" target="_blank" rel="noopener" aria-disabled="true">Xでおどす</a>
-    <button class="post" id="copy" type="button" aria-disabled="true">文をコピー</button>
+    <a class="post xbtn" id="post" href="#" target="_blank" rel="noopener" aria-disabled="true">この文でXにおどす<small>回すと押せるようになるよ</small></a>
+    <button class="post copy" id="copy" type="button" aria-disabled="true">文をコピー</button>
   </div>
+
+  <p class="hint">目押しできる。押した直後に線へ来た語で止まる（スペースキーでも可）<br>「お菓子・くれ・いたずら」をそろえると…</p>
 
   <section class="cho">
     <h2>おどし帳 <span id="best"></span></h2>
@@ -503,6 +513,8 @@ addEventListener('pointermove',e=>{ const b=obake.getBoundingClientRect(); const
 function setShare(on,j){
   const post=document.getElementById('post'), copy=document.getElementById('copy');
   post.setAttribute('aria-disabled',!on); copy.setAttribute('aria-disabled',!on);
+  post.querySelector('small').textContent=on?'友だちにもおどされてもらおう':'回すと押せるようになるよ';
+  if(on){ post.classList.remove('pop'); void post.offsetWidth; post.classList.add('pop'); }
   if(on) post.href='https://twitter.com/intent/tweet?text='+encodeURIComponent(`🏮「${current}」\n判定：${j.rank}（${j.score}点）\n次はキミがおどす番👇\nhttps://rickther1ck.com/trick-or-roulette/\n#トリックオアルーレット #ハロウィン`);
 }
 document.getElementById('copy').onclick=async e=>{
