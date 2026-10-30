@@ -1,20 +1,18 @@
-<!doctype html>
-<html lang="ja">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<!doctype html><html lang="ja"><head><meta charset="utf-8">
 <title>ぬめぬめうなぎ掴み</title>
-<meta name="description" content="両手でにぎった超ぬめぬめのうなぎを、押す・離すで手の中に留めて何秒耐えられるか競うブラウザゲーム。">
+<meta name="description" content="にゅるにゅる逃げるうなぎを、何秒つかんでいられる？ 押すとにぎって上へ、離すとゆるめて下へ。">
 <meta property="og:type" content="website">
-<meta property="og:title" content="超ぬめぬめうなぎ掴み">
-<meta property="og:description" content="押すとにぎる、離すとゆるむ。何秒耐えられる？">
-<meta property="og:url" content="https://RickTheR1ck.github.io/games/unagi/">
-<meta property="og:image" content="https://RickTheR1ck.github.io/games/unagi/ogp.png">
+<meta property="og:title" content="ぬめぬめうなぎ掴み">
+<meta property="og:description" content="にゅるにゅる逃げるうなぎを、何秒つかんでいられる？ 押すとにぎって上へ、離すとゆるめて下へ。">
+<meta property="og:url" content="https://rickther1ck.com/unagi/">
+<meta property="og:image" content="https://rickther1ck.com/unagi/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="超ぬめぬめうなぎ掴み">
-<meta name="twitter:description" content="押すとにぎる、離すとゆるむ。何秒耐えられる？">
-<meta name="twitter:image" content="https://RickTheR1ck.github.io/games/unagi/ogp.png">
-<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<meta name="twitter:title" content="ぬめぬめうなぎ掴み">
+<meta name="twitter:description" content="にゅるにゅる逃げるうなぎを、何秒つかんでいられる？ 押すとにぎって上へ、離すとゆるめて下へ。">
+<meta name="twitter:image" content="https://rickther1ck.com/unagi/og.png">
+<meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Yuji+Boku&family=Shippori+Mincho+B1:wght@500;800&display=swap" rel="stylesheet">
 <style>
@@ -177,8 +175,6 @@ h1 .b{display:block;font-size:clamp(46px,14vw,70px)}
 @media (prefers-reduced-motion: reduce){.noren span,.fuda,.hint.alarm,.flash.on{animation:none}.pop{animation-duration:1.6s}}
 </style>
 
-</head>
-<body>
 <canvas id="c"></canvas>
 <div class="vignette"></div>
 <div class="flash" id="flash"></div>
@@ -610,7 +606,7 @@ function showResult(){
   game.state='end';hudEl.hidden=meterEl.hidden=hintEl.hidden=true;
   const s=game.t;let rank=RANKS[0];for(const r of RANKS)if(s>=r[0])rank=r;
   $('#rSec').textContent=fmt(s);$('#rRank').textContent=rank[1];
-  game.shareText=`超ぬめぬめうなぎ掴みで ${fmt(s)}秒 耐えた！\n称号「${rank[1]}」\n#ぬめぬめうなぎ掴み\nhttps://RickTheR1ck.github.io/games/unagi/`;
+  game.shareText=`超ぬめぬめうなぎ掴みで ${fmt(s)}秒 耐えた！\n称号「${rank[1]}」\n#ぬめぬめうなぎ掴み\nhttps://rickther1ck.com/unagi/`;
   $('#xBtn').href='https://x.com/intent/tweet?text='+encodeURIComponent(game.shareText);$('#cpMsg').textContent='';
   let isBest=false;if(s>game.best){game.best=s;isBest=true;try{localStorage.setItem('unagi-endure-best',s);}catch(e){}}
   showBest();
@@ -730,5 +726,4 @@ frame();
 })();
 </script>
 
-</body>
-</html>
+</body></html>
