@@ -307,7 +307,6 @@ h1 em{font-style:normal;color:#8e1f10}
 .tag::before,.tag::after{display:none}
 .tag-num{color:#fff6e6;font-size:clamp(44px,8vw,64px);text-shadow:0 2px 0 rgba(0,0,0,.45),0 0 18px rgba(0,0,0,.55)}
 .tag-num small{font-family:var(--font-body);font-weight:900;font-size:.3em;margin-left:4px}
-.tag{pointer-events:auto}
 .tag-best{border:none;padding:0;margin-top:2px;color:rgba(255,246,230,.75);font-size:12px;text-shadow:0 1px 3px #000}
 .tag.beat{box-shadow:none}
 .tag.beat .tag-num,.tag.record .tag-best{color:#ffd84a}
@@ -393,7 +392,7 @@ const lerp = (a,b,t) => a + (b-a)*t;
 const clamp = (v,a,b) => Math.max(a, Math.min(b, v));
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const TOUCH = matchMedia('(pointer: coarse)').matches;
-// demo mode for recording: open with #demo, or tap the score three times. It throws a perfect shot and flies itself.
+// demo mode for recording: open the page with #demo on the end of the address. It throws a perfect shot and flies itself.
 let DEMO = location.hash === '#demo', demoT = 0;
 
 /* ---------- renderer / scene ---------- */
@@ -1861,13 +1860,6 @@ $('copyBtn').addEventListener('click', () => {
   else copy();
 });
 
-// triple-tap (or triple-click) the score: start a demo run for recording
-let tapTimes = [];
-$('scoreTag').addEventListener('pointerdown', e => {
-  e.stopPropagation(); const now = performance.now();
-  tapTimes = tapTimes.filter(t => now - t < 700); tapTimes.push(now);
-  if (tapTimes.length >= 3){ tapTimes = []; DEMO = true; start(); }
-});
 /* ---------- popups ---------- */
 const pops = $('pops');
 const _p = new THREE.Vector3();
