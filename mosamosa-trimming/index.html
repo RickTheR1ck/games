@@ -681,7 +681,9 @@ function rebuild() {
   ghost = buildDog(ghostScene, P.strands, seed, LOCK_GEO_LO, breed);
   builtCount = P.strands;
 }
+let FORCE_BREED = null, FORCE_ORDER = null; // 撮影デモ用
 function pickBreed() {
+  if (FORCE_BREED) { const b = BREEDS.find(x => x.id === FORCE_BREED); if (b) return b; }
   if (qs.get('breed')) { const b = BREEDS.find(x => x.id === qs.get('breed')); if (b) return b; }
   if (Math.random() < P.rareBreed) return BREEDS.find(b => b.rare);
   const pool = BREEDS.filter(b => !b.rare && b.id !== lastBreedId);
@@ -948,6 +950,7 @@ const cam = { theta: 0.5, phi: 1.12, dist: 4.6, target: new THREE.Vector3(0.25, 
 const ndc = new THREE.Vector2(), ray = new THREE.Raycaster();
 
 function pickOrder() {
+  if (FORCE_ORDER) { const o = ORDERS.find(x => x.id === FORCE_ORDER); if (o) return o; }
   if (DEBUG_ORDER) { const o = ORDERS.find(x => x.id === DEBUG_ORDER); if (o) return o; }
   if (Math.random() < P.rareRate) return ORDERS.find(o => o.rare);
   const pool = ORDERS.filter(o => !o.rare && o.id !== lastOrderId);
@@ -1765,7 +1768,7 @@ function update(sim, dt, raw) {
     // ドライヤーの風はすぐおさまる
     if (phase === 'dry' || phase === 'cut') for (const G of dog.groups) for (let i = 0; i < G.n; i++) if (G.wind[i] > 0) { G.wind[i] = Math.max(0, G.wind[i] - sim * 2.5); setState(G, i); }
     // ブルブル
-    if (shakeState === 0 && phase === 'cut') { nextShake -= sim; if (nextShake <= 0) startMischief(); }
+    if (shakeState === 0 && phase === 'cut' && !window.__demo) { nextShake -= sim; if (nextShake <= 0) startMischief(); }
     else if (shakeState === 3) updateMischief(sim);
     else {
       shakeT += sim;
@@ -1874,11 +1877,11 @@ function update(sim, dt, raw) {
   }
 }
 // ===================== わんこの妨害（ブルブル／ふりむき／くしゃみ／トコトコ） =====================
-function startMischief() {
+function startMischief(force) {
   evCount++;
   const r = Math.random();
   // 最初の1回は、合図のわかりやすいブルブル
-  evType = evCount === 1 ? 'shake' : r < 0.34 ? 'shake' : r < 0.58 ? 'turn' : r < 0.8 ? 'sneeze' : 'wander';
+  evType = force || evCount === 1 ? (force || 'shake') : r < 0.34 ? 'shake' : r < 0.58 ? 'turn' : r < 0.8 ? 'sneeze' : 'wander';
   evLog.push(evType); evDir = Math.random() < 0.5 ? -1 : 1; shakeT = 0;
   if (evType === 'shake') { shakeState = 1; if (!AC || AC.currentTime > voiceUntil) SFX.whimper(); bubbleSay('❗'); return; }
   shakeState = 3;
@@ -2224,6 +2227,96 @@ async function runSimtest_() {
   window.__simResult = rows;
 }
 
+// ===================== 撮影用デモ（URLの最後に #demo ／ #demo-dry） =====================
+// 画面収録をはじめてからタップすると、Xの動画用に「おいしい場面」を自動で演じる
+function runDemo() {
+  const dry = location.hash.startsWith('#demo-dry');
+  const m = location.hash.match(/^#demo-(?!dry|auto)([a-z]+)-(?!auto)([a-z]+)/);
+  FORCE_BREED = m ? m[1] : 'golden'; FORCE_ORDER = m ? m[2] : 'lion';
+  const ov = document.createElement('div');
+  ov.style.cssText = 'position:fixed;inset:0;z-index:98;display:grid;place-items:center;background:rgba(253,228,234,.92);font:900 20px sans-serif;color:#3d2a2e;text-align:center;line-height:1.7;padding:20px';
+  ov.innerHTML = '📹 撮影用デモ<br><small style="font-size:14px;font-weight:700">画面収録をはじめてから<br>画面をタップするとスタート（約' + (dry ? 6 : 18) + '秒）</small>';
+  document.body.appendChild(ov);
+  const go = () => { if (!ov.isConnected) return; ov.remove(); initAudio(); (dry ? demoDry() : demoCut()).catch(e => console.error(e)); };
+  ov.addEventListener('pointerdown', go, { once: true });
+  if (location.hash.includes('auto')) setTimeout(go, 800); // 確認用：タップなしで始める
+}
+const dSleep = ms => new Promise(r => setTimeout(r, ms));
+const dTouch = (type, x, y) => canvas.dispatchEvent(new PointerEvent('pointer' + type, { clientX: x, clientY: y, pointerId: 9, pointerType: 'touch', isPrimary: true, bubbles: true, button: 0, buttons: type === 'up' ? 0 : 1 }));
+function demoTarget() {
+  const v = new THREE.Vector3();
+  dog.root.updateMatrixWorld(true);
+  for (let tries = 0; tries < 500; tries++) {
+    const g = (Math.random() * 3) | 0, G = dog.groups[g]; if (!G.n) continue; const i = (Math.random() * G.n) | 0;
+    if (G.len[i] - G.tg[i] < 0.08 || G.tg[i] > 0.4) continue;
+    let edge = false; const rx = G.root[i * 3], ry = G.root[i * 3 + 1], rz = G.root[i * 3 + 2], R2 = Math.pow(P.cutRadius * 1.7, 2);
+    for (let q = 0; q < 160 && !edge; q++) { const j = (Math.random() * G.n) | 0; if (G.tg[j] > G.tg[i] + 0.05 && (G.root[j * 3] - rx) ** 2 + (G.root[j * 3 + 1] - ry) ** 2 + (G.root[j * 3 + 2] - rz) ** 2 < R2) edge = true; }
+    if (edge) continue;
+    v.set(rx, ry, rz); G.obj.localToWorld(v);
+    _dw.set(G.dir[i * 3], G.dir[i * 3 + 1], G.dir[i * 3 + 2]).transformDirection(G.obj.matrixWorld);
+    if (_dw.dot(v.clone().sub(camera.position).normalize()) > 0.05) continue;
+    v.project(camera); const x = (v.x + 1) / 2 * innerWidth, y = (1 - v.y) / 2 * innerHeight;
+    if (!isFinite(x) || x < 30 || x > innerWidth - 30 || y < 90 || y > innerHeight - 140) continue;
+    return { x, y, a: ATT.findIndex(a => Math.abs(a.len - G.tg[i]) < 0.001) };
+  }
+  return null;
+}
+async function demoCutFor(ms) {
+  const t0 = performance.now();
+  while (performance.now() - t0 < ms && state === 'play') {
+    if (shakeState !== 0) { await dSleep(50); continue; }
+    const b = demoTarget(); if (!b) { cam.theta += 0.5; await dSleep(120); continue; }
+    if (b.a >= 0 && b.a !== attIdx) setAtt(b.a);
+    const ang = Math.random() * Math.PI * 2, dx = Math.cos(ang) * 9, dy = Math.sin(ang) * 6;
+    dTouch('down', b.x, b.y); await dSleep(160); // 指を置いてから刈り始めるまでの待ち
+    for (let k = 1; k <= 7; k++) { dTouch('move', b.x + dx * k, b.y + dy * k); await dSleep(22); if (shakeState !== 0) break; }
+    dTouch('up', b.x + dx * 7, b.y + dy * 7); await dSleep(40);
+  }
+}
+async function demoCut() {
+  window.__demo = true;
+  lastCare = { clean: 0.96, fluffy: 0.95 };
+  startRound(true);
+  $('banner').classList.add('hide');
+  cam.dist = baseDist; cam.theta = 0.75; cam.phi = 1.1;
+  await dSleep(250);
+  await demoCutFor(3200);                         // つかみ：いきなりバリカンで毛がドサドサ
+  startMischief('shake'); await dSleep(300);       // ❗→ブルブル
+  while (shakeState !== 0) await dSleep(50);
+  await demoCutFor(2800);
+  cam.theta -= 0.9; await dSleep(200);
+  await demoCutFor(1800);
+  startMischief('sneeze');                         // ハ…ハ…ハックション！
+  while (shakeState !== 0) await dSleep(50);
+  await demoCutFor(2600);
+  // わざと1回、切っちゃダメな毛を刈って「キャン！」
+  const v = new THREE.Vector3(); let hit = null;
+  for (let t = 0; t < 600 && !hit; t++) {
+    const g = (Math.random() * 3) | 0, G = dog.groups[g]; if (!G.n) continue; const i = (Math.random() * G.n) | 0;
+    if (G.tg[i] < 0.5 || G.len[i] < 0.3) continue;
+    v.set(G.root[i * 3], G.root[i * 3 + 1], G.root[i * 3 + 2]); G.obj.localToWorld(v);
+    _dw.set(G.dir[i * 3], G.dir[i * 3 + 1], G.dir[i * 3 + 2]).transformDirection(G.obj.matrixWorld);
+    if (_dw.dot(v.clone().sub(camera.position).normalize()) > 0) continue;
+    v.project(camera); const x = (v.x + 1) / 2 * innerWidth, y = (1 - v.y) / 2 * innerHeight;
+    if (x > 40 && x < innerWidth - 40 && y > 120 && y < innerHeight - 160) hit = { x, y };
+  }
+  if (hit) { setAtt(0); dTouch('down', hit.x, hit.y); await dSleep(160); for (let k = 1; k <= 6; k++) { dTouch('move', hit.x + k * 7, hit.y + k * 3); await dSleep(25); } dTouch('up', hit.x + 42, hit.y + 18); }
+  await dSleep(900);
+  window.__demo = false;
+  $('finish').click();
+}
+async function demoDry() {
+  window.__demo = true;
+  startRound(false); $('banner').classList.add('hide');
+  for (const G of dog.groups) for (let i = 0; i < G.n; i++) { G.wet[i] = 1; G.dirt[i] *= 0.1; G.foam[i] = 2; setState(G, i); }
+  clearFoam(); careQ.shampoo = 1; careQ.rinse = 1;
+  setPhase('dry', true); cam.dist = baseDist * 0.9;
+  await dSleep(500);
+  while (!mg.done) { dTouch('down', innerWidth / 2, innerHeight / 2); dTouch('up', innerWidth / 2, innerHeight / 2); await dSleep(95); }
+  await dSleep(2500);
+  window.__demo = false;
+}
+
 // ===================== 起動 =====================
 setMuted(muted);
 breed = pickBreed(); rebuild(); layout();
@@ -2243,6 +2336,7 @@ function frame(now) {
 requestAnimationFrame(frame);
 if (location.hash.startsWith('#autotest')) setTimeout(runAutotest, 500);
 if (location.hash.startsWith('#simtest')) setTimeout(runSimtest, 800);
+if (location.hash.startsWith('#demo')) setTimeout(runDemo, 600);
 window.__game = { P, get state() { return state; }, startRound, endRound, computeAcc: () => computeAcc(), setAtt, cam, get dog() { return dog; } };
 </script>
 </body>
