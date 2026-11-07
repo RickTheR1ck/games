@@ -1,0 +1,2249 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>モサモサわんこトリミング</title>
+<meta name="description" content="モッサモサの犬を、ご注文どおりにバリカンで刈りそろえる3Dトリミングゲーム。">
+<link rel="canonical" href="https://rickther1ck.com/mosamosa-trimming/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="rickther1ck.com">
+<meta property="og:title" content="モサモサわんこトリミング">
+<meta property="og:description" content="モッサモサの犬をシャンプー→ドライヤー→バリカンで、ご注文どおりに刈りそろえろ！ブラウザですぐ遊べる3Dトリミングゲーム。">
+<meta property="og:url" content="https://rickther1ck.com/mosamosa-trimming/">
+<meta property="og:image" content="https://rickther1ck.com/mosamosa-trimming/og.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="モサモサわんこトリミング">
+<meta name="twitter:description" content="モッサモサの犬を、ご注文どおりに刈りそろえろ！ブラウザですぐ遊べる3Dトリミングゲーム。">
+<meta name="twitter:image" content="https://rickther1ck.com/mosamosa-trimming/og.jpg">
+<meta name="theme-color" content="#fde4ea">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@700;800;900&display=swap">
+<style>
+:root{--ink:#3d2a2e;--pink:#ff6f91;--pink2:#ffb3c4;--cream:#fff7ec;--mint:#3cc9a4;--shadow:0 4px 0 rgba(61,42,46,.18)}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;background:#fde4ea;color:var(--ink);
+  font-family:"Hiragino Maru Gothic ProN","M PLUS Rounded 1c","Rounded Mplus 1c","Yu Gothic",system-ui,sans-serif;
+  user-select:none;-webkit-user-select:none;touch-action:none}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;cursor:crosshair}
+.hide{display:none!important}
+button{font-family:inherit;color:var(--ink);cursor:pointer;border:none}
+
+/* HUD */
+#hud{position:fixed;inset:0;pointer-events:none}
+#tl{position:absolute;left:12px;top:10px;max-width:calc(100% - 190px)}
+#orderName{display:inline-block;background:var(--pink);color:#fff;font-weight:800;font-size:clamp(14px,3.6vw,19px);
+  padding:5px 12px;border-radius:999px;box-shadow:var(--shadow)}
+#timer{font-size:clamp(30px,8vw,46px);font-weight:900;line-height:1.1;margin-top:4px;text-shadow:0 2px 0 #fff}
+#timer.hurry{color:#e08a00}
+#timer.bored{color:#8a7a9a;font-size:clamp(20px,5.5vw,30px);margin-top:6px}
+#timer small{font-size:.42em;font-weight:800;opacity:.75;margin-left:4px}
+@keyframes pulse{to{transform:scale(1.12)}}
+#orderDesc{font-size:clamp(11px,3vw,14px);font-weight:700;background:rgba(255,255,255,.82);border-radius:10px;padding:6px 9px;
+  line-height:1.5;margin-top:4px;box-shadow:var(--shadow)}
+#orderDesc b{color:var(--pink)}
+#mini{position:absolute;top:10px;right:10px;border:4px solid #fff;border-radius:14px;box-shadow:var(--shadow);overflow:visible}
+#mini .lab{position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:11px;
+  font-weight:800;padding:2px 9px;border-radius:999px;white-space:nowrap}
+#accWrap{position:absolute;right:10px;width:150px;background:#fff;border-radius:999px;height:22px;box-shadow:var(--shadow);overflow:hidden}
+#accBar{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,#ffd166,var(--mint));transition:width .15s}
+#accTxt{position:absolute;inset:0;text-align:center;font-size:12px;font-weight:900;line-height:22px}
+#bottom{position:absolute;left:0;right:0;bottom:calc(12px + env(safe-area-inset-bottom));display:flex;justify-content:center;
+  align-items:flex-end;gap:8px;pointer-events:none;padding:0 8px}
+.btn{pointer-events:auto;background:#fff;border-radius:14px;box-shadow:var(--shadow);font-weight:800;font-size:clamp(12px,3.4vw,15px);
+  padding:9px 12px;min-width:44px;transition:transform .08s}
+.btn:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(61,42,46,.18)}
+.att{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:clamp(64px,19vw,86px)}
+.att small{font-size:10px;opacity:.6;font-weight:700}
+.att.on{background:var(--pink);color:#fff}
+.att.on small{opacity:.85}
+#finish{position:absolute;right:12px;bottom:calc(76px + env(safe-area-inset-bottom));pointer-events:auto;background:var(--mint);color:#fff}
+#mute{position:absolute;left:12px;bottom:calc(76px + env(safe-area-inset-bottom));pointer-events:auto}
+#site{position:fixed;right:8px;bottom:2px;font-size:10px;color:var(--ink);opacity:.55;text-decoration:none;pointer-events:auto;z-index:30}
+#banner{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);background:rgba(61,42,46,.88);color:#fff;
+  padding:12px 22px;border-radius:16px;font-weight:900;font-size:clamp(18px,5vw,28px);text-align:center;white-space:nowrap;
+  transition:opacity .3s}
+#banner small{display:block;font-size:12px;font-weight:700;opacity:.8;margin-top:2px}
+.pop{position:fixed;font-weight:900;pointer-events:none;white-space:nowrap;transform:translate(-50%,-50%);
+  animation:pop .9s ease-out forwards;text-shadow:0 2px 0 #fff,0 -1px 0 #fff,2px 0 0 #fff,-2px 0 0 #fff;z-index:20}
+@keyframes pop{0%{opacity:0;transform:translate(-50%,-30%) scale(.6)}15%{opacity:1;transform:translate(-50%,-60%) scale(1.15)}
+  100%{opacity:0;transform:translate(-50%,-160%) scale(1)}}
+#bubble{position:fixed;transform:translate(-50%,-100%);background:#fff;border-radius:16px;padding:4px 10px;font-size:26px;
+  box-shadow:var(--shadow);pointer-events:none}
+#bubble:after{content:"";position:absolute;left:50%;bottom:-8px;transform:translateX(-50%);border:8px solid transparent;
+  border-top-color:#fff;border-bottom:0}
+
+/* overlays */
+.ov{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;z-index:10;padding:16px}
+#title{background:linear-gradient(180deg,rgba(253,228,234,.15),rgba(253,228,234,.55) 60%,rgba(253,228,234,.9));cursor:pointer}
+#title h1{margin:0;font-size:clamp(34px,10vw,72px);font-weight:900;line-height:1.08;text-align:center;color:#f0507c;
+  letter-spacing:.02em;background:rgba(255,251,247,.94);border:3px solid #fff;border-radius:clamp(20px,5vw,32px);
+  padding:.28em .5em .32em;box-shadow:0 6px 0 rgba(61,42,46,.14),0 14px 36px rgba(61,42,46,.16);
+  text-shadow:0 .06em 0 rgba(240,80,124,.22);transform:rotate(-2deg)}
+#title h1 span{display:table;margin:0 auto .3em;font-size:.4em;color:#fff;background:var(--ink);padding:.3em .9em;border-radius:999px;
+  text-shadow:none;letter-spacing:.04em}
+#title .sub{font-weight:800;font-size:clamp(14px,4vw,20px);margin:10px 0 0;background:#fff;padding:4px 14px;border-radius:999px;box-shadow:var(--shadow)}
+#title .go{margin-top:auto;background:var(--pink);color:#fff;font-size:clamp(20px,6vw,30px);font-weight:900;padding:14px 38px;
+  border-radius:999px;box-shadow:0 6px 0 #c94767;animation:bob 1s infinite ease-in-out alternate}
+@keyframes bob{to{transform:translateY(-6px)}}
+#title .how{margin-top:14px;font-size:clamp(11px,3vw,13px);font-weight:700;text-align:center;line-height:1.7;background:rgba(255,255,255,.85);
+  padding:8px 14px;border-radius:12px;margin-bottom:24px}
+#title .top{margin-top:4vh;display:flex;flex-direction:column;align-items:center}
+#result{background:none;pointer-events:none;justify-content:flex-end;align-items:stretch;padding:0}
+#card{pointer-events:auto;background:var(--cream);border-radius:22px;padding:14px 18px 12px;width:min(360px,92vw);text-align:center;
+  box-shadow:0 8px 0 rgba(61,42,46,.25),0 10px 40px rgba(61,42,46,.18);cursor:default;animation:cardIn .35s cubic-bezier(.2,1.4,.4,1);
+  max-height:calc(100% - 24px);overflow:auto;touch-action:pan-y}
+@keyframes cardIn{from{transform:translateY(30px) scale(.85);opacity:0}}
+body.wide #result{justify-content:center;align-items:flex-end;padding-right:max(16px,env(safe-area-inset-right,0px));padding-top:var(--miniH,180px);padding-bottom:12px}
+body:not(.wide) #card{width:100%;border-radius:22px 22px 0 0;max-height:min(56vh,440px);padding-bottom:calc(12px + env(safe-area-inset-bottom))}
+#card.peek{display:none}
+#peekBar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom));z-index:12;display:flex;gap:8px;max-width:calc(100% - 32px);flex-wrap:wrap;justify-content:center;
+  pointer-events:auto;align-items:center}
+#peekBar .btn{padding:11px 16px;white-space:nowrap}
+@media (max-width:640px){#peekBar .cap{display:none}}
+#peekBar .cap{background:rgba(61,42,46,.82);color:#fff;font-weight:800;font-size:12px;padding:6px 12px;border-radius:999px;white-space:nowrap}
+#rView{background:#fff}
+body.resultMode #site,body.resultMode #tip,body.resultMode #bottom,body.resultMode #finish,body.resultMode #accWrap,body.resultMode #steps,body.resultMode #timer,body.resultMode #orderDesc{display:none}
+#rOrder{font-weight:800;font-size:13px;opacity:.7}
+#rAcc{font-size:clamp(52px,16vw,72px);font-weight:900;line-height:1;color:var(--pink);margin:4px 0}
+#rAcc small{font-size:.4em}
+#rRank{font-size:clamp(20px,6vw,26px);font-weight:900}
+#rCom{font-size:13px;font-weight:700;opacity:.75;margin-top:2px}
+#rStats{font-size:12px;font-weight:700;margin-top:10px;background:#fff;border-radius:10px;padding:6px}
+.sGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+.sp{position:relative;background:#fff6ef;border-radius:8px;padding:4px 2px 6px;overflow:hidden;line-height:1.15}
+.sp b{display:block;font-size:10px;opacity:.7;white-space:nowrap}
+.sp span{font-size:16px;font-weight:900}.sp i{font-size:10px;font-style:normal;opacity:.55}
+.sp em{display:block;font-size:10px;font-style:normal;opacity:.7}
+.sp u{position:absolute;left:0;bottom:0;height:3px;background:var(--mint);text-decoration:none}
+.sBored{margin-top:4px;color:#8a7a9a}
+#retryCut{white-space:nowrap;padding-left:8px!important;padding-right:8px!important}.sLine{margin-top:4px;font-size:11px;opacity:.7}
+#rBest{font-size:12px;font-weight:800;margin-top:6px}
+#rBest .new{color:#fff;background:#ff9f1c;padding:1px 6px;border-radius:6px;margin-left:4px}
+#card .row{display:flex;gap:8px;margin-top:12px}
+#card .row .btn{flex:1;padding:12px}
+#retry{background:var(--pink);color:#fff}
+#retryCut{background:#ffe3ea;color:var(--ink);flex:0.8!important}
+#share{background:#111;color:#fff}
+#card .hint{font-size:11px;opacity:.55;margin-top:8px;font-weight:700}
+body:not(.wide) #rAcc{font-size:clamp(42px,12vw,60px)}
+body:not(.wide) #rTip{display:none}
+
+#dbg{position:fixed;left:8px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,.93);border-radius:10px;padding:8px 10px;
+  font-size:11px;z-index:40;width:220px;box-shadow:var(--shadow);pointer-events:auto}
+#dbg label{display:block;margin:3px 0}
+#dbg input{width:100%}
+#dbg .v{float:right;font-weight:800}
+
+#steps{display:flex;gap:4px;margin-top:5px;flex-wrap:wrap}
+#steps span{font-size:11px;font-weight:800;background:rgba(255,255,255,.85);border-radius:999px;padding:2px 8px;opacity:.55}
+#steps span.cur{opacity:1;background:var(--ink);color:#fff}
+#steps span.done{opacity:.95;background:#d9f5ec;color:#1f8f71}
+#timer.phase{font-size:clamp(20px,5.5vw,30px);margin-top:6px}
+#bottom.noatt .att{display:none}
+.splash{position:fixed;border-radius:50%;pointer-events:none;z-index:18;
+  background:radial-gradient(circle at 35% 35%,rgba(255,255,255,.95),rgba(170,220,255,.6) 40%,rgba(120,190,255,.28) 66%,transparent 70%);
+  animation:splash 1.7s ease-out forwards}
+@keyframes splash{0%{transform:scale(.2);opacity:0}8%{transform:scale(1.05);opacity:1}65%{opacity:.85}100%{transform:translateY(46px) scale(1);opacity:0}}
+#mg{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(84px + env(safe-area-inset-bottom));width:min(440px,88vw);
+  background:rgba(255,255,255,.92);border-radius:16px;padding:8px 12px 10px;box-shadow:var(--shadow);text-align:center;pointer-events:none}
+#mgTitle{font-weight:900;font-size:clamp(13px,3.6vw,16px)}
+#mgGauge{position:relative;height:24px;border-radius:999px;background:#f1e6e9;margin:6px 0 4px;overflow:hidden}
+#mgGauge.temp{background:linear-gradient(90deg,#7cc4ff,#e9f4ff 45%,#ffe9e2 55%,#ff8a6b)}
+#mgZone{position:absolute;top:0;bottom:0;background:rgba(60,201,164,.45);border-left:2px solid var(--mint);border-right:2px solid var(--mint)}
+#mgFill{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,#ffd6e1,var(--pink))}
+#mgNeedle{position:absolute;top:-2px;bottom:-2px;width:5px;margin-left:-2px;background:var(--ink);border-radius:3px;box-shadow:0 0 0 2px #fff}
+#mgGauge .lab{position:absolute;top:0;font-size:10px;font-weight:800;line-height:24px;opacity:.6}
+#mgHint{font-size:clamp(11px,3vw,13px);font-weight:800;opacity:.8}
+#mgHint b{color:var(--pink)}
+#mgDots{font-size:14px;letter-spacing:4px;margin-top:2px}
+body.carePhase #tip,body.carePhase #accWrap{display:none}
+#flash{position:fixed;inset:0;background:#fff;pointer-events:none;z-index:40;animation:flash .45s ease-out forwards}
+@keyframes flash{from{opacity:.9}to{opacity:0}}
+#rPhoto{background:#fff}
+#viewfinder{position:fixed;z-index:11;pointer-events:none;border:3px solid #fff;border-radius:14px;box-shadow:0 0 0 200vmax rgba(61,42,46,.28)}
+#viewfinder::before,#viewfinder::after{content:"";position:absolute;width:26px;height:26px;border:4px solid var(--pink)}
+#viewfinder::before{left:-6px;top:-6px;border-right:0;border-bottom:0;border-radius:10px 0 0 0}
+#viewfinder::after{right:-6px;bottom:-6px;border-left:0;border-top:0;border-radius:0 0 10px 0}
+#viewfinder span{position:absolute;left:50%;top:-30px;transform:translateX(-50%);background:rgba(61,42,46,.82);color:#fff;font-size:12px;font-weight:800;
+  padding:3px 10px;border-radius:999px;white-space:nowrap}
+#peekBar .zoom{padding:11px 14px;font-size:16px;line-height:1}
+#breedName{font-size:clamp(11px,3vw,13px);font-weight:800;margin-top:4px;opacity:.75}
+#guide{position:fixed;z-index:15;pointer-events:none;background:#fff;border-radius:10px;padding:4px 9px;font-size:13px;font-weight:800;
+  box-shadow:var(--shadow);white-space:nowrap;border:2px solid #fff}
+#guide.ok{border-color:var(--mint);color:#1f8f71}
+#guide.warn{border-color:#ffb020;color:#a76a00}
+#guide.bad{border-color:#e63b5f;color:#d02a4f}
+#tip{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(74px + env(safe-area-inset-bottom));max-width:min(560px,70vw);
+  background:rgba(61,42,46,.82);color:#fff;font-size:clamp(11px,3vw,13px);font-weight:700;padding:6px 12px;border-radius:12px;
+  text-align:center;transition:opacity .4s;line-height:1.5}
+#tip b{color:#ffd166}
+#title .btns{display:flex;gap:10px;align-items:center;margin-top:auto;flex-wrap:wrap;justify-content:center}
+#title .btns .go{margin-top:0}
+#openZ,#rZukan{background:#fff}
+#title .tipline{margin-top:10px;font-size:clamp(11px,3vw,13px);font-weight:700;background:rgba(61,42,46,.82);color:#fff;padding:6px 12px;border-radius:10px;max-width:92vw;text-align:center}
+#title .tipline b{color:#ffd166}
+#rTip{font-size:12px;font-weight:700;margin-top:8px;background:#fff3c4;border-radius:10px;padding:6px 8px;text-align:left;line-height:1.5}
+#rNew{font-size:12px;font-weight:900;color:#ff7a00;margin-top:4px;min-height:1em}
+#zukan{background:rgba(61,42,46,.45);z-index:25}
+#zPanel{background:var(--cream);border-radius:20px;width:min(760px,94vw);max-height:88vh;overflow:auto;padding:14px 16px 18px;
+  box-shadow:0 8px 0 rgba(61,42,46,.25);touch-action:pan-y;cursor:default}
+.zHead{display:flex;align-items:center;gap:10px;font-size:20px;flex-wrap:wrap}
+.zHead #zCount{font-size:13px;font-weight:800;opacity:.7}
+.zHead #zClose{margin-left:auto}
+.zTabs{display:flex;gap:6px;margin:10px 0}
+.zt.on{background:var(--pink);color:#fff}
+.zGrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px}
+.zCard{background:#fff;border-radius:14px;padding:8px;box-shadow:var(--shadow)}
+.zPhoto{width:100%;aspect-ratio:4/3;border-radius:10px;background:#f3e6dc;display:flex;align-items:center;justify-content:center;
+  font-size:40px;color:#c9b3a6;overflow:hidden}
+.zPhoto img{width:100%;height:100%;object-fit:cover;display:block}
+.zName{font-weight:900;font-size:15px;margin-top:6px}
+.zInfo{font-size:11px;font-weight:700;opacity:.75;line-height:1.5;margin-top:2px}
+.zBest{font-size:12px;font-weight:800;margin-top:4px}
+.zMedals{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.zMedals span{font-size:10px;font-weight:800;background:#f6eee8;border-radius:6px;padding:2px 5px}
+.zMedals span.got{background:#fff0c2}
+.zTitles{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px}
+.zTitle{background:#fff;border-radius:12px;padding:8px 10px;box-shadow:var(--shadow);font-weight:900}
+.zTitle small{display:block;font-size:11px;font-weight:700;opacity:.65;margin-top:2px}
+.zTitle.locked{opacity:.55}
+.zTips{margin:0;padding-left:1.3em;font-weight:700;font-size:13px;line-height:1.8}
+
+@media (max-width:600px){
+  #tl{max-width:calc(100% - 120px);left:10px;top:8px}
+  #orderName{font-size:13px;padding:4px 10px}
+  #breedName,#steps,#tip{display:none!important}
+  #timer{font-size:28px;margin-top:2px}
+  #timer.phase,#timer.bored{font-size:18px}
+  #orderDesc{font-size:11px;padding:4px 8px;line-height:1.4;margin-top:2px}
+  body.carePhase #orderDesc{display:none}
+  #mini .lab{font-size:10px;padding:1px 7px}
+  #banner{font-size:18px;padding:8px 16px;top:36%}
+  .att{min-width:0;flex:1;max-width:96px;padding:8px 6px}
+  .att small{display:none}
+  #bottom{gap:6px}
+  #bottom .btn{padding:8px 10px}
+  .btn{min-height:44px}
+  #bottom .btn,#finish,#mute{min-width:44px}
+  .att{max-width:104px}
+  /* ミニゲーム中：パネルを一番下に、ボタンはその上 */
+  body.carePhase #bottom{display:none}
+  body.carePhase #mg{bottom:calc(10px + env(safe-area-inset-bottom));width:calc(100% - 20px);padding:6px 10px 8px}
+  body.carePhase #finish,body.carePhase #mute{bottom:calc(122px + env(safe-area-inset-bottom))}
+  #mgHint{font-size:11px}
+  #finish{right:10px;padding:8px 12px;bottom:calc(66px + env(safe-area-inset-bottom))}
+  #mute{left:10px;padding:8px 10px;bottom:calc(66px + env(safe-area-inset-bottom))}
+  .pop{font-size:clamp(16px,6vw,26px)!important}
+}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+
+<div id="hud" class="hide">
+  <div id="tl">
+    <div id="orderName">テディベアカット</div>
+    <div id="breedName"></div>
+    <div id="steps"></div>
+    <div id="timer">60</div>
+    <div id="orderDesc"></div>
+  </div>
+  <div id="mini"><div class="lab">ご注文</div></div>
+  <div id="accWrap"><div id="accBar"></div><div id="accTxt">一致度 0%</div></div>
+  <button class="btn" id="mute" title="ミュート (M)">🔊</button>
+  <button class="btn" id="finish">仕上げ✂</button>
+  <div id="bottom">
+    <button class="btn" id="rotL" aria-label="左に回す">⟲</button>
+    <button class="btn att" data-a="0">つるつる<small>1</small></button>
+    <button class="btn att on" data-a="1">みじかめ<small>2</small></button>
+    <button class="btn att" data-a="2">ながめ<small>3</small></button>
+    <button class="btn" id="rotR" aria-label="右に回す">⟳</button>
+  </div>
+  <div id="tip"></div>
+  <div id="mg" class="hide">
+    <div id="mgTitle"></div>
+    <div id="mgGauge"><div id="mgZone"></div><div id="mgFill"></div><div id="mgNeedle"></div><span class="lab" style="left:8px" id="mgL"></span><span class="lab" style="right:8px" id="mgR"></span></div>
+    <div id="mgHint"></div><div id="mgDots"></div>
+  </div>
+  <div id="banner" class="hide"></div>
+</div>
+<div id="guide" class="hide"></div>
+<div id="bubble" class="hide">💕</div>
+
+<div id="title" class="ov">
+  <div class="top">
+    <h1><span>ご注文どおりに刈りそろえろ！</span>モサモサわんこ<br>トリミング</h1>
+  </div>
+  <div class="btns"><button class="go" id="start">✂ はじめる</button><button class="btn" id="openZ">📖 図鑑・コツ</button></div>
+  <div class="tipline" id="titleTip"></div>
+  <div class="how">わんこの上をドラッグ＝バリカン ／ 背景ドラッグ・⟲⟳＝回転 ／ 2本指＝ズーム<br>1・2・3 でアタッチメント（毛の長さ）切りかえ</div>
+</div>
+
+<div id="result" class="ov hide">
+  <div id="card">
+    <div id="rOrder"></div>
+    <div id="rAcc">0<small>%</small></div>
+    <div id="rRank"></div>
+    <div id="rCom"></div>
+    <div id="rStats"></div>
+    <div id="rBest"></div>
+    <div id="rNew"></div>
+    <div id="rTip"></div>
+    <div class="row">
+      <button class="btn" id="retry">もう1回 (R)</button>
+      <button class="btn" id="retryCut" title="シャンプー〜ドライヤーをとばす (C)">✂ カットから</button>
+      <a class="btn" id="share" href="https://twitter.com/intent/tweet" target="_blank" rel="noopener" style="text-decoration:none;display:flex;align-items:center;justify-content:center">𝕏 でシェア</a>
+    </div>
+    <div class="row" style="margin-top:8px"><button class="btn" id="rView">👀 じっくり見る</button><button class="btn" id="rZukan">📖 図鑑</button></div>
+    <div class="hint"><a href="https://rickther1ck.com/" target="_blank" rel="noopener" style="color:inherit">rickther1ck.com ほかのゲーム ▶</a><br>R でもう1回 ／ C でカットから ／ わんこはドラッグで回せる</div>
+  </div>
+  <div id="viewfinder" class="hide"><span>📷 図鑑に写る範囲</span></div>
+  <div id="peekBar" class="hide"><span class="cap">ドラッグで回転・ピンチ/ホイールでズーム</span><button class="btn zoom" id="zOut" aria-label="ズームアウト">－</button><button class="btn zoom" id="zIn" aria-label="ズームイン">＋</button><button class="btn" id="rPhoto">📷 図鑑の写真にする</button><button class="btn" id="rBack">結果にもどる</button></div>
+</div>
+
+<div id="zukan" class="ov hide">
+  <div id="zPanel">
+    <div class="zHead"><b>📖 わんこ図鑑</b><span id="zCount"></span><button class="btn" id="zClose">とじる ✕</button></div>
+    <div class="zTabs">
+      <button class="btn zt on" data-t="dogs">犬種</button>
+      <button class="btn zt" data-t="titles">称号</button>
+      <button class="btn zt" data-t="tips">コツ</button>
+    </div>
+    <div id="zBody"></div>
+  </div>
+</div>
+
+<a id="site" href="https://rickther1ck.com/" target="_blank" rel="noopener">rickther1ck.com ▶ ほかのゲーム</a>
+<div id="dbg" class="hide"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+'use strict';
+// ===================== 調整パラメータ =====================
+const qs = new URLSearchParams(location.search);
+const DEBUG = qs.get('debug') === '1' || location.hash.startsWith('#debug');
+const DEBUG_ORDER = (location.hash.match(/^#debug-([a-z]+)/) || [])[1]; // 例: #debug-teddy で注文を固定
+const P = {
+  cutRadius: 0.24,     // バリカンの当たり半径
+  timeLimit: 60,       // 制限時間(秒)
+  hitstop: 0.05,       // ヒットストップ(秒)
+  camShake: 0.05,      // 画面揺れの強さ
+  shakeEvery: 6.5,      // わんこがブルブルする平均間隔(秒)
+  shakeStrength: 0.3,  // ブルブルの強さ
+  strands: 4200,       // 毛の本数（次のラウンドから反映。重い端末では自動で減らす）
+  buzzVol: 0.6,        // バリカン音量
+  rareRate: 0.12,      // レア注文の出現率
+  rareBreed: 0.08,     // 幻の犬種の出現率
+};
+const SLUG = 'mosamosa-trimming';
+{ const sv = lsGet('mosamosa_strands', 0); if (sv >= 1200 && sv < P.strands) P.strands = sv; } // 前回重かった端末
+const GAME_URL = 'https://rickther1ck.com/' + SLUG + '/';
+
+// ===================== 注文 =====================
+const S = 0.03, M = 0.13, L = 0.26, K = -1; // K = 切らない
+const ATT = [{ len: S, name: 'つるつる' }, { len: M, name: 'みじかめ' }, { len: L, name: 'ながめ' }];
+const ORDERS = [
+  { id: 'teddy', name: 'テディベアカット', desc: '体と足は<b>みじかめ</b>／頭と耳は<b>ながめ</b>',
+    t: { body: M, chest: M, leg: M, foot: M, tail: M, snout: M, head: L, ear: L } },
+  { id: 'poodle', name: 'プードルのポンポン', desc: '体・足・口元は<b>つるつる</b>／頭は<b>ながめ</b>／足先・しっぽ・耳は切らない',
+    t: { body: S, chest: S, leg: S, foot: K, tail: K, snout: S, head: L, ear: K } },
+  { id: 'lion', name: 'ライオンカット', desc: '体と足は<b>つるつる</b>／口元は<b>みじかめ</b>／頭・耳・胸・足先・しっぽは切らない',
+    t: { body: S, chest: K, leg: S, foot: K, tail: K, snout: M, head: K, ear: K } },
+  { id: 'summer', name: 'サマーカット', desc: '暑いので全身<b>つるつる</b>！',
+    t: { all: S } },
+  { id: 'mohawk', name: '★レア★ モヒカン', desc: '全身<b>つるつる</b>／背中〜頭のてっぺん一列だけ切らない',
+    t: { all: S }, top: K, rare: true },
+];
+function targetOf(o, reg, top, orig) {
+  if (o.top !== undefined && top) return o.top < 0 ? orig : o.top;
+  let v = o.t[reg]; if (v === undefined) v = o.t.all;
+  return v < 0 ? orig : v;
+}
+
+// ===================== 便利 =====================
+function mulberry(a) { return function () { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+const $ = id => document.getElementById(id);
+function lsGet(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch (e) { return d; } }
+function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } }
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+
+// ===================== Three 基本 =====================
+const canvas = $('c');
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+const IS_PHONE = Math.min(innerWidth, innerHeight) <= 600;
+renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, IS_PHONE ? 1.75 : 2));
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xfde4ea);
+const camera = new THREE.PerspectiveCamera(42, 1, 0.05, 60);
+scene.add(new THREE.HemisphereLight(0xfffaf2, 0xe8c9b8, 0.95));
+const sun = new THREE.DirectionalLight(0xffffff, 0.75); sun.position.set(3, 6, 4); scene.add(sun);
+const fill = new THREE.DirectionalLight(0xffe0ea, 0.3); fill.position.set(-4, 2, -3); scene.add(fill);
+
+// サロン
+const floor = new THREE.Mesh(new THREE.CircleGeometry(14, 48), new THREE.MeshLambertMaterial({ color: 0xf7c9d4 }));
+floor.rotation.x = -Math.PI / 2; floor.position.y = -1.4; scene.add(floor);
+const tableTop = new THREE.Mesh(new THREE.CylinderGeometry(1.75, 1.75, 0.14, 48), new THREE.MeshLambertMaterial({ color: 0xffffff }));
+tableTop.position.y = -0.07; scene.add(tableTop);
+const tableRim = new THREE.Mesh(new THREE.TorusGeometry(1.75, 0.05, 8, 48), new THREE.MeshLambertMaterial({ color: 0x8fdcc8 }));
+tableRim.rotation.x = Math.PI / 2; tableRim.position.y = -0.07; scene.add(tableRim);
+const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.16, 0.22, 1.3, 16), new THREE.MeshLambertMaterial({ color: 0xc8c8d0 }));
+pole.position.y = -0.75; scene.add(pole);
+const blob = new THREE.Mesh(new THREE.CircleGeometry(1.2, 32), new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.08 }));
+blob.rotation.x = -Math.PI / 2; blob.position.set(0.15, 0.002, 0); blob.scale.set(1.25, 0.6, 1); scene.add(blob);
+
+// ===================== 犬種 =====================
+// fur/ear/head=毛色, len=毛の長さ, curl=垂れ具合, wave=[うねりの強さ, 細かさ], thick=毛束の太さ
+const BREEDS = [
+  { id: 'poodle', name: 'トイプードル', fur: [0.96, 0.8, 0.62], ear: [0.9, 0.68, 0.48], len: [0.46, 0.62], curl: 0.7, wave: [0.05, 22], thick: 1.0,
+    body: [0.85, 0.55, 0.5], legRy: 0.42, legR: 0.15, headR: 0.42, snoutL: 0.22, ears: 'drop', earS: 1, tail: 'up',
+    info: 'くるくるの巻き毛で、抜け毛が少ない。カットのアレンジが一番多い人気者。' },
+  { id: 'pome', name: 'ポメラニアン', fur: [1.0, 0.7, 0.4], ear: [0.98, 0.66, 0.36], len: [0.42, 0.56], curl: 0.35, wave: [0.015, 10], thick: 1.15,
+    body: [0.62, 0.52, 0.48], legRy: 0.3, legR: 0.13, headR: 0.44, snoutL: 0.13, ears: 'up', earS: 0.9, tail: 'over',
+    info: 'ふわふわの二重毛で、まんまるシルエット。しっぽは背中にくるん。' },
+  { id: 'shihtzu', name: 'シーズー', fur: [0.98, 0.97, 0.94], ear: [0.66, 0.48, 0.34], head: [0.78, 0.62, 0.46], len: [0.55, 0.75], curl: 1.5, wave: [0.006, 6], thick: 0.9,
+    body: [0.85, 0.48, 0.46], legRy: 0.33, legR: 0.14, headR: 0.43, snoutL: 0.12, ears: 'drop', earS: 1.1, tail: 'over',
+    info: 'まっすぐな長い毛が床までサラサラ。放っておくと前が見えなくなる。' },
+  { id: 'golden', name: 'ゴールデンレトリバー', fur: [0.92, 0.68, 0.36], ear: [0.84, 0.56, 0.28], len: [0.36, 0.5], curl: 1.1, wave: [0.012, 8], thick: 1.1,
+    body: [1.0, 0.55, 0.48], legRy: 0.5, legR: 0.16, headR: 0.4, snoutL: 0.3, ears: 'drop', earS: 1.0, tail: 'down',
+    info: '金色のつやつや毛。おおらかで、トリミング中もわりとおとなしい。' },
+  { id: 'bichon', name: 'ビション・フリーゼ', fur: [1.0, 0.99, 0.96], ear: [0.98, 0.95, 0.9], len: [0.5, 0.64], curl: 0.45, wave: [0.06, 26], thick: 1.05,
+    body: [0.78, 0.52, 0.48], legRy: 0.38, legR: 0.14, headR: 0.45, snoutL: 0.15, ears: 'drop', earS: 0.9, tail: 'over',
+    info: 'まっしろなわたあめ。頭をまんまるに仕上げる「パフ」が有名。' },
+  { id: 'komondor', name: '★幻★ コモンドール', fur: [0.95, 0.93, 0.86], ear: [0.93, 0.9, 0.82], len: [0.75, 0.95], curl: 1.4, wave: [0.03, 5], thick: 1.6, rare: true,
+    body: [0.95, 0.6, 0.52], legRy: 0.45, legR: 0.17, headR: 0.45, snoutL: 0.18, ears: 'drop', earS: 1, tail: 'down',
+    info: '全身がモップのようなドレッドヘア。じつはハンガリーの牧羊犬。出会えたらラッキー。' },
+];
+function makeShape(b) {
+  const [bx, by, bz] = b.body, lr = b.legRy, lw = b.legR, hr = b.headR, sl = b.snoutL, hs = hr / 0.42;
+  const bodyY = lr * 1.6 + by * 0.5;
+  const parts = [];
+  parts.push({ n: 'body', g: 0, c: [0, bodyY, 0], r: [bx, by, bz] });
+  parts.push({ n: 'chest', g: 0, c: [bx * 0.65, bodyY + 0.1, 0], r: [bx * 0.5, by * 0.9, bz * 0.88] });
+  for (const sx of [1, -1]) for (const sz of [1, -1]) parts.push({ n: 'leg', g: 0, c: [sx * bx * 0.6, lr * 0.86, sz * bz * 0.54], r: [lw, lr, lw] });
+  const piv1 = [bx, bodyY + by * 0.73, 0];
+  const hc = [piv1[0] + 0.23 * hs, piv1[1] + 0.27 * hs, 0];
+  parts.push({ n: 'head', g: 1, c: hc, r: [hr, hr * 0.95, hr * 0.95] });
+  const sc = [hc[0] + hr * 0.45 + sl * 0.9, hc[1] - 0.12 * hs, 0];
+  parts.push({ n: 'snout', g: 1, c: sc, r: [sl, 0.16 * hs, 0.17 * hs] });
+  const e = b.earS;
+  for (const z of [1, -1]) {
+    if (b.ears === 'up') parts.push({ n: 'ear', g: 1, c: [hc[0] - 0.05, hc[1] + hr * 0.82, z * hr * 0.5], r: [0.09 * e, 0.17 * e, 0.07 * e] });
+    else parts.push({ n: 'ear', g: 1, c: [hc[0] - 0.08, hc[1] - 0.14 * hs, z * hr * 1.02], r: [0.12 * e, 0.3 * e, 0.1 * e] });
+  }
+  const piv2 = [-bx * 0.96, bodyY + by * 0.45, 0];
+  let tc, tr;
+  if (b.tail === 'over') { tc = [piv2[0] + 0.14, piv2[1] + 0.28, 0]; tr = [0.2, 0.16, 0.16]; }
+  else if (b.tail === 'down') { tc = [piv2[0] - 0.12, piv2[1] - 0.16, 0]; tr = [0.12, 0.26, 0.12]; }
+  else { tc = [piv2[0] - 0.13, piv2[1] + 0.18, 0]; tr = [0.13, 0.22, 0.13]; }
+  parts.push({ n: 'tail', g: 2, c: tc, r: tr });
+  return {
+    parts, pivots: [[0, 0, 0], piv1, piv2],
+    eyes: [[hc[0] + hr * 0.82, hc[1] + hr * 0.25, hr * 0.38], [hc[0] + hr * 0.82, hc[1] + hr * 0.25, -hr * 0.38]],
+    nose: [sc[0] + sl * 0.95, sc[1] + 0.04 * hs, 0], hs, chestX: bx * 0.4, footY: lr * 0.5, earUp: b.ears === 'up',
+  };
+}
+function regionOf(sh, n, x, y) {
+  if (n === 'body') return x > sh.chestX ? 'chest' : 'body';
+  if (n === 'leg') return y < sh.footY ? 'foot' : 'leg';
+  return n;
+}
+const REG_JP = { body: '体', chest: '胸', leg: '足', foot: '足先', head: '頭', snout: '口元', ear: '耳', tail: 'しっぽ', top: '背中のてっぺん' };
+// ---- 毛：細い毛を何本も束ねた「毛束」を、シェーダーで長さ・垂れ・うねりをつけて描く ----
+function buildLockGeo(hairs, segs, seedN) {
+  const rnd = mulberry(seedN);
+  const pos = [], hoff = [], hspr = [], idx = [];
+  for (let h = 0; h < hairs; h++) {
+    const a = rnd() * Math.PI * 2, r = Math.sqrt(rnd()) * 0.032;
+    const ox = Math.cos(a) * r, oz = Math.sin(a) * r;
+    const sa = rnd() * Math.PI * 2, sm = 0.3 + rnd() * 0.7;
+    const sx = Math.cos(sa) * sm, sz = Math.sin(sa) * sm, ph = rnd() * 6.283;
+    const ra = rnd() * Math.PI, rx = Math.cos(ra), rz = Math.sin(ra);
+    const base = pos.length / 3;
+    for (let k = 0; k <= segs; k++) {
+      const t = k / segs, hw = 0.009 * (1 - t * 0.85);
+      pos.push(-rx * hw, t, -rz * hw, rx * hw, t, rz * hw);
+      hoff.push(ox, oz, ph, ox, oz, ph); hspr.push(sx, sz, sx, sz);
+    }
+    for (let k = 0; k < segs; k++) { const b = base + k * 2; idx.push(b, b + 1, b + 2, b + 1, b + 3, b + 2); }
+  }
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.setAttribute('normal', new THREE.Float32BufferAttribute(new Array(pos.length).fill(0).map((v, i) => i % 3 === 1 ? 1 : 0), 3));
+  g.setAttribute('hoff', new THREE.Float32BufferAttribute(hoff, 3));
+  g.setAttribute('hspr', new THREE.Float32BufferAttribute(hspr, 2));
+  g.setIndex(idx);
+  return g;
+}
+const LOCK_GEO = buildLockGeo(8, 6, 77);      // 本体用（毛8本×6節）
+const LOCK_GEO_LO = buildLockGeo(4, 4, 78);   // お手本・切り毛用（軽量）
+function makeFurMat() {
+  const m = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.74, metalness: 0, side: THREE.DoubleSide });
+  m.onBeforeCompile = sh => {
+    sh.uniforms.uTime = { value: 0 }; m.userData.shader = sh;
+    sh.vertexShader = sh.vertexShader
+      .replace('#include <common>', `#include <common>
+attribute float aLen; attribute float aCurl; attribute float aThick; attribute vec2 aWave;
+attribute vec4 aState; uniform float uTime;
+attribute vec3 hoff; attribute vec2 hspr;
+varying float vS; varying float vRel; varying float vDirt; varying float vWet; varying float vShort;`)
+      .replace('#include <beginnormal_vertex>', `float hsWet = aState.x, hsFl = aState.y, hsWind = aState.w;
+float hsT = position.y; float hsS = hsT * aLen * (1.0 + 0.2 * hsFl) * (1.0 - 0.1 * hsWet);
+// 短く刈った毛：束を広げて密に、少し寝かせて、ビロードのような毛並みにする
+float hsShort = 1.0 - smoothstep(0.08, 0.3, aLen);
+// 濡れると毛束がまとまって体にぺたっ、乾かすとふわっと広がる
+vec2 hsLat = hoff.xy * aThick * (1.0 - 0.7 * hsWet + 0.5 * hsFl) * (1.0 + 1.3 * hsShort) + hspr * hsS * 0.32 * (1.0 - 0.85 * hsWet + 0.9 * hsFl) * (1.0 + 1.5 * hsShort);
+float hsBend = min(aCurl * (1.0 + 2.4 * hsWet - 0.45 * hsFl) * hsS * hsS + hsShort * hsS * 0.55, hsS * 0.95);
+vec3 objectNormal = normalize(vec3(hsLat.x * 5.0 + aCurl * hsS * 0.8, 1.1, hsLat.y * 5.0));
+#ifdef USE_TANGENT
+vec3 objectTangent = vec3( tangent.xyz );
+#endif`)
+      .replace('#include <begin_vertex>', `float hsW = aWave.x * min(hsS * 5.0, 1.0) * (1.0 - 0.6 * hsShort);
+float hsA = hsS * aWave.y + hoff.z;
+float hsSw = hsWind * hsT * hsT * 0.1;
+vec3 transformed = vec3(hsLat.x + position.x * aThick * (1.0 + 1.2 * hsShort) + hsBend + cos(hsA) * hsW + sin(uTime * 31.0 + hoff.z * 4.0) * hsSw,
+  hsS - hsBend * (0.35 + 0.4 * hsWet),
+  hsLat.y + position.z * aThick * (1.0 + 1.2 * hsShort) + sin(hsA) * hsW + cos(uTime * 27.0 + hoff.z * 3.0) * hsSw);
+if (aLen < 0.045) transformed *= 0.0; // つるつる：毛は消して地肌をきれいに見せる
+vS = hsS; vRel = hsT; vDirt = aState.z; vWet = hsWet; vShort = hsShort;`);
+    sh.fragmentShader = sh.fragmentShader
+      .replace('#include <common>', `#include <common>
+varying float vS; varying float vRel; varying float vDirt; varying float vWet; varying float vShort;`)
+      .replace('#include <color_fragment>', `#include <color_fragment>
+float hsAo = mix(mix(0.6, 1.0, smoothstep(0.0, 0.28, vS)), 0.84 + 0.16 * vRel, vShort); // 短い毛は根元の影を弱く
+diffuseColor.rgb *= hsAo * (0.95 + 0.15 * vRel * (1.0 - 0.7 * vShort));
+diffuseColor.rgb *= mix(vec3(1.0), vec3(0.58, 0.5, 0.42), vDirt) * mix(1.0, 0.8, vWet);`)
+      .replace('#include <normal_fragment_begin>', `#include <normal_fragment_begin>
+normal = normalize(vNormal);`);
+  };
+  return m;
+}
+const furMat = makeFurMat();
+function furMesh(geoBase, n) {
+  const g = geoBase.clone();
+  const N = Math.max(1, n);
+  g.setAttribute('aLen', new THREE.InstancedBufferAttribute(new Float32Array(N), 1));
+  g.setAttribute('aCurl', new THREE.InstancedBufferAttribute(new Float32Array(N), 1));
+  g.setAttribute('aThick', new THREE.InstancedBufferAttribute(new Float32Array(N).fill(1), 1));
+  const wv = new Float32Array(N * 2); for (let i = 0; i < N; i++) { wv[i * 2] = 0.015; wv[i * 2 + 1] = 10; }
+  g.setAttribute('aWave', new THREE.InstancedBufferAttribute(wv, 2));
+  g.setAttribute('aState', new THREE.InstancedBufferAttribute(new Float32Array(N * 4), 4)); // 濡れ, ふわふわ, 汚れ, 風
+  const m = new THREE.InstancedMesh(g, furMat, N); m.frustumCulled = false;
+  return m;
+}
+const SKIN_GEO = new THREE.SphereGeometry(1, 28, 20);
+// 刈りこんだ毛並みの細かいざらつき（ビロード感）
+const VELVET = (() => {
+  const c = document.createElement('canvas'); c.width = c.height = 256;
+  const x = c.getContext('2d'); const img = x.createImageData(256, 256);
+  for (let i = 0; i < 256 * 256; i++) {
+    const v = 236 + Math.random() * 19 - (Math.random() < 0.18 ? 22 : 0);
+    img.data[i * 4] = img.data[i * 4 + 1] = img.data[i * 4 + 2] = v; img.data[i * 4 + 3] = 255;
+  }
+  x.putImageData(img, 0, 0);
+  const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(5, 3);
+  return t;
+})();
+const blackMat = new THREE.MeshPhongMaterial({ color: 0x1a1214, shininess: 80 });
+const UP = new THREE.Vector3(0, 1, 0);
+
+function buildDog(sc, count, seed, lockGeo, breed) {
+  const rnd = mulberry(seed);
+  const SH = makeShape(breed), PARTS = SH.parts, PIVOTS = SH.pivots;
+  // 刈った後の地肌：ピンクの肌に毛色をまぜた、短く刈りこんだ毛並みの色
+  const f = breed.fur;
+  const skinMat = new THREE.MeshStandardMaterial({ color: new THREE.Color(0.95 * 0.12 + f[0] * 0.88, 0.8 * 0.12 + f[1] * 0.88, 0.74 * 0.12 + f[2] * 0.88), roughness: 0.95, map: VELVET, bumpMap: VELVET, bumpScale: 0.004 });
+  const root = new THREE.Group(); sc.add(root);
+  const groups = PIVOTS.map(pv => { const o = new THREE.Group(); o.position.set(pv[0], pv[1], pv[2]); root.add(o); return { obj: o, pv, list: [] }; });
+  const skins = [];
+  for (const p of PARTS) {
+    const pv = PIVOTS[p.g];
+    const m = new THREE.Mesh(SKIN_GEO, skinMat);
+    m.position.set(p.c[0] - pv[0], p.c[1] - pv[1], p.c[2] - pv[2]); m.scale.set(p.r[0], p.r[1], p.r[2]);
+    m.userData = { n: p.n, g: p.g };
+    groups[p.g].obj.add(m); skins.push(m);
+  }
+  let W = 0; const ws = PARTS.map(p => { const [a, b, c] = p.r; const w = a * b + b * c + a * c; W += w; return w; });
+  PARTS.forEach((p, pi) => {
+    const pv = PIVOTS[p.g];
+    let need = Math.round(count * ws[pi] / W), tries = 0;
+    while (need > 0 && tries < need * 8 + 60) {
+      tries++;
+      let ux, uy, uz, l;
+      do { ux = rnd() * 2 - 1; uy = rnd() * 2 - 1; uz = rnd() * 2 - 1; l = ux * ux + uy * uy + uz * uz; } while (l > 1 || l < 0.01);
+      l = Math.sqrt(l); ux /= l; uy /= l; uz /= l;
+      const px = p.c[0] + ux * p.r[0], py = p.c[1] + uy * p.r[1], pz = p.c[2] + uz * p.r[2];
+      if (py < 0.03) continue;
+      let inside = false;
+      for (const o of PARTS) {
+        if (o === p) continue;
+        const a = (px - o.c[0]) / o.r[0], b = (py - o.c[1]) / o.r[1], c = (pz - o.c[2]) / o.r[2];
+        if (a * a + b * b + c * c < 0.9) { inside = true; break; }
+      }
+      if (inside) continue;
+      let nx = ux / p.r[0], ny = uy / p.r[1], nz = uz / p.r[2];
+      let nl = Math.hypot(nx, ny, nz); nx /= nl; ny /= nl; nz /= nl;
+      const reg = regionOf(SH, p.n, px, py);
+      const top = (p.n === 'body' || p.n === 'head') && ny > 0.5 && Math.abs(pz) < 0.27;
+      const droop = reg === 'ear' ? (SH.earUp ? 0.2 : -0.9) : (reg === 'leg' || reg === 'foot') ? -0.3 : -0.12;
+      let dx = nx + (rnd() - 0.5) * 0.45, dy = ny + (rnd() - 0.5) * 0.35 + droop, dz = nz + (rnd() - 0.5) * 0.45;
+      if (reg === 'foot' && dy < -0.2) dy = -0.2;
+      nl = Math.hypot(dx, dy, dz); dx /= nl; dy /= nl; dz /= nl;
+      const [l0, l1] = breed.len;
+      let len = l0 + rnd() * (l1 - l0);
+      if (reg === 'snout') len *= 0.72;
+      if (reg === 'ear') len *= SH.earUp ? 0.6 : 1.12;
+      const w = (0.85 + rnd() * 0.5) * breed.thick;
+      const curl = breed.curl * (reg === 'ear' ? (SH.earUp ? 0.2 : 0.5) : reg === 'snout' ? 0.9 : 1.0) * (0.7 + rnd() * 0.7);
+      const wave = [breed.wave[0] * (0.6 + rnd() * 0.8), breed.wave[1] * (0.8 + rnd() * 0.4)];
+      const sh = 0.86 + rnd() * 0.18;
+      const base = (reg === 'ear') ? breed.ear : (breed.head && (reg === 'head' || reg === 'snout')) ? breed.head : breed.fur;
+      const col = [Math.min(1, base[0] * sh), Math.min(1, base[1] * sh), Math.min(1, base[2] * sh)];
+      groups[p.g].list.push({ x: px - pv[0], y: py - pv[1], z: pz - pv[2], dx, dy, dz, len, w, curl, wave, reg, top, col });
+      need--;
+    }
+  });
+  const q = new THREE.Quaternion(), c = new THREE.Color(), mb = new THREE.Matrix4();
+  const X = new THREE.Vector3(), Y = new THREE.Vector3(), Z = new THREE.Vector3();
+  let total = 0;
+  for (const G of groups) {
+    const n = G.list.length; total += n;
+    G.n = n; G.root = new Float32Array(n * 3); G.dir = new Float32Array(n * 3); G.q = new Float32Array(n * 4);
+    G.orig = new Float32Array(n); G.len = new Float32Array(n); G.tg = new Float32Array(n); G.w = new Float32Array(n);
+    G.col = new Float32Array(n * 3); G.reg = []; G.top = [];
+    G.mesh = furMesh(lockGeo, n);
+    G.aLen = G.mesh.geometry.attributes.aLen; G.curl = new Float32Array(n);
+    G.aState = G.mesh.geometry.attributes.aState;
+    G.wet = new Float32Array(n); G.fluff = new Float32Array(n); G.dirt = new Float32Array(n); G.wind = new Float32Array(n); G.foam = new Uint8Array(n);
+    const aCurl = G.mesh.geometry.attributes.aCurl, aThick = G.mesh.geometry.attributes.aThick, aWave = G.mesh.geometry.attributes.aWave;
+    G.list.forEach((s, i) => {
+      G.root.set([s.x, s.y, s.z], i * 3); G.dir.set([s.dx, s.dy, s.dz], i * 3);
+      // y=毛の向き、x=重力の向き（そっちに垂れる）
+      Y.set(s.dx, s.dy, s.dz);
+      X.set(0, -1, 0).addScaledVector(Y, Y.y);
+      if (X.lengthSq() < 0.02) X.set(Math.cos(i * 2.39), 0, Math.sin(i * 2.39)).addScaledVector(Y, -Y.x * Math.cos(i * 2.39) - Y.z * Math.sin(i * 2.39));
+      X.normalize(); Z.crossVectors(X, Y).normalize(); X.crossVectors(Y, Z).normalize();
+      mb.makeBasis(X, Y, Z); q.setFromRotationMatrix(mb); G.q.set([q.x, q.y, q.z, q.w], i * 4);
+      _p.set(s.x, s.y, s.z); _s.set(1, 1, 1); _m.compose(_p, q, _s); G.mesh.setMatrixAt(i, _m);
+      G.orig[i] = s.len; G.len[i] = s.len; G.w[i] = s.w; G.curl[i] = s.curl; G.reg.push(s.reg); G.top.push(s.top);
+      aCurl.array[i] = s.curl; aThick.array[i] = s.w; aWave.array[i * 2] = s.wave[0]; aWave.array[i * 2 + 1] = s.wave[1];
+      G.col.set(s.col, i * 3); c.setRGB(s.col[0], s.col[1], s.col[2]); G.mesh.setColorAt(i, c);
+    });
+    if (G.mesh.instanceColor) G.mesh.instanceColor.needsUpdate = true;
+    G.obj.add(G.mesh);
+    for (let i = 0; i < n; i++) setStrand(G, i);
+    G.mesh.instanceMatrix.needsUpdate = true; aCurl.needsUpdate = true; aThick.needsUpdate = true; aWave.needsUpdate = true;
+    delete G.list;
+  }
+  // 目・鼻（頭グループ）
+  const hp = PIVOTS[1], eyes = [];
+  for (const ep of SH.eyes) {
+    const e = new THREE.Mesh(new THREE.SphereGeometry(0.055 * SH.hs, 12, 10), blackMat);
+    e.position.set(ep[0] - hp[0], ep[1] - hp[1], ep[2]); groups[1].obj.add(e); eyes.push(e);
+  }
+  const nose = new THREE.Mesh(new THREE.SphereGeometry(0.075 * SH.hs, 12, 10), blackMat);
+  nose.position.set(SH.nose[0] - hp[0], SH.nose[1] - hp[1], 0); groups[1].obj.add(nose);
+  return { root, groups, skins, eyes, total, head: groups[1].obj, tail: groups[2].obj, shape: SH, breed, skinMat };
+}
+
+const _p = new THREE.Vector3(), _q = new THREE.Quaternion(), _s = new THREE.Vector3(), _m = new THREE.Matrix4();
+function setStrand(G, i) { G.aLen.array[i] = Math.max(G.len[i], 0.004); G.dirty = true; }
+function setState(G, i) { const a = G.aState.array; a[i * 4] = G.wet[i]; a[i * 4 + 1] = G.fluff[i]; a[i * 4 + 2] = G.dirt[i]; a[i * 4 + 3] = G.wind[i]; G.sdirty = true; }
+// ラウンド開始時：汚れた・乾いた・ぺたんとした毛にする（お手本はきれいでふわふわ）
+function initCoat(D, clean) {
+  for (const G of D.groups) for (let i = 0; i < G.n; i++) {
+    const x = G.root[i * 3] + G.pv[0], y = G.root[i * 3 + 1] + G.pv[1], z = G.root[i * 3 + 2] + G.pv[2];
+    let d = 0;
+    if (!clean) {
+      const nz = Math.sin(x * 4.3 + 1.7) * Math.sin(y * 5.1 + 0.3) * Math.sin(z * 6.7 + 2.1) + 0.5 * Math.sin(x * 9.1 + y * 7.3 + z * 2.0);
+      d = clamp(0.38 + 0.4 * nz + (y < 0.35 ? 0.3 : 0) + (Math.random() - 0.5) * 0.15, 0, 0.92);
+    }
+    G.dirt[i] = d; G.wet[i] = 0; G.fluff[i] = clean ? 1 : 0; G.wind[i] = 0; G.foam[i] = 0; setState(G, i);
+  }
+}
+function disposeDog(sc, dog) { if (!dog) return; sc.remove(dog.root); dog.skinMat.dispose(); dog.groups.forEach(G => { G.mesh.geometry.dispose(); G.mesh.dispose(); }); }
+
+// お手本（ご注文）用の別シーン
+const ghostScene = new THREE.Scene();
+ghostScene.background = new THREE.Color(0xfff7ec);
+ghostScene.add(new THREE.HemisphereLight(0xffffff, 0xd9a7b4, 0.8));
+const gsun = new THREE.DirectionalLight(0xffffff, 0.7); gsun.position.set(3, 5, 4); ghostScene.add(gsun);
+const ghostCam = new THREE.PerspectiveCamera(34, 1, 0.1, 30);
+ghostCam.position.set(0.25, 2.1, 6.4); ghostCam.lookAt(0.15, 0.85, 0);
+
+let dog = null, ghost = null, builtCount = 0, seed = 1234;
+let breed = BREEDS[0], lastBreedId = null;
+function rebuild() {
+  disposeDog(scene, dog); disposeDog(ghostScene, ghost);
+  seed = (Math.random() * 1e9) | 0;
+  dog = buildDog(scene, P.strands, seed, LOCK_GEO, breed);
+  ghost = buildDog(ghostScene, P.strands, seed, LOCK_GEO_LO, breed);
+  builtCount = P.strands;
+}
+function pickBreed() {
+  if (qs.get('breed')) { const b = BREEDS.find(x => x.id === qs.get('breed')); if (b) return b; }
+  if (Math.random() < P.rareBreed) return BREEDS.find(b => b.rare);
+  const pool = BREEDS.filter(b => !b.rare && b.id !== lastBreedId);
+  return pool[(Math.random() * pool.length) | 0];
+}
+
+// ===================== 切り毛パーティクル =====================
+const PN = 1100;
+const pmesh = furMesh(LOCK_GEO_LO, PN); scene.add(pmesh);
+const pLenA = pmesh.geometry.attributes.aLen, pCurlA = pmesh.geometry.attributes.aCurl, pThickA = pmesh.geometry.attributes.aThick;
+const pp = new Float32Array(PN * 3), pv = new Float32Array(PN * 3), pax = new Float32Array(PN * 3), psp = new Float32Array(PN);
+const plen = new Float32Array(PN), pw = new Float32Array(PN), pst = new Uint8Array(PN);
+const pq = Array.from({ length: PN }, () => new THREE.Quaternion());
+let pIdx = 0;
+const _c = new THREE.Color(), _d = new THREE.Vector3(), _ax = new THREE.Vector3(), _e = new THREE.Euler();
+(function initParticles() { _m.makeScale(0, 0, 0); for (let i = 0; i < PN; i++) pmesh.setMatrixAt(i, _m); _c.setRGB(1, 1, 1); for (let i = 0; i < PN; i++) pmesh.setColorAt(i, _c); })();
+function clearParticles() { _m.makeScale(0, 0, 0); for (let i = 0; i < PN; i++) { pst[i] = 0; pmesh.setMatrixAt(i, _m); } pmesh.instanceMatrix.needsUpdate = true; }
+function spawnParticle(wx, wy, wz, dx, dy, dz, len, w, r, g, b, speed, curl) {
+  const i = pIdx; pIdx = (pIdx + 1) % PN;
+  pp[i * 3] = wx; pp[i * 3 + 1] = wy; pp[i * 3 + 2] = wz;
+  const sp = speed * (0.6 + Math.random());
+  pv[i * 3] = dx * sp + (Math.random() - 0.5) * 1.4;
+  pv[i * 3 + 1] = dy * sp + 1.2 + Math.random() * 1.2;
+  pv[i * 3 + 2] = dz * sp + (Math.random() - 0.5) * 1.4;
+  _d.set(dx, dy, dz).normalize(); pq[i].setFromUnitVectors(UP, _d);
+  _ax.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5).normalize();
+  pax[i * 3] = _ax.x; pax[i * 3 + 1] = _ax.y; pax[i * 3 + 2] = _ax.z; psp[i] = 4 + Math.random() * 10;
+  plen[i] = Math.max(0.02, len); pw[i] = w; pst[i] = 1;
+  pLenA.array[i] = plen[i]; pCurlA.array[i] = curl === undefined ? 1 : curl; pThickA.array[i] = w;
+  pLenA.needsUpdate = pCurlA.needsUpdate = pThickA.needsUpdate = true;
+  _c.setRGB(r, g, b); pmesh.setColorAt(i, _c); pmesh.instanceColor.needsUpdate = true;
+}
+const _dq = new THREE.Quaternion();
+function updateParticles(dt) {
+  let any = false;
+  for (let i = 0; i < PN; i++) {
+    if (pst[i] !== 1) continue; any = true;
+    pv[i * 3 + 1] -= 9.8 * dt;
+    pv[i * 3] *= (1 - 1.2 * dt); pv[i * 3 + 2] *= (1 - 1.2 * dt);
+    pp[i * 3] += pv[i * 3] * dt; pp[i * 3 + 1] += pv[i * 3 + 1] * dt; pp[i * 3 + 2] += pv[i * 3 + 2] * dt;
+    _ax.set(pax[i * 3], pax[i * 3 + 1], pax[i * 3 + 2]); _dq.setFromAxisAngle(_ax, psp[i] * dt); pq[i].premultiply(_dq);
+    const x = pp[i * 3], y = pp[i * 3 + 1], z = pp[i * 3 + 2];
+    if (pv[i * 3 + 1] < 0 && y < 0.01 && y > -0.2 && x * x + z * z < 1.7 * 1.7) { pp[i * 3 + 1] = 0.01; land(i); }
+    else if (y < -1.38) { pp[i * 3 + 1] = -1.38; land(i); }
+    _p.set(pp[i * 3], pp[i * 3 + 1], pp[i * 3 + 2]); _s.set(1, 1, 1);
+    _m.compose(_p, pq[i], _s); pmesh.setMatrixAt(i, _m);
+  }
+  if (any) pmesh.instanceMatrix.needsUpdate = true;
+}
+function land(i) { pst[i] = 2; _e.set(Math.PI / 2, Math.random() * Math.PI * 2, 0, 'YXZ'); pq[i].setFromEuler(_e); }
+
+// ===================== バリカン =====================
+const clipper = new THREE.Group(); scene.add(clipper);
+const cBody = new THREE.Mesh(new THREE.BoxGeometry(0.17, 0.46, 0.11), new THREE.MeshLambertMaterial({ color: 0xff6f91 }));
+cBody.position.y = 0.27; clipper.add(cBody);
+const cBand = new THREE.Mesh(new THREE.BoxGeometry(0.18, 0.06, 0.12), new THREE.MeshLambertMaterial({ color: 0xffffff }));
+cBand.position.y = 0.4; clipper.add(cBand);
+const cBlade = new THREE.Mesh(new THREE.BoxGeometry(0.22, 0.05, 0.13), new THREE.MeshPhongMaterial({ color: 0xd8dde3, shininess: 120 }));
+cBlade.position.y = 0.025; clipper.add(cBlade);
+const cComb = new THREE.Mesh(new THREE.BoxGeometry(0.2, 1, 0.11), new THREE.MeshLambertMaterial({ color: 0xffffff, transparent: true, opacity: 0.55 }));
+clipper.add(cComb);
+const ring = new THREE.Mesh(new THREE.RingGeometry(0.86, 1, 36), new THREE.MeshBasicMaterial({ color: 0xff6f91, transparent: true, opacity: 0.55, depthTest: false, side: THREE.DoubleSide }));
+ring.renderOrder = 10; scene.add(ring);
+clipper.visible = false; ring.visible = false;
+// スポンジ（シャンプー）
+const sponge = new THREE.Group(); scene.add(sponge);
+{ const b = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.13, 0.22), new THREE.MeshStandardMaterial({ color: 0xffe36e, roughness: 0.9 })); b.position.y = 0.07; sponge.add(b);
+  const t = new THREE.Mesh(new THREE.BoxGeometry(0.31, 0.045, 0.23), new THREE.MeshStandardMaterial({ color: 0x5fd39a, roughness: 0.8 })); t.position.y = 0.155; sponge.add(t); }
+// シャワー（すすぎ）
+const shower = new THREE.Group(); scene.add(shower);
+const chrome = new THREE.MeshStandardMaterial({ color: 0xdfe6ee, roughness: 0.25, metalness: 0.6 });
+{ const head = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.1, 0.07, 24), chrome); head.position.y = 0; shower.add(head);
+  const face = new THREE.Mesh(new THREE.CircleGeometry(0.1, 24), new THREE.MeshStandardMaterial({ color: 0x9fb4c8, roughness: 0.4 })); face.rotation.x = Math.PI / 2; face.position.y = -0.037; shower.add(face);
+  const neck = new THREE.Mesh(new THREE.CylinderGeometry(0.035, 0.035, 0.45, 12), chrome); neck.position.set(0.12, 0.2, 0); neck.rotation.z = 0.55; shower.add(neck); }
+// ドライヤー
+const dryer = new THREE.Group(); scene.add(dryer);
+{ const pink = new THREE.MeshStandardMaterial({ color: 0x8fd6ff, roughness: 0.45 });
+  const nozzle = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.08, 0.2, 18), new THREE.MeshStandardMaterial({ color: 0x3d4a5a, roughness: 0.6 })); nozzle.position.y = 0.1; dryer.add(nozzle);
+  const body = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.34, 24), pink); body.position.y = 0.36; dryer.add(body);
+  const back = new THREE.Mesh(new THREE.SphereGeometry(0.12, 18, 12), pink); back.position.y = 0.53; dryer.add(back);
+  const grip = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.3, 0.08), pink); grip.position.set(0.17, 0.42, 0); grip.rotation.z = -0.4; dryer.add(grip); }
+sponge.visible = shower.visible = dryer.visible = false;
+const TOOLS = { cut: clipper, shampoo: sponge, rinse: shower, dry: dryer };
+const TOOL_R = { shampoo: 0.38, rinse: 0.4, dry: 0.5 };
+function showTool(ph) { for (const k in TOOLS) TOOLS[k].visible = (k === ph); }
+
+// 泡（わんこの各パーツにくっつく）
+const FOAM_N = 360;
+const foamGeo = new THREE.SphereGeometry(1, 10, 8);
+const foamMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.35, transparent: true, opacity: 0.92 });
+const foams = [0, 1, 2].map(() => {
+  const m = new THREE.InstancedMesh(foamGeo, foamMat, FOAM_N); m.frustumCulled = false;
+  _m.makeScale(0, 0, 0); for (let i = 0; i < FOAM_N; i++) m.setMatrixAt(i, _m);
+  return { mesh: m, pos: new Float32Array(FOAM_N * 3), sc: new Float32Array(FOAM_N), tg: new Float32Array(FOAM_N), idx: 0, any: false };
+});
+function clearFoam() { for (const f of foams) { f.sc.fill(0); f.tg.fill(0); f.any = true; } }
+function spawnFoam(g, x, y, z, size) { const f = foams[g]; const i = f.idx; f.idx = (f.idx + 1) % FOAM_N; f.pos[i * 3] = x; f.pos[i * 3 + 1] = y; f.pos[i * 3 + 2] = z; f.sc[i] = 0.001; f.tg[i] = size; f.any = true; }
+function popFoam(g, lx, ly, lz, R) { const f = foams[g]; let n = 0; for (let i = 0; i < FOAM_N; i++) { if (f.tg[i] <= 0) continue; const dx = f.pos[i * 3] - lx, dy = f.pos[i * 3 + 1] - ly, dz = f.pos[i * 3 + 2] - lz; if (dx * dx + dy * dy + dz * dz < R * R) { f.tg[i] = 0; n++; } } return n; }
+function updateFoam(dt) {
+  for (const f of foams) {
+    if (!f.any) continue; let alive = false;
+    for (let i = 0; i < FOAM_N; i++) {
+      const t = f.tg[i]; f.sc[i] += (t - f.sc[i]) * Math.min(1, dt * (t > 0 ? 10 : 14));
+      if (f.sc[i] < 0.002 && t <= 0) f.sc[i] = 0; else alive = true;
+      _p.set(f.pos[i * 3], f.pos[i * 3 + 1], f.pos[i * 3 + 2]); _s.setScalar(f.sc[i]); _q.identity(); _m.compose(_p, _q, _s); f.mesh.setMatrixAt(i, _m);
+    }
+    f.mesh.instanceMatrix.needsUpdate = true; f.any = alive;
+  }
+}
+// 水しぶき・温風（ワールド座標の小さな粒）
+const FX_N = 700;
+const fxMesh = new THREE.InstancedMesh(new THREE.SphereGeometry(1, 8, 6), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.75, depthWrite: false }), FX_N);
+fxMesh.frustumCulled = false; scene.add(fxMesh);
+const fxP = new Float32Array(FX_N * 3), fxV = new Float32Array(FX_N * 3), fxL = new Float32Array(FX_N), fxS = new Float32Array(FX_N), fxG = new Float32Array(FX_N);
+let fxIdx = 0;
+(() => { _c.setRGB(1, 1, 1); _m.makeScale(0, 0, 0); for (let i = 0; i < FX_N; i++) { fxMesh.setColorAt(i, _c); fxMesh.setMatrixAt(i, _m); } })();
+function spawnFx(x, y, z, vx, vy, vz, life, size, r, g, b, grav) {
+  const i = fxIdx; fxIdx = (fxIdx + 1) % FX_N;
+  fxP[i * 3] = x; fxP[i * 3 + 1] = y; fxP[i * 3 + 2] = z; fxV[i * 3] = vx; fxV[i * 3 + 1] = vy; fxV[i * 3 + 2] = vz;
+  fxL[i] = life; fxS[i] = size; fxG[i] = grav; _c.setRGB(r, g, b); fxMesh.setColorAt(i, _c); fxMesh.instanceColor.needsUpdate = true;
+}
+function updateFx(dt) {
+  for (let i = 0; i < FX_N; i++) {
+    if (fxL[i] <= 0) { if (fxS[i] !== 0) { fxS[i] = 0; _m.makeScale(0, 0, 0); fxMesh.setMatrixAt(i, _m); } continue; }
+    fxL[i] -= dt; fxV[i * 3 + 1] -= fxG[i] * dt;
+    fxP[i * 3] += fxV[i * 3] * dt; fxP[i * 3 + 1] += fxV[i * 3 + 1] * dt; fxP[i * 3 + 2] += fxV[i * 3 + 2] * dt;
+    if (fxP[i * 3 + 1] < -1.38) fxL[i] = 0;
+    const sc = fxL[i] > 0 ? fxS[i] * Math.min(1, fxL[i] * 4) : 0;
+    _p.set(fxP[i * 3], fxP[i * 3 + 1], fxP[i * 3 + 2]); _s.setScalar(sc); _q.identity(); _m.compose(_p, _q, _s); fxMesh.setMatrixAt(i, _m);
+  }
+  fxMesh.instanceMatrix.needsUpdate = true;
+}
+function clearFx() { fxL.fill(0); }
+
+// ===================== オーディオ =====================
+let AC = null, master = null, buzzGain = null, buzzO1 = null, buzzO2 = null, noiseBuf = null, loopFilter = null, loopGain = null;
+let muted = lsGet('mosamosa_mute', false);
+function initAudio() {
+  if (AC) { if (AC.state === 'suspended') AC.resume(); return; }
+  try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { AC = null; return; }
+  master = AC.createGain(); master.gain.value = muted ? 0 : 0.8; master.connect(AC.destination);
+  buzzO1 = AC.createOscillator(); buzzO1.type = 'sawtooth'; buzzO1.frequency.value = 118;
+  buzzO2 = AC.createOscillator(); buzzO2.type = 'square'; buzzO2.frequency.value = 236;
+  const g2 = AC.createGain(); g2.gain.value = 0.3;
+  const f = AC.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 1500; f.Q.value = 4;
+  buzzGain = AC.createGain(); buzzGain.gain.value = 0;
+  buzzO1.connect(f); buzzO2.connect(g2); g2.connect(f); f.connect(buzzGain); buzzGain.connect(master);
+  buzzO1.start(); buzzO2.start();
+  noiseBuf = AC.createBuffer(1, AC.sampleRate * 0.5, AC.sampleRate);
+  const ch = noiseBuf.getChannelData(0); for (let i = 0; i < ch.length; i++) ch[i] = Math.random() * 2 - 1;
+  // シャワー・ドライヤー用のループ音
+  const ls = AC.createBufferSource(); ls.buffer = noiseBuf; ls.loop = true;
+  loopFilter = AC.createBiquadFilter(); loopFilter.type = 'highpass'; loopFilter.frequency.value = 2500;
+  loopGain = AC.createGain(); loopGain.gain.value = 0;
+  ls.connect(loopFilter); loopFilter.connect(loopGain); loopGain.connect(master); ls.start();
+}
+function tone(f0, f1, dur, type, vol, delay) {
+  if (!AC) return; const t = AC.currentTime + (delay || 0);
+  const o = AC.createOscillator(), g = AC.createGain(); o.type = type || 'sine';
+  o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(Math.max(20, f1), t + dur);
+  g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.01); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  o.connect(g); g.connect(master); o.start(t); o.stop(t + dur + 0.02);
+}
+function noise(dur, freq, q, vol, type, delay) {
+  if (!AC) return; const t = AC.currentTime + (delay || 0);
+  const s = AC.createBufferSource(); s.buffer = noiseBuf;
+  const f = AC.createBiquadFilter(); f.type = type || 'bandpass'; f.frequency.value = freq; f.Q.value = q;
+  const g = AC.createGain(); g.gain.setValueAtTime(vol, t); g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+  s.connect(f); f.connect(g); g.connect(master); s.start(t); s.stop(t + dur + 0.02);
+}
+const SFX = {
+  snip() { noise(0.05, 2600 + Math.random() * 2400, 1.5, 0.22); },
+  chunk() { noise(0.14, 900, 0.7, 0.35, 'lowpass'); noise(0.08, 4000, 2, 0.2); },
+  bark() { dogVoice([{ f: [430, 520, 300], d: 0.17, form: [900, 1700, 800], v: 0.5 }]); },                        // ワン！
+  angryBark() { dogVoice([{ f: [380, 470, 260], d: 0.15, form: [800, 1500, 700], v: 0.55 }, { f: [400, 500, 270], d: 0.16, form: [800, 1500, 700], v: 0.55, at: 0.22 }]); }, // ワンワン！
+  happy() { dogVoice([{ f: [620, 760, 520], d: 0.11, form: [1300, 2300, 1200], v: 0.45 }, { f: [660, 800, 540], d: 0.12, form: [1300, 2300, 1200], v: 0.45, at: 0.17 }]); }, // キャンキャン♪
+  yelp() { dogVoice([{ f: [900, 1350, 620], d: 0.26, form: [1600, 2600, 1300], v: 0.5 }]); },                    // キャン！
+  growl() { dogVoice([{ f: [95, 110, 85], d: 0.75, form: [420, 520, 380], v: 0.6, growl: true }]); },             // ウ〜ッ
+  whimper() { dogVoice([{ f: [760, 900, 560], d: 0.5, form: [1100, 1300, 900], v: 0.3, whine: true }]); },        // くぅ〜ん
+  whoosh() { noise(0.7, 700, 0.6, 0.3, 'bandpass'); },
+  good() { tone(1320, 1760, 0.08, 'sine', 0.08); },
+  click() { tone(900, 700, 0.04, 'square', 0.06); },
+  bubble() { tone(900 + Math.random() * 900, 1500 + Math.random() * 900, 0.05, 'sine', 0.05); },
+  step() { [660, 880, 1320].forEach((f, i) => tone(f, f, 0.1, 'triangle', 0.12, i * 0.07)); },
+  sneeze() { noise(0.12, 2500, 1.2, 0.3, 'bandpass'); tone(500, 900, 0.1, 'triangle', 0.12); noise(0.35, 1500, 0.6, 0.45, 'bandpass', 0.35); tone(900, 300, 0.3, 'square', 0.1, 0.35); },
+  puff() { noise(0.12, 700 + Math.random() * 300, 0.7, 0.28, 'bandpass'); },
+  boom() { noise(0.6, 400, 0.6, 0.5, 'lowpass'); tone(200, 70, 0.5, 'sine', 0.3); },
+  shutter() { noise(0.04, 3000, 1, 0.4, 'highpass'); noise(0.06, 1200, 1, 0.3, 'bandpass', 0.07); },
+  splash() { noise(0.9, 1800, 0.5, 0.35, 'bandpass'); noise(0.5, 600, 0.8, 0.25, 'lowpass', 0.1); },
+  start() { [523, 659, 784].forEach((f, i) => tone(f, f, 0.12, 'triangle', 0.15, i * 0.08)); },
+  timeup() { tone(880, 880, 0.1, 'square', 0.12); tone(660, 660, 0.3, 'square', 0.12, 0.12); },
+  fanfare(ok) {
+    const n = ok ? [523, 659, 784, 1047] : [392, 370, 349, 330];
+    n.forEach((f, i) => tone(f, f, 0.18, 'triangle', 0.16, i * 0.12));
+  },
+};
+// 犬の声：のこぎり波を「口の形」のフィルター（フォルマント）に通して、ワン／キャン／くぅ〜んを作る
+let voiceBus = null, voiceUntil = 0;
+function dogVoice(parts) {
+  if (!AC) return;
+  const now = AC.currentTime;
+  // 前の声がまだ鳴っていたら、すっと止めてから鳴かせる（二重鳴き防止）
+  if (voiceBus) { const old = voiceBus; old.gain.cancelScheduledValues(now); old.gain.setTargetAtTime(0, now, 0.015); setTimeout(() => { try { old.disconnect(); } catch (e) { } }, 300); }
+  const bus = AC.createGain(); bus.gain.value = 1; bus.connect(master); voiceBus = bus;
+  let end = now;
+  for (const p of parts) {
+    const t = now + (p.at || 0), d = p.d;
+    const o = AC.createOscillator(); o.type = 'sawtooth';
+    o.frequency.setValueAtTime(p.f[0], t); o.frequency.linearRampToValueAtTime(p.f[1], t + d * 0.25); o.frequency.exponentialRampToValueAtTime(p.f[2], t + d);
+    const o2 = AC.createOscillator(); o2.type = 'square'; o2.frequency.setValueAtTime(p.f[0] * 0.5, t); o2.frequency.exponentialRampToValueAtTime(p.f[2] * 0.5, t + d);
+    const g2 = AC.createGain(); g2.gain.value = 0.25;
+    // 口の形（「ワ」→「ン」）
+    const f1 = AC.createBiquadFilter(); f1.type = 'bandpass'; f1.Q.value = 3.2;
+    f1.frequency.setValueAtTime(p.form[0], t); f1.frequency.linearRampToValueAtTime(p.form[1], t + d * 0.3); f1.frequency.exponentialRampToValueAtTime(p.form[2], t + d);
+    const f2 = AC.createBiquadFilter(); f2.type = 'lowpass'; f2.frequency.value = p.form[1] * 1.6;
+    const env = AC.createGain();
+    env.gain.setValueAtTime(0.0001, t); env.gain.exponentialRampToValueAtTime(p.v, t + 0.012);
+    env.gain.setValueAtTime(p.v, t + d * (p.whine ? 0.7 : 0.35)); env.gain.exponentialRampToValueAtTime(0.0001, t + d);
+    o.connect(f1); o2.connect(g2); g2.connect(f1); f1.connect(f2); f2.connect(env); env.connect(bus);
+    // うなり声：ゴロゴロ震わせる
+    if (p.growl) { const lfo = AC.createOscillator(), lg = AC.createGain(); lfo.frequency.value = 26; lg.gain.value = p.v * 0.6; lfo.connect(lg); lg.connect(env.gain); lfo.start(t); lfo.stop(t + d + 0.05); }
+    // 鼻声：ビブラート
+    if (p.whine) { const lfo = AC.createOscillator(), lg = AC.createGain(); lfo.frequency.value = 7; lg.gain.value = 25; lfo.connect(lg); lg.connect(o.frequency); lfo.start(t); lfo.stop(t + d + 0.05); }
+    // 吠えはじめの息の音
+    if (!p.whine && !p.growl) {
+      const s = AC.createBufferSource(); s.buffer = noiseBuf;
+      const nf = AC.createBiquadFilter(); nf.type = 'bandpass'; nf.frequency.value = p.form[1]; nf.Q.value = 1.2;
+      const ng = AC.createGain(); ng.gain.setValueAtTime(p.v * 0.5, t); ng.gain.exponentialRampToValueAtTime(0.0001, t + 0.06);
+      s.connect(nf); nf.connect(ng); ng.connect(bus); s.start(t); s.stop(t + 0.08);
+    }
+    o.start(t); o2.start(t); o.stop(t + d + 0.02); o2.stop(t + d + 0.02);
+    end = Math.max(end, t + d);
+  }
+  voiceUntil = end;
+}
+function setMuted(m) {
+  muted = m; lsSet('mosamosa_mute', m); $('mute').textContent = m ? '🔇' : '🔊';
+  if (master) master.gain.setTargetAtTime(m ? 0 : 0.8, AC.currentTime, 0.02);
+}
+
+// ===================== 状態 =====================
+let state = 'title';
+// 工程：シャンプー → すすぎ → ドライヤー → カット
+const PHASES = ['shampoo', 'rinse', 'dry', 'cut'];
+const PH = {
+  shampoo: { label: '🧴 シャンプー', short: 'シャンプー', tip: '画面を<b>長押し</b>で泡立てる。緑のところで離そう' },
+  rinse: { label: '🚿 すすぎ', short: 'すすぎ', tip: '針が<b>ぬるま湯</b>（緑）に来たらタップ！ 3回' },
+  dry: { label: '💨 ドライヤー', short: 'ドライヤー', tip: '4.5秒で<b>連打</b>！ 毛が多い犬種ほどたくさん必要' },
+  cut: { label: '✂ カット', short: 'カット' },
+};
+let phase = 'cut', phaseNextT = 0, phaseProg = 0, waterShake = false, dirt0 = 1;
+let order = ORDERS[0], lastOrderId = null;
+let attIdx = 1;
+let timeLeft = P.timeLimit, endT = 0, boredPts = 0, boredStage = 0, cutT = 0;
+let freeze = 0, shakeAmt = 0, lastHitstop = 0;
+let cutting = false, rotating = false, pointerIn = false, pointerType = 'mouse';
+let lastHit = null, buzzLoad = 0;
+let stats = { cut: 0, bald: 0 };
+let lastBaldT = -9, lastGoodT = -9, lastSnipT = 0, goodAcc = 0;
+let shakeState = 0, shakeT = 0, nextShake = 10, evType = '', evDir = 1, evCount = 0, evLog = [];
+let jumpV = 0, reaction = null, reactT = 0, nextAngryBark = 0;
+let clock = 0, accNow = 0;
+const cam = { theta: 0.5, phi: 1.12, dist: 4.6, target: new THREE.Vector3(0.25, 0.92, 0) };
+const ndc = new THREE.Vector2(), ray = new THREE.Raycaster();
+
+function pickOrder() {
+  if (DEBUG_ORDER) { const o = ORDERS.find(x => x.id === DEBUG_ORDER); if (o) return o; }
+  if (Math.random() < P.rareRate) return ORDERS.find(o => o.rare);
+  const pool = ORDERS.filter(o => !o.rare && o.id !== lastOrderId);
+  return pool[(Math.random() * pool.length) | 0];
+}
+function applyTargets() {
+  for (let gi = 0; gi < 3; gi++) {
+    const G = dog.groups[gi], H = ghost.groups[gi];
+    for (let i = 0; i < G.n; i++) {
+      const T = targetOf(order, G.reg[i], G.top[i], G.orig[i]);
+      G.tg[i] = T; G.len[i] = G.orig[i]; setStrand(G, i);
+      H.tg[i] = T; H.len[i] = T; setStrand(H, i);
+    }
+  }
+}
+// 左右のそろい具合：体の右側と左側で、同じ場所の毛の「お手本との差」をくらべる（0〜1）
+function computeSym() {
+  const bins = new Map(), B = 0.09;
+  dog.groups.forEach((G, g) => {
+    for (let i = 0; i < G.n; i++) {
+      const z = G.root[i * 3 + 2]; if (Math.abs(z) < 0.05) continue;
+      const k = g + ',' + Math.round(G.root[i * 3] / B) + ',' + Math.round(G.root[i * 3 + 1] / B) + ',' + Math.round(Math.abs(z) / B);
+      let b = bins.get(k); if (!b) bins.set(k, b = [0, 0, 0, 0]);
+      const e = G.len[i] - G.tg[i], o = z > 0 ? 0 : 2; b[o] += e; b[o + 1]++;
+    }
+  });
+  let s = 0, n = 0;
+  for (const b of bins.values()) { if (!b[1] || !b[3]) continue; s += Math.min(1, Math.abs(b[0] / b[1] - b[2] / b[3]) / 0.15); n++; }
+  return n ? 1 - s / n : 1;
+}
+function computeScore(acc, sym, clean, fluffy, t, bored) {
+  const S = {};
+  S.acc = 60 * Math.pow(clamp(acc / 100, 0, 1), 3);
+  const ok = clamp((acc - 40) / 45, 0, 1); // そろい・スピードは、ちゃんと刈れているときだけ効く
+  S.sym = 10 * sym * ok;
+  S.clean = 10 * clean; S.fluffy = 10 * fluffy;
+  S.speed = 10 * clamp((45 - t) / 35, 0, 1) * clamp((acc - 70) / 25, 0, 1);
+  S.bored = bored;
+  S.total = Math.max(0, S.acc + S.sym + S.clean + S.fluffy + S.speed - bored);
+  return S;
+}
+function computeAcc() {
+  let s = 0, n = 0;
+  for (const G of dog.groups) for (let i = 0; i < G.n; i++) { s += Math.max(0, 1 - Math.abs(G.len[i] - G.tg[i]) / 0.2); n++; }
+  return n ? s / n * 100 : 0;
+}
+
+let lastCare = null; // 前回のピカピカ・ふわふわ（カットからリトライ用）
+function startRound(cutOnly) {
+  initAudio();
+  if (cutOnly && !lastCare) cutOnly = false;
+  breed = pickBreed(); lastBreedId = breed.id;
+  rebuild();
+  order = pickOrder(); lastOrderId = order.id;
+  markSeen();
+  applyTargets(); clearParticles(); clearFoam(); clearFx();
+  initCoat(dog, false); initCoat(ghost, true);
+  dirt0 = 0; let nn = 0; for (const G of dog.groups) for (let i = 0; i < G.n; i++) { dirt0 += G.dirt[i]; nn++; } dirt0 = Math.max(0.01, dirt0 / nn);
+  dog.groups.forEach((G, g) => G.obj.add(foams[g].mesh));
+  dog.root.position.set(0, 0, 0); dog.root.rotation.set(0, 0, 0); dog.head.rotation.set(0, 0, 0); dog.tail.rotation.set(0, 0, 0);
+  dog.eyes.forEach(e => e.scale.set(1, 1, 1));
+  timeLeft = P.timeLimit; stats = { cut: 0, bald: 0 }; shakeState = 0; nextShake = P.shakeEvery * (0.6 + Math.random() * 0.6);
+  jumpV = 0; reaction = null; cutting = false; rotating = false; lastHit = null;
+  state = 'play';
+  document.body.classList.remove('resultMode'); viewOff.tx = viewOff.ty = 0; cam.dist = baseDist; $('viewfinder').classList.add('hide');
+  $('title').classList.add('hide'); $('result').classList.add('hide'); $('site').classList.add('hide'); $('hud').classList.remove('hide'); $('bubble').classList.add('hide');
+  $('orderName').textContent = order.name; $('orderDesc').innerHTML = order.desc;
+  $('breedName').textContent = '🐶 ' + breed.name;
+  tipIdx = (Math.random() * TIPS.length) | 0; tipT = 0; showTip();
+  $('timer').classList.remove('hurry', 'bored');
+  if (cutOnly) {
+    // 洗って乾かした状態にして、カットから始める（ピカピカ・ふわふわは前回の結果を引きつぐ）
+    for (const G of dog.groups) for (let i = 0; i < G.n; i++) { G.dirt[i] *= (1 - lastCare.clean); G.wet[i] = 0; G.fluff[i] = lastCare.fluffy; G.foam[i] = 2; setState(G, i); }
+    setPhase('cut', true);
+    showBanner('✂ カットから！', breed.name + '・' + order.name, 1600);
+    SFX.start(); return;
+  }
+  setPhase('shampoo', true);
+  showBanner('ご注文：' + order.name, (breed.rare ? '幻の犬種「' + breed.name.replace('★幻★ ', '') + '」が来店！' : breed.name + 'が来店！') + (order.rare ? '／レア注文！' : '') + ' まずはシャンプー', 2000);
+  SFX.start();
+}
+function setPhase(p, quiet) {
+  phase = p; phaseNextT = 0; phaseProg = 0; cutting = false; lastHit = null;
+  const i = PHASES.indexOf(p);
+  $('steps').innerHTML = PHASES.map((q, j) => '<span class="' + (j < i ? 'done' : j === i ? 'cur' : '') + '">' + (j < i ? '✓ ' : '') + PH[q].short + '</span>').join('');
+  $('bottom').classList.toggle('noatt', p !== 'cut');
+  document.body.classList.toggle('carePhase', p !== 'cut');
+  $('finish').textContent = p === 'cut' ? '仕上げ✂' : '次へ ▶';
+  const t = $('timer');
+  if (p === 'cut') {
+    timeLeft = P.timeLimit; cutT = 0; boredPts = 0; boredStage = 0; t.classList.remove('phase', 'bored', 'hurry'); t.dataset.b = ''; t.innerHTML = '0.0<small>秒</small>';
+    nextShake = 3 + Math.random() * 2; evCount = 0; evLog = [];
+    tipIdx = (Math.random() * TIPS.length) | 0; tipT = 0; showTip();
+    if (!quiet) showBanner('✂ カット開始！', 'わんこが飽きる前に仕上げよう（時間切れなし）', 1600);
+    $('mg').classList.add('hide'); showTool(null);
+    $('accTxt').textContent = '一致度 ' + computeAcc().toFixed(0) + '%';
+  } else {
+    t.classList.add('phase'); t.textContent = PH[p].label;
+    if (!quiet) showBanner(PH[p].label, '', 1000);
+    startMG(p);
+  }
+}
+function nextPhase() {
+  if (state !== 'play' || phase === 'cut') return;
+  SFX.step();
+  mg.holding = false;
+  if (phase === 'rinse') { startWaterShake(); clearFoam(); for (const G of dog.groups) for (let i = 0; i < G.n; i++) if (G.foam[i] === 1) { G.foam[i] = 2; setState(G, i); } }
+  if (phase === 'dry') for (const G of dog.groups) for (let i = 0; i < G.n; i++) { G.wind[i] = 0; setState(G, i); }
+  setPhase(PHASES[PHASES.indexOf(phase) + 1]);
+}
+function startWaterShake() {
+  waterShake = true; shakeState = 2; shakeT = 0; SFX.splash(); SFX.whoosh();
+  pop('ブルブルブル〜ッ！', innerWidth / 2, innerHeight * 0.3, '#3a8fd6', 32);
+  for (let k = 0; k < 14; k++) {
+    const d = document.createElement('div'); d.className = 'splash';
+    const sz = 30 + Math.random() * 90; d.style.width = d.style.height = sz + 'px';
+    d.style.left = (Math.random() * innerWidth - sz / 2) + 'px'; d.style.top = (Math.random() * innerHeight * 0.85 - sz / 2) + 'px';
+    d.style.animationDelay = (Math.random() * 0.35) + 's';
+    document.body.appendChild(d); setTimeout(() => d.remove(), 2300);
+  }
+}
+// ===================== ミニゲーム（シャンプー：長押し／すすぎ：タイミング／ドライヤー：連打） =====================
+const mg = { kind: null, holding: false, done: false, L: 0, t: 0, speed: 3, zoneC: 0.5, zoneW: 0.22, taps: 0, q: [], sprayT: 0, sec: 0, xmin: 0, xmax: 1, presses: 0, timeLeft: 5, started: false, blowT: 0, lastWetT: 0 };
+const careQ = { shampoo: 0, rinse: 0, dry: 0 };
+const DRY_NEED = { poodle: 26, pome: 24, shihtzu: 30, golden: 32, bichon: 28, komondor: 38 };
+const DRY_TIME = 4.5;
+function dryNeed() { return DRY_NEED[breed.id] || 28; }
+let lastBubbleT = 0;
+function strandWX(G, i) { return G.root[i * 3] + G.obj.position.x; }
+function startMG(p) {
+  Object.assign(mg, { kind: p, holding: false, done: false, L: 0, t: 0, taps: 0, q: [], sprayT: 0, presses: 0, timeLeft: DRY_TIME, started: false, blowT: 0 });
+  $('mg').classList.remove('hide');
+  const g = $('mgGauge'), z = $('mgZone'), f = $('mgFill'), n = $('mgNeedle');
+  g.classList.toggle('temp', p === 'rinse');
+  $('mgL').textContent = p === 'rinse' ? 'つめたい' : ''; $('mgR').textContent = p === 'rinse' ? 'あつい' : '';
+  n.style.display = p === 'rinse' ? '' : 'none'; f.style.display = p === 'rinse' ? 'none' : ''; f.style.width = '0%';
+  $('mgDots').textContent = '';
+  if (p === 'shampoo') {
+    careQ.shampoo = 0;
+    $('mgTitle').textContent = '🧴 あわあわ長押し';
+    $('mgHint').innerHTML = '<b>長押し</b>で泡立てる → <b>緑</b>で離す（SpaceでもOK）';
+    mg.zoneC = 0.68 + Math.random() * 0.34; mg.zoneW = 0.16;
+    z.style.display = ''; z.style.left = ((mg.zoneC - mg.zoneW / 2) / 1.25 * 100) + '%'; z.style.width = (mg.zoneW / 1.25 * 100) + '%';
+  } else if (p === 'rinse') {
+    careQ.rinse = 0;
+    let a = 1e9, b = -1e9; for (const G of dog.groups) for (let i = 0; i < G.n; i++) { const x = strandWX(G, i); if (x < a) a = x; if (x > b) b = x; }
+    mg.xmin = a; mg.xmax = b; mg.speed = 3.0; mg.zoneW = 0.2; newRinseZone();
+    $('mgTitle').textContent = '🚿 ぬるま湯タイミング';
+    $('mgHint').innerHTML = '針が<b>緑</b>に来たら<b>タップ</b>（Space）';
+    $('mgDots').textContent = '◯◯◯';
+  } else if (p === 'dry') {
+    careQ.dry = 0;
+    $('mgTitle').textContent = '💨 ドライヤー連打';
+    $('mgHint').innerHTML = '<b>' + dryNeed() + '回連打</b>でボワッ！ ' + DRY_TIME.toFixed(1) + '秒';
+    z.style.display = 'none';
+  }
+}
+function newRinseZone() {
+  const v = 0.5 - 0.5 * Math.cos(mg.t * mg.speed);
+  let c = 0.5; for (let k = 0; k < 20; k++) { c = 0.16 + Math.random() * 0.68; if (Math.abs(c - v) >= 0.3) break; }
+  mg.zoneC = c;
+  const z = $('mgZone'); z.style.display = ''; z.style.left = ((mg.zoneC - mg.zoneW / 2) * 100) + '%'; z.style.width = (mg.zoneW * 100) + '%';
+}
+function anyStrand() { // 毛の本数に比例してグループを選ぶ
+  const n0 = dog.groups[0].n, n1 = dog.groups[1].n, n2 = dog.groups[2].n, r = Math.random() * (n0 + n1 + n2);
+  const g = r < n0 ? 0 : r < n0 + n1 ? 1 : 2; const G = dog.groups[g];
+  return G.n ? [g, G, (Math.random() * G.n) | 0] : null;
+}
+function mgDown() {
+  if (state !== 'play' || phase === 'cut' || mg.done || phaseNextT > 0) return;
+  if (mg.kind === 'shampoo') { mg.holding = true; }
+  else if (mg.kind === 'rinse') rinseTap();
+  else if (mg.kind === 'dry') dryPress();
+}
+function mgUp() {
+  if (mg.kind === 'shampoo' && mg.holding) { mg.holding = false; if (mg.L >= 0.15) finishShampoo(false); }
+}
+// --- シャンプー ---
+function finishShampoo(over) {
+  mg.done = true; mg.holding = false;
+  const L = mg.L, h = mg.zoneW / 2, d = L - mg.zoneC, ad = Math.abs(d);
+  const near = !over && ad > h && ad <= h + 0.12;
+  const q = over ? 0.4 : ad <= h ? 1 : near ? 1 - (ad - h) / 0.12 * 0.35 : d < 0 ? Math.max(0.15, L / mg.zoneC * 0.6) : 0.5;
+  careQ.shampoo = q;
+  for (const G of dog.groups) for (let i = 0; i < G.n; i++) { G.dirt[i] *= (1 - 0.5 * q); setState(G, i); }
+  let msg, col = '#2aa984';
+  if (over) { msg = 'ハ…ハ…ハックション！！'; col = '#e67e22'; }
+  else if (ad <= h) msg = 'ちょうどいい泡！✨';
+  else if (near) { msg = d < 0 ? '惜しい！ あとひと泡…！' : '惜しい！ ちょい泡すぎ'; col = '#ff9f1c'; }
+  else if (d < 0) { msg = 'あわが足りない…'; col = '#8a7a9a'; }
+  else { msg = 'あわすぎ！'; col = '#e67e22'; }
+  pop(msg, innerWidth / 2, innerHeight * 0.38, col, 34);
+  if (over) { SFX.sneeze(); jumpV = 3; shakeAmt += P.camShake * 3; for (let k = 0; k < 40; k++) { const a = anyStrand(); if (!a) continue; const [g, G, i] = a; _w.set(G.root[i * 3], G.root[i * 3 + 1], G.root[i * 3 + 2]); G.obj.localToWorld(_w); spawnFx(_w.x, _w.y, _w.z, (Math.random() - 0.5) * 5, 2 + Math.random() * 3, (Math.random() - 0.5) * 5, 1.3, 0.05, 1, 1, 1, 6); } }
+  else if (q >= 0.99) SFX.good(); else SFX.click();
+  $('mgDots').textContent = q >= 0.99 ? '★★★' : q >= 0.75 ? '★★☆' : '★☆☆';
+  phaseNextT = 1.3;
+}
+function updateShampoo(dt) {
+  if (mg.holding && !mg.done) {
+    mg.L += dt * (0.3 + 0.55 * mg.L); // だんだん速く泡立つ
+    // 泡をどんどん増やす（多すぎると泡がでかくなる）
+    const over = Math.max(0, mg.L - 1.0);
+    const tries = Math.ceil(dt * 520 * Math.min(1.2, mg.L + 0.15));
+    for (let k = 0; k < tries; k++) {
+      const a = anyStrand(); if (!a) continue; const [g, G, i] = a;
+      if (G.foam[i] === 0 || over > 0) {
+        G.foam[i] = 1;
+        const l = 0.1 + Math.random() * 0.18 + over * 0.4;
+        spawnFoam(g, G.root[i * 3] + G.dir[i * 3] * l, G.root[i * 3 + 1] + G.dir[i * 3 + 1] * l, G.root[i * 3 + 2] + G.dir[i * 3 + 2] * l, (0.035 + Math.random() * 0.05) * (1 + over * 4));
+      }
+    }
+    if (clock - mg.lastWetT > 0.12) { mg.lastWetT = clock; const w = Math.min(0.55, mg.L * 0.6); for (const G of dog.groups) for (let i = 0; i < G.n; i++) if (G.wet[i] < w) { G.wet[i] = w; setState(G, i); } }
+    if (clock - lastBubbleT > 0.07) { SFX.bubble(); lastBubbleT = clock; }
+    if (mg.L >= 1.25) finishShampoo(true);
+  }
+  $('mgFill').style.width = Math.min(100, mg.L / 1.25 * 100) + '%';
+  // スポンジがわんこの背中をごしごし
+  sponge.visible = !mg.done; dryer.visible = shower.visible = clipper.visible = false; ring.visible = false;
+  const sx = Math.sin(clock * (mg.holding ? 9 : 2)) * 0.55;
+  sponge.position.set(0.1 + sx, 1.9 + (mg.holding ? Math.abs(Math.sin(clock * 18)) * 0.03 : 0.1), 0.05 + Math.cos(clock * 7) * 0.08);
+  sponge.rotation.set(0, Math.sin(clock * 9) * 0.3, 0);
+}
+// --- すすぎ ---
+function rinseTap() {
+  if (mg.taps >= 3) return;
+  const v = 0.5 - 0.5 * Math.cos(mg.t * mg.speed);
+  const d = Math.abs(v - mg.zoneC), good = d <= mg.zoneW / 2, near = !good && d <= mg.zoneW / 2 + 0.1;
+  const q = good ? 1 : near ? 0.7 : 0.35;
+  mg.q.push(q);
+  // 前（頭）から順に1/3ずつ流す
+  const w = (mg.xmax - mg.xmin) / 3, xb = mg.xmax - mg.taps * w, xa = xb - w;
+  const qs = careQ.shampoo;
+  dog.groups.forEach((G, g) => {
+    for (let i = 0; i < G.n; i++) {
+      const x = strandWX(G, i); if (x < xa - 0.02 || x > xb + 0.02) continue;
+      G.wet[i] = 1; G.foam[i] = 2;
+      G.dirt[i] *= good ? (1 - qs) * 0.6 : 0.4 + (1 - qs) * 0.3;
+      setState(G, i);
+    }
+    const f = foams[g], px = G.obj.position.x;
+    for (let k = 0; k < FOAM_N; k++) { if (f.tg[k] <= 0) continue; const x = f.pos[k * 3] + px; if (x >= xa - 0.1 && x <= xb + 0.1) { f.tg[k] = 0; f.any = true; } }
+  });
+  mg.sec = (xa + xb) / 2; mg.sprayT = 0.7;
+  if (good) { SFX.good(); pop(['ちょうどいい〜♪', 'ぬくぬく〜', 'きもちいい〜'][mg.taps % 3], innerWidth / 2, innerHeight * 0.36, '#2aa984', 30); }
+  else if (near) { SFX.click(); pop(v > mg.zoneC ? '惜しい！ ちょいアツ' : '惜しい！ ちょいぬるい', innerWidth / 2, innerHeight * 0.36, '#ff9f1c', 30); }
+  else if (v > mg.zoneC) { SFX.yelp(); jumpV = 2.4; shakeAmt += P.camShake * 2; pop('アチッ！！', innerWidth / 2, innerHeight * 0.36, '#e63b5f', 34); }
+  else { SFX.whimper(); shakeAmt += P.camShake * 1.5; pop('ひゃっ！つめたっ', innerWidth / 2, innerHeight * 0.36, '#3a8fd6', 30); }
+  mg.taps++;
+  $('mgDots').textContent = mg.q.map(x => x >= 1 ? '◎' : x >= 0.6 ? '△' : '×').join('') + '◯◯◯'.slice(mg.taps);
+  if (mg.taps >= 3) {
+    mg.done = true; careQ.rinse = mg.q.reduce((a, b) => a + b, 0) / 3;
+    phaseNextT = 1.2;
+  } else { mg.speed += 1.2; mg.zoneW = Math.max(0.14, mg.zoneW - 0.03); newRinseZone(); }
+}
+function updateRinse(dt) {
+  if (!mg.done) mg.t += dt;
+  const v = 0.5 - 0.5 * Math.cos(mg.t * mg.speed);
+  $('mgNeedle').style.left = (v * 100) + '%';
+  shower.visible = true; sponge.visible = dryer.visible = clipper.visible = false; ring.visible = false;
+  const sxp = mg.sprayT > 0 ? mg.sec : (mg.taps < 3 ? mg.xmax - (mg.taps + 0.5) * (mg.xmax - mg.xmin) / 3 : 0);
+  shower.position.x += (sxp - shower.position.x) * Math.min(1, dt * 8);
+  shower.position.y = 2.55; shower.position.z = 0.15; shower.rotation.set(0, 0, 0);
+  if (mg.sprayT > 0) {
+    mg.sprayT -= dt;
+    const o = shower.position;
+    for (let j = 0; j < 9; j++) spawnFx(o.x + (Math.random() - 0.5) * 0.16, o.y - 0.05, o.z + (Math.random() - 0.5) * 0.16, (Math.random() - 0.5) * 1.2, -5 - Math.random() * 2, (Math.random() - 0.5) * 1.2, 0.5, 0.018, 0.62, 0.84, 1.0, 4);
+  }
+}
+// --- ドライヤー ---
+function dryPress() {
+  if (mg.done) return;
+  if (!mg.started) { mg.started = true; mg.timeLeft = DRY_TIME; }
+  mg.presses++; mg.blowT = 0.18;
+  const p = Math.min(1, mg.presses / dryNeed());
+  for (const G of dog.groups) for (let i = 0; i < G.n; i++) {
+    G.wet[i] = Math.min(G.wet[i], 1 - p); G.fluff[i] = Math.max(G.fluff[i], p * p * 0.4 + p * 0.6);
+    if (Math.random() < 0.35) G.wind[i] = 1;
+    setState(G, i);
+  }
+  SFX.puff();
+  const o = dryer.position;
+  for (let j = 0; j < 10; j++) spawnFx(o.x, o.y, o.z, (Math.random() - 0.5) * 2.2, -3 - Math.random() * 1.5, (Math.random() - 0.5) * 2.2, 0.45, 0.012, 1, 0.95, 0.85, -0.5);
+  if (p < 0.9 && Math.random() < 0.6) { const a = anyStrand(); if (a) { const [g, G, i] = a; _w.set(G.root[i * 3], G.root[i * 3 + 1], G.root[i * 3 + 2]); G.obj.localToWorld(_w); spawnFx(_w.x, _w.y, _w.z, -2 - Math.random() * 2, Math.random() * 2, (Math.random() - 0.5) * 2, 0.7, 0.02, 0.62, 0.84, 1, 9.8); } }
+  if (p >= 1) finishDry();
+}
+function finishDry() {
+  mg.done = true;
+  const need = dryNeed(), p = Math.min(1, mg.presses / need); careQ.dry = p;
+  if (p >= 1) { pop('ボワッ！！ ふわっふわ！', innerWidth / 2, innerHeight * 0.36, '#ff6f91', 38); SFX.boom(); shakeAmt += P.camShake * 3; jumpV = 2.2; }
+  else if (need - mg.presses <= 4) { pop('惜しい！ あと' + (need - mg.presses) + '回でボワッだった', innerWidth / 2, innerHeight * 0.36, '#ff9f1c', 28); SFX.click(); }
+  else if (p >= 0.6) { pop('まあまあふわふわ', innerWidth / 2, innerHeight * 0.36, '#2aa984', 30); SFX.good(); }
+  else { pop('まだしっとり…', innerWidth / 2, innerHeight * 0.36, '#8a7a9a', 30); SFX.click(); }
+  $('mgDots').textContent = p >= 1 ? '★★★' : p >= 0.6 ? '★★☆' : '★☆☆';
+  phaseNextT = 1.3;
+}
+function updateDry(dt) {
+  if (mg.started && !mg.done) { mg.timeLeft -= dt; if (mg.timeLeft <= 0) { mg.timeLeft = 0; finishDry(); } }
+  const need = dryNeed(), left = need - mg.presses;
+  $('mgFill').style.width = Math.min(100, mg.presses / need * 100) + '%';
+  if (!mg.done) $('mgHint').innerHTML = (mg.started && left <= 5 ? '<b style="color:#ff6f91">あとちょっとでボワッ…！ あと' + left + '回</b>' : '<b>連打！</b> あと<b>' + left + '回</b>') + '　' + mg.timeLeft.toFixed(1) + '秒';
+  dryer.visible = true; sponge.visible = shower.visible = clipper.visible = false; ring.visible = false;
+  if (mg.blowT > 0) mg.blowT -= dt;
+  dryer.position.set(0.25 + Math.sin(clock * 1.7) * 0.5 + (Math.random() - 0.5) * (mg.blowT > 0 ? 0.04 : 0), 2.55 + (mg.blowT > 0 ? -0.06 : 0), 0.25);
+  dryer.rotation.set(0.15, 0, Math.sin(clock * 1.7) * 0.2);
+}
+function updateMG(dt) {
+  if (mg.kind === 'shampoo') updateShampoo(dt);
+  else if (mg.kind === 'rinse') updateRinse(dt);
+  else if (mg.kind === 'dry') updateDry(dt);
+}
+function mgAutoPerfect() { // デバッグ用
+  if (mg.done) return;
+  if (mg.kind === 'shampoo') { mg.holding = true; for (let k = 0; k < 30 && mg.L < mg.zoneC; k++) updateShampoo(0.05); mg.L = mg.zoneC; finishShampoo(false); }
+  else if (mg.kind === 'rinse') { while (mg.taps < 3) { mg.t = Math.acos(1 - 2 * mg.zoneC) / mg.speed; rinseTap(); } }
+  else if (mg.kind === 'dry') { mg.started = true; while (!mg.done) dryPress(); }
+}
+const _hnL = new THREE.Vector3();
+let bannerTO = 0;
+function showBanner(t, sub, ms) {
+  const b = $('banner'); b.innerHTML = t + (sub ? '<small>' + sub + '</small>' : ''); b.classList.remove('hide'); b.style.opacity = 1;
+  clearTimeout(bannerTO); bannerTO = setTimeout(() => { b.style.opacity = 0; setTimeout(() => b.classList.add('hide'), 300); }, ms);
+}
+function pop(text, x, y, color, size) {
+  const d = document.createElement('div'); d.className = 'pop'; d.textContent = text;
+  d.style.left = x + 'px'; d.style.top = y + 'px'; d.style.color = color || '#3d2a2e'; d.style.fontSize = (size || 24) + 'px';
+  document.body.appendChild(d); setTimeout(() => d.remove(), 950);
+}
+let lastPX = innerWidth / 2, lastPY = innerHeight / 2;
+
+function setAtt(i) {
+  attIdx = i; document.querySelectorAll('.att').forEach(b => b.classList.toggle('on', +b.dataset.a === i));
+  SFX.click();
+}
+
+// ===================== カット =====================
+const _w = new THREE.Vector3(), _lp = new THREE.Vector3(), _dw = new THREE.Vector3();
+function cutAt(wp, st) {
+  const cutLen = ATT[attIdx].len, R = P.cutRadius, R2 = R * R;
+  for (const G of dog.groups) {
+    _lp.copy(wp); G.obj.worldToLocal(_lp);
+    for (let i = 0; i < G.n; i++) {
+      const dx = G.root[i * 3] - _lp.x, dy = G.root[i * 3 + 1] - _lp.y, dz = G.root[i * 3 + 2] - _lp.z;
+      if (dx * dx + dy * dy + dz * dz > R2) continue;
+      const old = G.len[i]; if (old <= cutLen + 0.004) continue;
+      const T = G.tg[i], oldErr = Math.abs(old - T);
+      G.len[i] = cutLen; setStrand(G, i);
+      const rem = old - cutLen; st.n++; st.sum += rem;
+      if (T > 0.2 && cutLen < 0.08 && old > 0.2) st.bald++;
+      if (Math.abs(cutLen - T) < 0.03 && oldErr > 0.12) st.good++;
+      if (Math.random() < 0.6) {
+        const mid = cutLen + rem * 0.5;
+        _w.set(G.root[i * 3] + G.dir[i * 3] * mid, G.root[i * 3 + 1] + G.dir[i * 3 + 1] * mid, G.root[i * 3 + 2] + G.dir[i * 3 + 2] * mid);
+        G.obj.localToWorld(_w);
+        _dw.set(G.dir[i * 3], G.dir[i * 3 + 1], G.dir[i * 3 + 2]).transformDirection(G.obj.matrixWorld);
+        spawnParticle(_w.x - _dw.x * rem * 0.5, _w.y - _dw.y * rem * 0.5, _w.z - _dw.z * rem * 0.5, _dw.x, _dw.y, _dw.z, rem, G.w[i],
+          G.col[i * 3], G.col[i * 3 + 1], G.col[i * 3 + 2], 1.6, G.curl[i]);
+      }
+    }
+  }
+}
+function hitTest() {
+  ray.setFromCamera(ndc, camera);
+  const hits = ray.intersectObjects(dog.skins, false);
+  return hits.length ? hits[0] : null;
+}
+const _nm = new THREE.Matrix3(), _hn = new THREE.Vector3(), _tmp = new THREE.Vector3(), _m4 = new THREE.Matrix4();
+function showTool_(ph) { showTool(ph); }
+function doCutting(dt) {
+  dog.root.updateMatrixWorld(true);
+  const h = hitTest();
+  if (state === 'play' && phase !== 'cut') { hideGuide(); return; }
+  const showTool = h && (cutting || (pointerType === 'mouse' && pointerIn)) && (state === 'play') && phaseNextT <= 0;
+  showTool_(showTool ? phase : null); ring.visible = !!showTool;
+  if (!h) { lastHit = null; hideGuide(); return; }
+  _nm.getNormalMatrix(h.object.matrixWorld); _hn.copy(h.face.normal).applyMatrix3(_nm).normalize();
+  if (state === 'play' && (showTool || cutting)) updateGuide(h); else hideGuide();
+  const cutLen = ATT[attIdx].len;
+  if (showTool) {
+    clipper.position.copy(h.point).addScaledVector(_hn, cutLen);
+    clipper.quaternion.setFromUnitVectors(UP, _hn);
+    cComb.scale.y = Math.max(0.01, cutLen); cComb.position.y = -cutLen / 2;
+    if (cutting) { clipper.position.x += (Math.random() - 0.5) * 0.012; clipper.position.y += (Math.random() - 0.5) * 0.012; }
+    ring.position.copy(h.point).addScaledVector(_hn, 0.02);
+    ring.quaternion.setFromUnitVectors(_tmp.set(0, 0, 1), _hn);
+    ring.scale.setScalar(P.cutRadius);
+  }
+  if (!cutting || state !== 'play' || freeze > 0 || phaseNextT > 0) { lastHit = h.point.clone(); return; }
+  const st = { n: 0, sum: 0, bald: 0, good: 0 };
+  const from = lastHit || h.point;
+  const dist = from.distanceTo(h.point);
+  const steps = Math.min(10, Math.max(1, Math.ceil(dist / (P.cutRadius * 0.5))));
+  for (let k = 1; k <= steps; k++) { _w.lerpVectors(from, h.point, k / steps); cutAt(_w.clone(), st); }
+  lastHit = h.point.clone();
+  feedback(st);
+}
+function feedback(st) {
+  if (st.n === 0) { buzzLoad *= 0.9; return; }
+  stats.cut += st.n; stats.bald += st.bald;
+  buzzLoad = Math.min(1, buzzLoad + st.sum * 0.4);
+  shakeAmt = Math.min(P.camShake * 3, shakeAmt + st.sum * P.camShake * 0.25);
+  if (clock - lastSnipT > 0.06) { SFX.snip(); lastSnipT = clock; }
+  if (st.sum > 4 && clock - lastHitstop > 0.35) { freeze = P.hitstop; lastHitstop = clock; SFX.chunk(); shakeAmt += P.camShake; }
+  if (st.bald > 0 && clock - lastBaldT > 0.9) {
+    lastBaldT = clock; SFX.yelp(); jumpV = 2.4; shakeAmt += P.camShake * 2;
+    const t = ['キャン！', 'ハゲた！', 'あっ…', 'そこ切らないで！'][(Math.random() * 4) | 0];
+    pop(t, lastPX, lastPY - 40, '#e63b5f', 30);
+  }
+  goodAcc += st.good;
+  if (goodAcc > 14 && clock - lastGoodT > 0.7) { lastGoodT = clock; goodAcc = 0; SFX.good(); pop(['ピタッ！', 'いい感じ！', 'ナイス！'][(Math.random() * 3) | 0], lastPX + 30, lastPY - 30, '#2aa984', 20); }
+}
+
+// ===================== コツ・ガイド =====================
+const TIPS = [
+  'カーソルの横に<b>その部位の正しい長さ</b>が出るよ。<b>✓</b>ならそのまま刈ってOK',
+  'まず<b>つるつる</b>・<b>みじかめ</b>の広い部分から一気に刈ると早い',
+  '「切らない」部分の近くでは<b>⚠</b>が出たら手を止めよう',
+  'わんこが<b>❗</b>を出したらブルブルの合図。いったん手を止めよう',
+  '背景をドラッグで回転。<b>反対側・おなか側</b>の刈り残しに注意',
+  '右上の<b>お手本</b>と見比べて、毛が長いところを探そう',
+  '迷ったら<b>ながめ</b>で一周 → 短くしたい所だけ切りかえ、が安全',
+  '犬種で体型も毛質もちがう。<b>📖図鑑</b>で全犬種コンプをめざそう',
+];
+let tipIdx = 0, tipT = 0;
+function showTip() { $('tip').innerHTML = '💡 ' + TIPS[tipIdx % TIPS.length]; $('tip').style.opacity = 1; }
+const _gl = new THREE.Vector3();
+function updateGuide(h) {
+  const ud = h.object.userData; if (!ud || !ud.n) { hideGuide(); return; }
+  const G = dog.groups[ud.g], pv = dog.shape.pivots[ud.g];
+  _gl.copy(h.point); G.obj.worldToLocal(_gl);
+  const x = _gl.x + pv[0], y = _gl.y + pv[1], z = _gl.z + pv[2];
+  const reg = regionOf(dog.shape, ud.n, x, y);
+  const top = (ud.n === 'body' || ud.n === 'head') && _hn.y > 0.55 && Math.abs(z) < 0.2;
+  const T = targetOf(order, reg, top, 9);
+  const name = REG_JP[top && order.top !== undefined ? 'top' : reg];
+  const cur = ATT[attIdx].len;
+  const g = $('guide');
+  let txt, cls;
+  if (T > 1) {
+    txt = '⚠ ' + name + '：切らない！'; cls = 'bad';
+  } else {
+    const need = ATT.find(a => Math.abs(a.len - T) < 0.001).name;
+    if (Math.abs(cur - T) < 0.001) { txt = '✓ ' + name + '：' + need; cls = 'ok'; }
+    else if (cur < T) { txt = '⚠ ' + name + '：' + need + '（短すぎ！）'; cls = 'bad'; }
+    else { txt = '▲ ' + name + '：' + need + 'にしよう'; cls = 'warn'; }
+  }
+  g.textContent = txt; g.className = cls;
+  const dy = pointerType === 'mouse' ? 26 : -70;
+  g.style.left = Math.max(8, Math.min(innerWidth - 10 - g.offsetWidth, lastPX + 18)) + 'px'; g.style.top = (lastPY + dy) + 'px';
+}
+function hideGuide() { const g = $('guide'); if (!g.classList.contains('hide')) g.className = 'hide'; }
+
+// ===================== 入力 =====================
+let dragX = 0, dragY = 0;
+function setNDC(e) {
+  const r = canvas.getBoundingClientRect();
+  ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+  lastPX = e.clientX; lastPY = e.clientY;
+}
+const ptrs = new Map(); let pinch = null, mainId = null, pendCut = null;
+// スマホ：指を置いてすぐは「刈る」か「2本指ズーム」か決めない。少し動かすか0.15秒たったら刈り始める
+function beginCut() { if (!pendCut) return; pendCut = null; if (state !== 'play' || phase !== 'cut' || pinch) return; cutting = true; lastHit = null; doCutting(0); }
+function pinchDist() { const a = [...ptrs.values()]; return Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y) || 1; }
+canvas.addEventListener('pointerdown', e => {
+  initAudio(); pointerType = e.pointerType; pointerIn = true; setNDC(e);
+  try { canvas.setPointerCapture(e.pointerId); } catch (_) { }
+  ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (ptrs.size === 1) { pinch = null; mainId = e.pointerId; } // 指が全部はなれていたら、ズーム状態をリセット
+  // 刈っている最中に2本目の指が来ても、ズームはしない（刈り続ける）
+  if (ptrs.size >= 2 && cutting) return;
+  if (ptrs.size === 2 && (state !== 'play' || phase === 'cut')) {
+    pendCut = null;
+    // 2本目の指が来たら、刈るのをやめてズーム＆回転モードへ
+    const a = [...ptrs.values()];
+    pinch = { d0: pinchDist(), dist0: cam.dist, mx: (a[0].x + a[1].x) / 2, my: (a[0].y + a[1].y) / 2 };
+    rotating = false; cutting = false; lastHit = null; if (state === 'result') userSpun = true; return;
+  }
+  if (pinch) return;
+  dragX = e.clientX; dragY = e.clientY;
+  if (state !== 'play') { rotating = true; if (state === 'result') userSpun = true; return; }
+  if (e.button === 2) { rotating = true; return; }
+  if (phase !== 'cut') { mgDown(); return; }
+  dog.root.updateMatrixWorld(true);
+  if (hitTest()) {
+    if (e.pointerType === 'touch') { const pc = pendCut = { x: e.clientX, y: e.clientY }; setTimeout(() => { if (pendCut === pc) beginCut(); }, 150); }
+    else { cutting = true; lastHit = null; doCutting(0); }
+  } else rotating = true;
+});
+canvas.addEventListener('pointermove', e => {
+  if (ptrs.has(e.pointerId)) ptrs.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (pinch && ptrs.size >= 2) {
+    cam.dist = clamp(pinch.dist0 * pinch.d0 / pinchDist(), 2.6, 12);
+    const a = [...ptrs.values()], mx = (a[0].x + a[1].x) / 2, my = (a[0].y + a[1].y) / 2;
+    cam.theta -= (mx - pinch.mx) * 0.009; cam.phi = clamp(cam.phi - (my - pinch.my) * 0.007, 0.35, 1.5);
+    pinch.mx = mx; pinch.my = my; return;
+  }
+  if (pinch) return; // ズームのあと指が1本残っていても、離すまでは刈らない
+  if (mainId !== null && e.pointerId !== mainId && ptrs.has(e.pointerId)) return; // 刈っている指以外の動きは無視
+  pointerType = e.pointerType; pointerIn = true; setNDC(e);
+  if (pendCut && Math.hypot(e.clientX - pendCut.x, e.clientY - pendCut.y) > 6) beginCut();
+  if (rotating) {
+    cam.theta -= (e.clientX - dragX) * 0.009; cam.phi = clamp(cam.phi - (e.clientY - dragY) * 0.007, 0.35, 1.5);
+    dragX = e.clientX; dragY = e.clientY;
+  }
+  if (cutting && dog) doCutting(0);
+});
+function endPtr(e) {
+  if (e && e.pointerId !== undefined) ptrs.delete(e.pointerId);
+  // 刈っている指とは別の指が離れただけなら、刈り続ける
+  if (e && e.pointerId !== undefined && mainId !== null && e.pointerId !== mainId && !pinch) return;
+  if (pendCut) { beginCut(); } // ちょんとタップしただけでも、その場所は刈る
+  if (pinch) { if (ptrs.size === 0) pinch = null; cutting = false; rotating = false; return; }
+  cutting = false; rotating = false; lastHit = null; if (state === 'play' && phase !== 'cut') mgUp(); }
+canvas.addEventListener('pointerup', endPtr); canvas.addEventListener('pointercancel', endPtr);
+canvas.addEventListener('pointerleave', () => { pointerIn = false; });
+canvas.addEventListener('contextmenu', e => e.preventDefault());
+canvas.addEventListener('wheel', e => { e.preventDefault(); if (state === 'result') userSpun = true; cam.dist = clamp(cam.dist * (1 + e.deltaY * 0.001), 2.6, 12); }, { passive: false });
+
+let rotHold = 0;
+function holdBtn(id, dir) {
+  const b = $(id);
+  b.addEventListener('pointerdown', e => { e.stopPropagation(); initAudio(); rotHold = dir; });
+  ['pointerup', 'pointerleave', 'pointercancel'].forEach(t => b.addEventListener(t, () => { rotHold = 0; }));
+}
+holdBtn('rotL', 1); holdBtn('rotR', -1);
+document.querySelectorAll('.att').forEach(b => b.addEventListener('pointerdown', e => { e.stopPropagation(); initAudio(); setAtt(+b.dataset.a); }));
+$('finish').addEventListener('click', () => { if (state !== 'play') return; if (phase === 'cut') endRound(); else nextPhase(); });
+$('mute').addEventListener('click', () => { initAudio(); setMuted(!muted); });
+$('start').addEventListener('click', e => { e.stopPropagation(); startRound(); });
+$('title').addEventListener('click', () => startRound());
+$('retry').addEventListener('click', e => { e.stopPropagation(); startRound(); });
+$('retryCut').addEventListener('click', e => { e.stopPropagation(); startRound(true); });
+$('share').addEventListener('click', e => { e.stopPropagation(); });
+$('card').addEventListener('click', e => e.stopPropagation());
+// 結果画面：カードをよけてわんこを映す
+const viewOff = { x: 0, y: 0, tx: 0, ty: 0 }, peekShift = { x: 0, y: 0 };
+let userSpun = false, baseDist = 6;
+function updateResultOffset() {
+  if (state !== 'result') { viewOff.tx = viewOff.ty = 0; return; }
+  const card = $('card');
+  if (card.classList.contains('peek')) { viewOff.tx = peekShift.x; viewOff.ty = peekShift.y; return; }
+  const r = card.getBoundingClientRect();
+  if (document.body.classList.contains('wide')) { viewOff.tx = (innerWidth - r.left) / 2 + 8; viewOff.ty = 0; }
+  else { viewOff.tx = 0; viewOff.ty = Math.max(0, innerHeight - r.top) / 2; }
+}
+function fitDogToFrame() { // わんこが撮影枠の9割に収まるようにカメラの距離を合わせる
+  const vf = photoRect(); let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9;
+  dog.root.updateMatrixWorld(true);
+  for (const G of dog.groups) for (let i = 0; i < G.n; i += 9) {
+    const l = G.len[i]; _w.set(G.root[i * 3] + G.dir[i * 3] * l, G.root[i * 3 + 1] + G.dir[i * 3 + 1] * l, G.root[i * 3 + 2] + G.dir[i * 3 + 2] * l);
+    G.obj.localToWorld(_w); _w.project(camera);
+    const x = (_w.x + 1) / 2 * innerWidth, y = (1 - _w.y) / 2 * innerHeight; x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y);
+  }
+  const k = Math.max((x1 - x0) / (vf.w * 0.86), (y1 - y0) / (vf.h * 0.86));
+  if (isFinite(k) && k > 0) { userSpun = true; cam.dist = clamp(cam.dist * k, 2.6, 12); }
+  // 枠の真ん中に来るように画面をずらす（今のずれ＋わんこの中心と枠の中心の差）
+  if (isFinite(x0)) { peekShift.x = viewOff.x + ((x0 + x1) / 2 - (vf.x + vf.w / 2)) / Math.max(1, k); peekShift.y = viewOff.y + ((y0 + y1) / 2 - (vf.y + vf.h / 2)) / Math.max(1, k); viewOff.tx = peekShift.x; viewOff.ty = peekShift.y; }
+}
+function setPeek(on) {
+  $('card').classList.toggle('peek', on); $('peekBar').classList.toggle('hide', !on);
+  $('viewfinder').classList.toggle('hide', !on); if (on) { placeViewfinder(); peekShift.x = peekShift.y = 0; [350, 900, 1450].forEach(t => setTimeout(() => { if ($('card').classList.contains('peek')) fitDogToFrame(); }, t)); }
+  updateResultOffset(); SFX.click();
+}
+$('rView').addEventListener('click', e => { e.stopPropagation(); setPeek(true); });
+$('rBack').addEventListener('click', e => { e.stopPropagation(); setPeek(false); });
+function zoomBy(f) { userSpun = true; cam.dist = clamp(cam.dist * f, 2.6, 12); }
+$('zIn').addEventListener('click', e => { e.stopPropagation(); zoomBy(0.85); });
+$('zOut').addEventListener('click', e => { e.stopPropagation(); zoomBy(1 / 0.85); });
+$('rPhoto').addEventListener('click', e => {
+  e.stopPropagation();
+  const en = zEntry(breed.id);
+  photoReq = data => { en.photo = data; saveZ(); };
+  SFX.shutter();
+  setTimeout(() => {
+    const f = document.createElement('div'); f.id = 'flash'; document.body.appendChild(f); setTimeout(() => f.remove(), 500);
+    pop('📷 図鑑の写真を更新！', innerWidth / 2, innerHeight * 0.3, '#ff6f91', 28);
+  }, 40);
+});
+
+const keys = {};
+addEventListener('keydown', e => {
+  keys[e.key.toLowerCase()] = true;
+  const k = e.key.toLowerCase();
+  if (!$('zukan').classList.contains('hide')) { if (k === 'escape') closeZukan(); return; }
+  if (state === 'title' && (k === ' ' || k === 'enter')) { e.preventDefault(); startRound(); return; }
+  if (state === 'result' && (k === ' ' || k === 'r' || k === 'enter')) { e.preventDefault(); startRound(); return; }
+  if (state === 'result' && k === 'c') { startRound(true); return; }
+  if (state === 'result' && (k === 'v' || k === 'escape')) { setPeek(!$('card').classList.contains('peek')); return; }
+  if (state === 'play') {
+    if (phase === 'cut') { if (k === '1') setAtt(0); if (k === '2') setAtt(1); if (k === '3') setAtt(2); }
+    if (k === 'f' || k === 'enter') { if (phase === 'cut') endRound(); else nextPhase(); }
+    if (k === ' ' && phase !== 'cut') { e.preventDefault(); if (!e.repeat) mgDown(); }
+    if (DEBUG && k === 't' && phase === 'cut') timeLeft = Math.min(timeLeft, 1); // デバッグ：すぐ飽きさせる
+    if (DEBUG && k === 'p' && phase !== 'cut') { mgAutoPerfect(); return; }
+    if (DEBUG && k === 'p') { // デバッグ：今の工程を一瞬で終わらせる（カット中ならお手本どおりに仕上げる）
+      for (const G of dog.groups) for (let i = 0; i < G.n; i++) {
+        if (phase === 'shampoo') { G.foam[i] = 1; G.wet[i] = 0.55; }
+        else if (phase === 'rinse') { G.foam[i] = 2; G.dirt[i] = 0; G.wet[i] = 1; }
+        else if (phase === 'dry') { G.wet[i] = 0; G.fluff[i] = 1; }
+        else { G.len[i] = G.tg[i]; setStrand(G, i); }
+        setState(G, i);
+      }
+      if (phase === 'shampoo') dog.groups.forEach((G, g) => { for (let j = 0; j < 300; j++) { const i = (Math.random() * G.n) | 0; const l = 0.15; spawnFoam(g, G.root[i * 3] + G.dir[i * 3] * l, G.root[i * 3 + 1] + G.dir[i * 3 + 1] * l, G.root[i * 3 + 2] + G.dir[i * 3 + 2] * l, 0.05); } });
+      if (phase === 'rinse') clearFoam();
+      stats.cut += 1000;
+    }
+    if (k === 'r') startRound();
+  }
+  if (k === 'm') { initAudio(); setMuted(!muted); }
+});
+addEventListener('keyup', e => { keys[e.key.toLowerCase()] = false; if (e.key === ' ' && state === 'play' && phase !== 'cut') mgUp(); });
+
+// ===================== 進行 =====================
+function endRound() {
+  if (state !== 'play') return;
+  if (shakeState === 3) endMischief(); else if (shakeState) { shakeState = 0; dog.root.rotation.set(0, 0, 0); }
+  state = 'ending'; endT = 0; cutting = false; clipper.visible = ring.visible = false; hideGuide(); showTool(null); $('mg').classList.add('hide'); document.body.classList.remove('carePhase');
+  accNow = computeAcc();
+  let dsum = 0, fsum = 0, n = 0;
+  for (const G of dog.groups) for (let i = 0; i < G.n; i++) { dsum += G.dirt[i]; fsum += G.fluff[i] * (1 - G.wet[i]); n++; }
+  careNow = { clean: clamp(1 - (dsum / n) / dirt0, 0, 1), fluffy: clamp(fsum / n, 0, 1) };
+  lastCare = { clean: careNow.clean, fluffy: careNow.fluffy };
+  symNow = computeSym();
+  scoreParts = computeScore(accNow, symNow, careNow.clean, careNow.fluffy, cutT, boredPts);
+  scoreNow = scoreParts.total;
+  SFX.timeup(); showBanner('そこまで！', '', 900);
+}
+function bestKey() { return 'mosamosa_best2_' + order.id; }
+function rankOf(acc, baldRatio) {
+  if (stats.cut < 30) return ['放置プレイ', '…せめて触ってあげて？'];
+  if (baldRatio > 0.35 && acc < 75) return ['ハゲ散らかし職人', '飼い主さん、泣いてます'];
+  if (acc >= 92) return ['神の手（ゴッドハンド）', 'コンテスト優勝レベル！'];
+  if (acc >= 80) return ['カリスマトリマー', '予約が3年先まで埋まった'];
+  if (acc >= 65) return ['街の人気トリマー', 'リピーター続出'];
+  if (acc >= 45) return ['見習いトリマー', 'わんこは許してくれた'];
+  if (acc >= 25) return ['前衛芸術家', '個性的…ですね'];
+  return ['事件現場', '飼い主が膝から崩れ落ちた'];
+}
+let lastResult = null, careNow = { clean: 0, fluffy: 0 }, scoreNow = 0, symNow = 1, scoreParts = null;
+function startReaction() {
+  let keep = 0, bald = 0;
+  for (const G of dog.groups) for (let i = 0; i < G.n; i++) if (G.tg[i] > 0.2) { keep++; if (G.len[i] < 0.08) bald++; }
+  const baldRatio = keep ? bald / keep : 0;
+  const acc = Math.round(scoreNow);
+  const [rank, com] = rankOf(acc, baldRatio);
+  reaction = acc >= 75 ? 'happy' : acc >= 45 && baldRatio <= 0.35 ? 'meh' : 'angry';
+  reactT = 0;
+  const bub = $('bubble'); bub.textContent = reaction === 'happy' ? '💕' : reaction === 'meh' ? '🐶❔' : '💢'; bub.classList.remove('hide');
+  if (reaction === 'happy') { SFX.happy(); dog.eyes.forEach(e => e.scale.set(1.1, 0.35, 1)); }
+  else if (reaction === 'angry') { SFX.growl(); nextAngryBark = 0.9; }
+  else SFX.bark();
+  const prev = lsGet(bestKey(), 0), isNew = acc > prev && stats.cut >= 30;
+  if (isNew) lsSet(bestKey(), acc);
+  const zr = recordZukan(acc, rank);
+  const tKey = 'mosamosa_time_' + order.id, prevT = lsGet(tKey, 0);
+  const tOK = acc >= 80, newTime = tOK && (!prevT || cutT < prevT);
+  if (newTime) lsSet(tKey, Math.round(cutT * 10) / 10);
+  let tip;
+  if (baldRatio > 0.2) tip = '切っちゃダメな所を刈りすぎ。カーソル横に<b>⚠</b>が出たら手を止めよう';
+  else if (stats.cut < 400) tip = '刈った量が少なめ。<b>広い部分</b>から大きく往復して一気に刈ろう';
+  else if (accNow < 85) tip = 'お手本と見比べて刈り残しを探そう。<b>回転</b>させると裏側に残ってるかも';
+  else if (scoreParts.sym < 7) tip = '左右で長さがちがうかも。<b>回転</b>して反対側も同じ長さに';
+  else if (careNow.clean < 0.85 || careNow.fluffy < 0.85) tip = 'シャンプー・すすぎ・ドライヤーの<b>★</b>がそろうとピカピカ・ふわふわで+20点';
+  else if (scoreParts.speed < 6) tip = '一致度が高いまま<b>速く</b>仕上げるとスピードボーナス。<b>10秒台</b>をめざそう';
+  else tip = TIPS[(Math.random() * TIPS.length) | 0];
+  lastResult = { acc, rank, com, isNew, best: Math.max(prev, isNew ? acc : 0), bald, cut: stats.cut, tip, zr, t: cutT, bestT: newTime ? cutT : prevT, newTime };
+}
+function showResult() {
+  const r = lastResult; state = 'result';
+  $('rOrder').textContent = breed.name + ' × ' + order.name;
+  $('rTip').innerHTML = '💡 次のコツ：' + r.tip;
+  $('rNew').textContent = [r.zr.newBreed ? '📖 ' + breed.name.replace('★幻★ ', '') + 'を図鑑に登録！' : (r.zr.newBest ? '📷 図鑑の写真を更新！' : ''), r.zr.newTitle ? '🏅 新しい称号ゲット！' : ''].filter(Boolean).join('　');
+  $('rAcc').innerHTML = r.acc + '<small>点</small>';
+  $('rRank').textContent = '「' + r.rank + '」';
+  $('rCom').textContent = r.com;
+  const S = scoreParts, it = (lab, v, mx, sub) => '<div class="sp"><b>' + lab + '</b><span>' + Math.round(v) + '<i>/' + mx + '</i></span>' + (sub ? '<em>' + sub + '</em>' : '') + '<u style="width:' + clamp(v / mx * 100, 0, 100) + '%"></u></div>';
+  $('rStats').innerHTML = '<div class="sGrid">' + it('一致', S.acc, 60, Math.round(accNow) + '%') + it('左右そろい', S.sym, 10) + it('ピカピカ', S.clean, 10) + it('ふわふわ', S.fluffy, 10) + it('スピード', S.speed, 10, r.t.toFixed(1) + '秒') + '</div>' +
+    (boredPts > 0 ? '<div class="sBored">😪 おまたせ −' + boredPts + '点</div>' : '') +
+    '<div class="sLine">刈った毛 ' + r.cut.toLocaleString() + ' 本 ／ 切っちゃダメな毛を刈った ' + r.bald + ' 本</div>';
+  $('rBest').innerHTML = '自己ベスト ' + r.best + '点' + (r.isNew ? '<span class="new">NEW!</span>' : '') + (r.bestT ? '　⏱ 最速 ' + r.bestT.toFixed(1) + '秒' + (r.newTime ? '<span class="new">NEW!</span>' : '') : '　<small style="opacity:.6">（80点以上でタイム記録）</small>');
+  $('share').href = shareURL(r); $('site').classList.remove('hide');
+  $('card').classList.remove('peek'); $('peekBar').classList.add('hide');
+  document.body.classList.add('resultMode'); userSpun = false;
+  $('result').classList.remove('hide');
+  requestAnimationFrame(updateResultOffset);
+  SFX.fanfare(reaction !== 'angry');
+}
+function shareURL(r) {
+  const text = breed.name.replace('★幻★ ', '幻の') + 'を「' + order.name + '」にトリミング✂️🐶\n仕上がり ' + r.acc + '点（カット ' + r.t.toFixed(1) + '秒）で称号「' + r.rank + '」でした\n#モサモサわんこトリミング';
+  return 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(text) + '&url=' + encodeURIComponent(GAME_URL);
+}
+
+// ===================== 図鑑 =====================
+const ALL_TITLES = [
+  ['神の手（ゴッドハンド）', '仕上がり92点以上'], ['カリスマトリマー', '仕上がり80点以上'], ['街の人気トリマー', '仕上がり65点以上'],
+  ['見習いトリマー', '仕上がり45点以上'], ['前衛芸術家', '仕上がり25点以上'], ['事件現場', '仕上がり25点未満'],
+  ['ハゲ散らかし職人', '切っちゃダメな毛をたくさん刈る'], ['放置プレイ', 'ほとんど刈らずに仕上げる'],
+];
+let Z = lsGet('mosamosa_zukan', null);
+if (!Z || !Z.b) Z = { b: {}, titles: [] };
+function saveZ() { lsSet('mosamosa_zukan', Z); }
+function zEntry(id) { return Z.b[id] || (Z.b[id] = { best: -1, title: '', photo: '', medals: {} }); }
+function markSeen() { zEntry(breed.id).seen = true; saveZ(); }
+let photoReq = null;
+function recordZukan(acc, rank) {
+  const e = zEntry(breed.id);
+  const newBreed = e.best < 0;
+  const newBest = acc > e.best;
+  if (newBest) { e.best = acc; e.title = rank; }
+  if ((e.medals[order.id] ?? -1) < acc) e.medals[order.id] = acc;
+  const newTitle = !Z.titles.includes(rank);
+  if (newTitle) Z.titles.push(rank);
+  saveZ();
+  if (newBest) photoReq = data => { e.photo = data; saveZ(); };
+  return { newBreed, newBest, newTitle };
+}
+// 図鑑の写真に写る範囲（画面のCSSピクセル）。枠の表示と撮影で同じ値を使う
+function photoRect() {
+  const w = Math.min(innerWidth * 0.86, innerHeight * 0.56 * 4 / 3), h = w * 0.75;
+  return { x: (innerWidth - w) / 2, y: innerHeight * 0.47 - h / 2, w, h };
+}
+function placeViewfinder() {
+  const r = photoRect(), v = $('viewfinder');
+  v.style.left = r.x + 'px'; v.style.top = r.y + 'px'; v.style.width = r.w + 'px'; v.style.height = r.h + 'px';
+}
+function capturePhoto() {
+  try {
+    const r = photoRect(), k = canvas.width / innerWidth;
+    const cv = document.createElement('canvas'); cv.width = 320; cv.height = 240;
+    cv.getContext('2d').drawImage(canvas, r.x * k, r.y * k, r.w * k, r.h * k, 0, 0, 320, 240);
+    return cv.toDataURL('image/jpeg', 0.72);
+  } catch (e) { return ''; }
+}
+function medal(a) { return a >= 92 ? '🥇' : a >= 80 ? '🥈' : a >= 65 ? '🥉' : '・'; }
+let zTab = 'dogs';
+function openZukan() { $('zukan').classList.remove('hide'); renderZukan(); }
+function closeZukan() { $('zukan').classList.add('hide'); }
+function renderZukan() {
+  const seen = BREEDS.filter(b => Z.b[b.id] && Z.b[b.id].best >= 0).length;
+  $('zCount').textContent = '犬種 ' + seen + '/' + BREEDS.length + '　称号 ' + Z.titles.length + '/' + ALL_TITLES.length;
+  document.querySelectorAll('.zt').forEach(b => b.classList.toggle('on', b.dataset.t === zTab));
+  const body = $('zBody');
+  if (zTab === 'dogs') {
+    body.innerHTML = '<div class="zGrid">' + BREEDS.map(b => {
+      const e = Z.b[b.id]; const known = e && e.best >= 0;
+      const photo = known && e.photo ? '<img alt="' + b.name + 'の仕上がり" src="' + e.photo + '">' : (e && e.seen ? '🐶' : '？');
+      const medals = ORDERS.map(o => {
+        const a = known ? e.medals[o.id] : undefined;
+        return '<span class="' + (a >= 65 ? 'got' : '') + '">' + o.name.replace('★レア★ ', '★') + ' ' + (a === undefined ? '－' : medal(a) + a + '点') + '</span>';
+      }).join('');
+      return '<div class="zCard"><div class="zPhoto">' + photo + '</div>' +
+        '<div class="zName">' + (known || (e && e.seen) ? b.name : '？？？') + '</div>' +
+        '<div class="zInfo">' + (known ? b.info : (b.rare ? 'めったに来店しない幻の犬種…' : 'まだ出会っていない犬種')) + '</div>' +
+        (known ? '<div class="zBest">ベスト ' + e.best + '点「' + e.title + '」</div><div class="zMedals">' + medals + '</div>' : '') +
+        '</div>';
+    }).join('') + '</div>';
+  } else if (zTab === 'titles') {
+    body.innerHTML = '<div class="zTitles">' + ALL_TITLES.map(([t, how]) => {
+      const got = Z.titles.includes(t);
+      return '<div class="zTitle ' + (got ? '' : 'locked') + '">' + (got ? '🏅 ' + t : '？？？') + '<small>' + how + '</small></div>';
+    }).join('') + '</div>';
+  } else {
+    body.innerHTML = '<ol class="zTips">' + TIPS.map(t => '<li>' + t + '</li>').join('') +
+      '<li>メダル：🥉65点以上 🥈80点以上 🥇92点以上。全犬種×全注文の🥇をめざそう</li></ol>';
+  }
+}
+document.querySelectorAll('.zt').forEach(b => b.addEventListener('click', e => { e.stopPropagation(); zTab = b.dataset.t; renderZukan(); }));
+$('zClose').addEventListener('click', e => { e.stopPropagation(); closeZukan(); });
+$('zukan').addEventListener('click', e => { e.stopPropagation(); if (e.target.id === 'zukan') closeZukan(); });
+$('zPanel').addEventListener('click', e => e.stopPropagation());
+$('openZ').addEventListener('click', e => { e.stopPropagation(); initAudio(); openZukan(); });
+$('rZukan').addEventListener('click', e => { e.stopPropagation(); openZukan(); });
+$('titleTip').innerHTML = '💡 ' + TIPS[(Math.random() * TIPS.length) | 0];
+
+// ===================== メインループ =====================
+const _hw = new THREE.Vector3();
+function update(sim, dt, raw) {
+  clock += dt;
+  // カメラ
+  if (rotHold) cam.theta += rotHold * dt * 1.8;
+  if (keys['a'] || keys['arrowleft']) cam.theta += dt * 1.8;
+  if (keys['d'] || keys['arrowright']) cam.theta -= dt * 1.8;
+  if (keys['w'] || keys['arrowup']) cam.phi = clamp(cam.phi - dt * 1.2, 0.35, 1.5);
+  if (keys['s'] || keys['arrowdown']) cam.phi = clamp(cam.phi + dt * 1.2, 0.35, 1.5);
+  if (state === 'title') cam.theta += dt * 0.35;
+  if (state === 'ending' || (state === 'result' && !userSpun)) cam.theta += dt * 0.35;
+  // 結果画面ではわんこに少し寄る
+  if (state === 'result' && !userSpun) cam.dist += (baseDist * 0.92 - cam.dist) * Math.min(1, dt * 2);
+  viewOff.x += (viewOff.tx - viewOff.x) * Math.min(1, dt * 6); viewOff.y += (viewOff.ty - viewOff.y) * Math.min(1, dt * 6);
+
+  // ゲーム進行
+  if (state === 'play' && sim > 0) {
+    if (phase === 'cut') {
+      timeLeft -= raw; cutT += raw;
+      const t = $('timer');
+      if (timeLeft > 0) {
+        t.innerHTML = cutT.toFixed(1) + '<small>秒' + (timeLeft < 15 ? '・ごきげん' + Math.ceil(timeLeft) : '') + '</small>'; t.classList.toggle('hurry', timeLeft < 10);
+      } else {
+        // 時間切れでは終わらない：わんこが飽きてきて、少しずつ減点（2秒で1点、最大30点）
+        const pts = Math.min(30, Math.floor(-timeLeft / 2));
+        if (boredStage === 0) {
+          boredStage = 1; t.classList.remove('hurry'); t.classList.add('bored');
+          SFX.whimper(); bubbleSay('💤'); pop('ふわぁ〜…あきてきた', innerWidth / 2, innerHeight * 0.3, '#8a7a9a', 26);
+          $('tip').innerHTML = '💡 わんこが<b>飽きてきた</b>…待たせるほど少しずつ減点。終わったら<b>仕上げ✂</b>を押そう';
+        }
+        if (pts !== boredPts || boredStage === 1 && !t.dataset.b) { boredPts = pts; t.dataset.b = '1'; t.textContent = '😪 あきてきた −' + pts + '点'; }
+        if (boredStage === 1 && -timeLeft > 20) { boredStage = 2; SFX.whimper(); pop('くぅ〜ん…（はやく帰りたい）', innerWidth / 2, innerHeight * 0.3, '#8a7a9a', 24); }
+        if (shakeState === 0 && nextShake > 5) nextShake = 3 + Math.random() * 3; // 飽きるとそわそわ
+        if (Math.random() < raw * 0.15 && shakeState === 0) bubbleSay(['💤', '🥱', '😪'][(Math.random() * 3) | 0]);
+      }
+      tipT += raw; if (tipT > 9 && boredStage === 0) { tipT = 0; tipIdx++; showTip(); }
+    } else {
+      updateMG(raw);
+      if (phaseNextT > 0) { phaseNextT -= raw; if (phaseNextT <= 0) nextPhase(); }
+    }
+    // ドライヤーの風はすぐおさまる
+    if (phase === 'dry' || phase === 'cut') for (const G of dog.groups) for (let i = 0; i < G.n; i++) if (G.wind[i] > 0) { G.wind[i] = Math.max(0, G.wind[i] - sim * 2.5); setState(G, i); }
+    // ブルブル
+    if (shakeState === 0 && phase === 'cut') { nextShake -= sim; if (nextShake <= 0) startMischief(); }
+    else if (shakeState === 3) updateMischief(sim);
+    else {
+      shakeT += sim;
+      if (shakeState === 1 && shakeT > 0.6) { shakeState = 2; shakeT = 0; SFX.whoosh(); pop('ブルブルブル！', innerWidth / 2, innerHeight * 0.3, '#e67e22', 30); }
+      else if (shakeState === 2) {
+        const k = P.shakeStrength;
+        dog.root.rotation.y = Math.sin(shakeT * 47) * k; dog.root.rotation.x = Math.sin(shakeT * 61) * k * 0.4;
+        shakeAmt = Math.max(shakeAmt, P.camShake * 0.6);
+        // 濡れていれば水しぶき、泡があれば泡が飛ぶ
+        if (waterShake || phase === 'rinse' || phase === 'dry') {
+          for (let j = 0; j < (waterShake ? 16 : 5); j++) {
+            const G = dog.groups[(Math.random() * 3) | 0]; if (!G.n) continue; const i = (Math.random() * G.n) | 0;
+            if (!waterShake && G.wet[i] < 0.3) continue;
+            _w.set(G.root[i * 3], G.root[i * 3 + 1], G.root[i * 3 + 2]); G.obj.localToWorld(_w);
+            _dw.set(G.dir[i * 3], G.dir[i * 3 + 1], G.dir[i * 3 + 2]).transformDirection(G.obj.matrixWorld);
+            const sp = 3 + Math.random() * 3;
+            spawnFx(_w.x, _w.y, _w.z, _dw.x * sp, _dw.y * sp + 1.5, _dw.z * sp, 1.2, 0.02 + Math.random() * 0.02, 0.62, 0.84, 1.0, 9.8);
+          }
+        }
+        if (phase === 'shampoo' && Math.random() < 0.5) dog.groups.forEach((G, g) => { if (G.n) { const i = (Math.random() * G.n) | 0; _w.set(G.root[i * 3], G.root[i * 3 + 1], G.root[i * 3 + 2]); G.obj.localToWorld(_w); spawnFx(_w.x, _w.y, _w.z, (Math.random() - 0.5) * 4, 2 + Math.random() * 2, (Math.random() - 0.5) * 4, 1.1, 0.04, 1, 1, 1, 6); } });
+        // 抜け毛が舞う
+        for (let j = 0; j < (phase === 'cut' ? 4 : 0); j++) {
+          const G = dog.groups[(Math.random() * 3) | 0]; if (!G.n) continue; const i = (Math.random() * G.n) | 0; const l = G.len[i];
+          if (l < 0.1) continue;
+          _w.set(G.root[i * 3] + G.dir[i * 3] * l, G.root[i * 3 + 1] + G.dir[i * 3 + 1] * l, G.root[i * 3 + 2] + G.dir[i * 3 + 2] * l);
+          G.obj.localToWorld(_w); _dw.set(G.dir[i * 3], G.dir[i * 3 + 1], G.dir[i * 3 + 2]).transformDirection(G.obj.matrixWorld);
+          spawnParticle(_w.x, _w.y, _w.z, _dw.x, _dw.y, _dw.z, 0.08, 0.8, G.col[i * 3], G.col[i * 3 + 1], G.col[i * 3 + 2], 3);
+        }
+        if (shakeT > (waterShake ? 1.3 : 0.9)) {
+          shakeState = 0; dog.root.rotation.set(0, 0, 0); nextShake = P.shakeEvery * (0.77 + Math.random() * 0.46); $('bubble').classList.add('hide');
+          if (waterShake) { waterShake = false; for (const G of dog.groups) for (let i = 0; i < G.n; i++) { G.wet[i] *= 0.8; setState(G, i); } }
+        }
+      }
+    }
+    // 待機アニメ
+    dog.tail.rotation.x = Math.sin(clock * 6) * 0.25;
+    dog.head.rotation.z = Math.sin(clock * 1.3) * 0.04;
+  }
+  if (state === 'ending') {
+    endT += raw;
+    if (endT > 0.9 && !reaction) startReaction();
+    if (endT > 2.6 && state === 'ending') showResult();
+  }
+  if (reaction && sim > 0) {
+    reactT += sim;
+    if (reaction === 'happy') {
+      dog.tail.rotation.x = Math.sin(reactT * 22) * 0.6;
+      dog.head.rotation.z = Math.sin(reactT * 4) * 0.15;
+      if (dog.root.position.y <= 0 && jumpV <= 0 && (reactT % 0.8) < sim * 1.5) jumpV = 2.6;
+    } else if (reaction === 'angry') {
+      dog.head.rotation.y = Math.sin(reactT * 24) * 0.22 * (Math.sin(reactT * 2) > 0 ? 1 : 0);
+      dog.tail.rotation.x = 0;
+      if (nextAngryBark > 0) { nextAngryBark -= sim; if (nextAngryBark <= 0) { nextAngryBark = 0; SFX.angryBark(); } } // 1回だけ吠える
+    } else {
+      dog.head.rotation.x = Math.sin(reactT * 1.5) * 0.3;
+      dog.tail.rotation.x = Math.sin(reactT * 5) * 0.2;
+    }
+  }
+  if (state === 'title' && dog) dog.tail.rotation.x = Math.sin(clock * 6) * 0.3;
+  // ジャンプ
+  if (dog && sim > 0 && (dog.root.position.y > 0 || jumpV > 0)) {
+    jumpV -= 14 * sim; dog.root.position.y += jumpV * sim;
+    if (dog.root.position.y < 0) { dog.root.position.y = 0; jumpV = 0; }
+  }
+  // カット・パーティクル
+  if (dog) doCutting(dt);
+  if (sim > 0) { updateParticles(sim); updateFoam(sim); updateFx(sim); }
+  if (furMat.userData.shader) furMat.userData.shader.uniforms.uTime.value = clock;
+  if (dog) for (const G of dog.groups) { if (G.dirty) { G.aLen.needsUpdate = true; G.dirty = false; } if (G.sdirty) { G.aState.needsUpdate = true; G.sdirty = false; } }
+  if (ghost) for (const G of ghost.groups) if (G.sdirty) { G.aState.needsUpdate = true; G.sdirty = false; }
+  if (ghost) { for (const G of ghost.groups) if (G.dirty) { G.aLen.needsUpdate = true; G.dirty = false; } ghost.root.rotation.y = clock * 0.6; }
+
+  // バリカン音
+  if (AC && buzzGain) {
+    const on = cutting && state === 'play' && phase === 'cut';
+    const lp = state === 'play' && ((phase === 'rinse' && mg.sprayT > 0) || (phase === 'dry' && mg.blowT > 0));
+    if (loopGain) {
+      if (phase === 'rinse') { loopFilter.type = 'highpass'; loopFilter.frequency.setTargetAtTime(2400, AC.currentTime, 0.05); }
+      else { loopFilter.type = 'lowpass'; loopFilter.frequency.setTargetAtTime(1100, AC.currentTime, 0.05); }
+      loopGain.gain.setTargetAtTime(lp ? (phase === 'rinse' ? 0.16 : 0.22) : 0, AC.currentTime, 0.05);
+    }
+    buzzLoad *= Math.pow(0.02, dt);
+    buzzGain.gain.setTargetAtTime(on ? (0.05 + 0.08 * buzzLoad) * P.buzzVol : 0, AC.currentTime, 0.03);
+    buzzO1.frequency.setTargetAtTime(118 - 22 * buzzLoad, AC.currentTime, 0.05);
+    buzzO2.frequency.setTargetAtTime(236 - 44 * buzzLoad, AC.currentTime, 0.05);
+  }
+
+  // 一致度
+  if ((state === 'play') && phase === 'cut' && dog && ((clock * 10) | 0) % 2 === 0) {
+    accNow = computeAcc();
+    $('accBar').style.width = accNow.toFixed(0) + '%'; $('accTxt').textContent = '一致度 ' + accNow.toFixed(0) + '%';
+  }
+
+  // カメラ配置
+  const s = Math.sin(cam.phi);
+  camera.position.set(cam.target.x + Math.sin(cam.theta) * s * cam.dist, cam.target.y + Math.cos(cam.phi) * cam.dist, cam.target.z + Math.cos(cam.theta) * s * cam.dist);
+  shakeAmt *= Math.pow(0.003, dt);
+  if (shakeAmt > 0.001) camera.position.add(_tmp.set((Math.random() - 0.5), (Math.random() - 0.5), (Math.random() - 0.5)).multiplyScalar(shakeAmt));
+  camera.lookAt(cam.target);
+
+  // 吹き出し
+  const bub = $('bubble');
+  if (!bub.classList.contains('hide') && dog) {
+    _hw.set(0.25, 0.85, 0); dog.head.localToWorld(_hw); _hw.project(camera);
+    bub.style.left = ((_hw.x + 1) / 2 * innerWidth) + 'px'; bub.style.top = ((1 - _hw.y) / 2 * innerHeight) + 'px';
+  }
+}
+// ===================== わんこの妨害（ブルブル／ふりむき／くしゃみ／トコトコ） =====================
+function startMischief() {
+  evCount++;
+  const r = Math.random();
+  // 最初の1回は、合図のわかりやすいブルブル
+  evType = evCount === 1 ? 'shake' : r < 0.34 ? 'shake' : r < 0.58 ? 'turn' : r < 0.8 ? 'sneeze' : 'wander';
+  evLog.push(evType); evDir = Math.random() < 0.5 ? -1 : 1; shakeT = 0;
+  if (evType === 'shake') { shakeState = 1; if (!AC || AC.currentTime > voiceUntil) SFX.whimper(); bubbleSay('❗'); return; }
+  shakeState = 3;
+  if (evType === 'turn') bubbleSay('👀');
+  else if (evType === 'sneeze') { bubbleSay('😤'); pop('ハ…ハ…', innerWidth / 2, innerHeight * 0.3, '#e67e22', 26); }
+  else { bubbleSay('🐾'); pop('トコトコ…', innerWidth / 2, innerHeight * 0.3, '#8a5a3a', 26); }
+}
+function endMischief() {
+  shakeState = 0; dog.root.rotation.set(0, 0, 0); dog.root.position.x = 0; dog.head.rotation.y = 0;
+  nextShake = P.shakeEvery * (0.77 + Math.random() * 0.46); $('bubble').classList.add('hide');
+}
+function updateMischief(sim) {
+  shakeT += sim; const t = shakeT;
+  if (evType === 'turn') {
+    // ふりむく：頭がぐいっと横を向く（頭の毛がねらいからズレる）
+    const D = 1.8, w = t < 0.35 ? 0 : Math.sin(Math.PI * Math.min(1, (t - 0.35) / (D - 0.35)));
+    dog.head.rotation.y = evDir * 0.7 * Math.min(1, w * 1.6);
+    if (t > 0.35 && t - sim <= 0.35) { if (!AC || AC.currentTime > voiceUntil) SFX.whimper(); pop('ん？（ふりむき）', innerWidth / 2, innerHeight * 0.3, '#8a5a3a', 24); }
+    if (t > D) endMischief();
+  } else if (evType === 'sneeze') {
+    if (t > 0.7 && t - sim <= 0.7) { SFX.sneeze(); jumpV = 3; shakeAmt += P.camShake * 3; pop('ハックション！！', innerWidth / 2, innerHeight * 0.3, '#e67e22', 32); }
+    if (t > 0.7 && t < 1.0) dog.root.rotation.x = Math.sin((t - 0.7) * 30) * 0.08;
+    else dog.root.rotation.x = 0;
+    if (t > 1.3) endMischief();
+  } else {
+    // トコトコ：台の上を少し歩いて、もどってくる
+    const D = 2.0, w = Math.max(0, t - 0.5);
+    dog.root.position.x = evDir * 0.32 * Math.sin(Math.PI * Math.min(1, w / D));
+    dog.root.rotation.z = w > 0 ? Math.sin(w * 14) * 0.03 : 0;
+    if (w > 0 && (w * 4 | 0) !== ((w - sim) * 4 | 0)) SFX.click();
+    if (w > D) endMischief();
+  }
+}
+function bubbleSay(t) { const b = $('bubble'); b.textContent = t; b.classList.remove('hide'); }
+
+let miniSize = 140;
+function layout() {
+  const w = innerWidth, h = innerHeight;
+  if (!(w > 0 && h > 0)) return; // アプリが最小化されて画面サイズ0のときは何もしない（カメラ距離がNaNになるのを防ぐ）
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h; camera.updateProjectionMatrix();
+  const portrait = w / h < 0.85;
+  cam.dist = clamp(Math.max(6.0, (portrait ? 1.45 : 1.9) / (Math.tan(21 * Math.PI / 180) * camera.aspect)), 2.6, 12); baseDist = cam.dist;
+  document.body.classList.toggle('wide', w / h > 1.05 && w >= 640);
+  if (state === 'result') requestAnimationFrame(updateResultOffset);
+  placeViewfinder();
+  miniSize = Math.round(w <= 600 ? clamp(w * 0.24, 76, 110) : clamp(Math.min(w, h) * 0.28, 96, 150));
+  const mi = $('mini'); mi.style.width = mi.style.height = (miniSize + 8) + 'px';
+  $('accWrap').style.top = (10 + miniSize + 8 + 8) + 'px';
+  $('accWrap').style.width = (miniSize + 8) + 'px';
+  document.documentElement.style.setProperty('--miniH', (miniSize + 60) + 'px');
+}
+addEventListener('resize', layout);
+
+function render() {
+  const w = innerWidth, h = innerHeight;
+  renderer.setScissorTest(false); renderer.setViewport(0, 0, w, h);
+  if (Math.abs(viewOff.x) > 0.5 || Math.abs(viewOff.y) > 0.5) camera.setViewOffset(w, h, viewOff.x, viewOff.y, w, h);
+  else if (camera.view && camera.view.enabled) camera.clearViewOffset();
+  renderer.render(scene, camera);
+  if (photoReq && state === 'result') { const d = capturePhoto(); if (d) photoReq(d); photoReq = null; }
+  if (state !== 'title' && ghost) {
+    const x = w - 10 - 4 - miniSize, y = h - (10 + 4) - miniSize;
+    renderer.setScissorTest(true); renderer.setScissor(x, y, miniSize, miniSize); renderer.setViewport(x, y, miniSize, miniSize);
+    renderer.render(ghostScene, ghostCam);
+    renderer.setScissorTest(false);
+  }
+}
+
+// ===================== デバッグ =====================
+let fpsT = 0, fpsN = 0, fps = 0;
+if (DEBUG && (qs.get('debug') === '1' || location.hash.includes('panel'))) {
+  const box = $('dbg'); box.classList.remove('hide');
+  const defs = [['cutRadius', 0.08, 0.5, 0.01], ['timeLimit', 10, 120, 1], ['hitstop', 0, 0.15, 0.005], ['camShake', 0, 0.2, 0.005],
+    ['shakeEvery', 3, 40, 1], ['shakeStrength', 0, 0.8, 0.02], ['strands', 600, 6000, 100], ['buzzVol', 0, 1.5, 0.05], ['rareRate', 0, 1, 0.01]];
+  box.innerHTML = '<b>DEBUG</b> <span id="fps"></span><br>' + defs.map(d => `<label>${d[0]} <span class="v" id="v_${d[0]}">${P[d[0]]}</span><input type="range" min="${d[1]}" max="${d[2]}" step="${d[3]}" value="${P[d[0]]}" data-k="${d[0]}"></label>`).join('') +
+    '<button class="btn" id="dbgCopy" style="width:100%;margin-top:4px">値をコピー</button><div style="opacity:.6">strandsは次のラウンドから</div>';
+  box.querySelectorAll('input').forEach(inp => inp.addEventListener('input', () => { P[inp.dataset.k] = +inp.value; $('v_' + inp.dataset.k).textContent = inp.value; }));
+  box.addEventListener('pointerdown', e => e.stopPropagation());
+  $('dbgCopy').addEventListener('click', () => { const s = JSON.stringify(P); try { navigator.clipboard.writeText(s); } catch (e) { } prompt('P =', s); });
+}
+
+// ===================== 自動テスト（URLの最後に #autotest） =====================
+// ボットが指で触ったときと同じイベントを送って1プレイ通し、fps・UIの重なり・はみ出し・わんこの見え方を計測する
+async function runAutotest() {
+  const R = { vp: innerWidth + 'x' + innerHeight + ' @' + devicePixelRatio + 'x', issues: [], info: [] };
+  const sleep = ms => new Promise(r => setTimeout(r, ms));
+  const issue = t => { R.issues.push(t); console.log('[AT] ⚠ ' + t); };
+  const info = t => { R.info.push(t); console.log('[AT] ' + t); };
+  const meter = () => {
+    let n = 0, t0 = performance.now(), last = t0, worst = 0, on = true;
+    const f = now => { if (!on) return; n++; worst = Math.max(worst, now - last); last = now; requestAnimationFrame(f); };
+    requestAnimationFrame(f);
+    return () => { on = false; const dt = (performance.now() - t0) / 1000; return { fps: Math.round(n / dt), worst: Math.round(worst) }; };
+  };
+  const vis = el => {
+    if (!el) return false;
+    for (let p = el; p && p !== document.body; p = p.parentElement) { if (p.classList && p.classList.contains('hide')) return false; const cs = getComputedStyle(p); if (cs.display === 'none' || cs.visibility === 'hidden') return false; }
+    const r = el.getBoundingClientRect(); return r.width > 0 && r.height > 0;
+  };
+  const NAMES = { tl: '左上の注文/タイマー', mini: 'お手本', accWrap: '一致度バー', mg: 'ミニゲーム枠', finish: '仕上げ/次へボタン', mute: 'ミュート', bottom: 'アタッチメント列', card: '結果カード', peekBar: 'じっくり見るボタン列', start: 'はじめるボタン', openZ: '図鑑ボタン', titleTip: 'タイトルのコツ', site: 'サイトリンク', bubble: 'ふきだし', guide: 'ガイド' };
+  const nm = id => NAMES[id] || '#' + id;
+  const layout = (label, ids) => {
+    const els = ids.map(id => [id, $(id)]).filter(([, e]) => vis(e));
+    const rs = els.map(([id, e]) => [id, e.getBoundingClientRect()]);
+    for (let a = 0; a < rs.length; a++) for (let b = a + 1; b < rs.length; b++) {
+      const A = rs[a][1], B = rs[b][1];
+      const w = Math.min(A.right, B.right) - Math.max(A.left, B.left), h = Math.min(A.bottom, B.bottom) - Math.max(A.top, B.top);
+      if (w > 4 && h > 4) issue(label + '：' + nm(rs[a][0]) + 'と' + nm(rs[b][0]) + 'が重なる（' + Math.round(w) + '×' + Math.round(h) + 'px）');
+    }
+    for (const [id, r] of rs) if (r.left < -1 || r.top < -1 || r.right > innerWidth + 1 || r.bottom > innerHeight + 1) issue(label + '：' + nm(id) + 'が画面外にはみ出す');
+    document.querySelectorAll('button, .btn').forEach(b => { if (!vis(b)) return; const r = b.getBoundingClientRect(); if (r.height < 34 || r.width < 34) issue(label + '：ボタン「' + (b.textContent.trim().slice(0, 8) || b.getAttribute('aria-label')) + '」が小さい（' + Math.round(r.width) + '×' + Math.round(r.height) + 'px）'); if (b.scrollWidth > b.clientWidth + 2) issue(label + '：ボタン「' + b.textContent.trim().slice(0, 8) + '」の文字がはみ出す'); });
+  };
+  const dogBox = () => {
+    let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9, inside = 0, n = 0;
+    dog.root.updateMatrixWorld(true);
+    for (const G of dog.groups) for (let i = 0; i < G.n; i += 7) {
+      const l = G.len[i];
+      _w.set(G.root[i * 3] + G.dir[i * 3] * l, G.root[i * 3 + 1] + G.dir[i * 3 + 1] * l, G.root[i * 3 + 2] + G.dir[i * 3 + 2] * l); G.obj.localToWorld(_w); _w.project(camera);
+      const x = (_w.x + 1) / 2 * innerWidth, y = (1 - _w.y) / 2 * innerHeight; n++;
+      if (x >= 0 && x <= innerWidth && y >= 0 && y <= innerHeight) inside++;
+      x0 = Math.min(x0, x); y0 = Math.min(y0, y); x1 = Math.max(x1, x); y1 = Math.max(y1, y);
+    }
+    return { x0, y0, x1, y1, inside: inside / n };
+  };
+  const dogCheck = (label, coverIds) => {
+    const b = dogBox(), area = Math.max(1, (b.x1 - b.x0) * (b.y1 - b.y0));
+    info(label + '：わんこの大きさ ' + Math.round(b.x1 - b.x0) + '×' + Math.round(b.y1 - b.y0) + 'px（画面内 ' + Math.round(b.inside * 100) + '%）');
+    if (b.inside < 0.92) issue(label + '：わんこが画面からはみ出す（画面内 ' + Math.round(b.inside * 100) + '%）');
+    for (const id of coverIds) {
+      const e = $(id); if (!vis(e)) continue; const r = e.getBoundingClientRect();
+      const w = Math.min(r.right, b.x1) - Math.max(r.left, b.x0), h = Math.min(r.bottom, b.y1) - Math.max(r.top, b.y0);
+      if (w > 0 && h > 0 && w * h / area > 0.12) issue(label + '：' + nm(id) + 'がわんこに' + Math.round(w * h / area * 100) + '%かぶる');
+    }
+    return b;
+  };
+  const touch = (type, x, y) => canvas.dispatchEvent(new PointerEvent('pointer' + type, { clientX: x, clientY: y, pointerId: 7, pointerType: 'touch', isPrimary: true, bubbles: true, button: 0, buttons: type === 'up' ? 0 : 1 }));
+  const fpsLog = {};
+  const phaseFps = (k, stop) => { const r = stop(); fpsLog[k] = r; info(k + '：' + r.fps + 'fps（最大の引っかかり ' + r.worst + 'ms）'); if (r.fps < 40) issue(k + '：fps が低い（' + r.fps + 'fps）'); if (r.worst > 200) issue(k + '：' + r.worst + 'ms の引っかかり（カクつき）'); };
+  const waitFor = async (cond, ms) => { const t = performance.now(); while (!cond()) { if (performance.now() - t > ms) return false; await sleep(30); } return true; };
+
+  // --- タイトル ---
+  await sleep(1200);
+  let st = meter(); await sleep(1500); phaseFps('タイトル', st);
+  layout('タイトル', ['start', 'openZ', 'titleTip', 'site']);
+  // --- 開始（ボタンを押す） ---
+  let t0 = performance.now();
+  $('start').click();
+  info('ラウンド生成 ' + Math.round(performance.now() - t0) + 'ms（' + breed.name + '×' + order.name + '）');
+  if (performance.now() - t0 > 600) issue('はじめる→開始まで ' + Math.round(performance.now() - t0) + 'ms 固まる');
+  await sleep(2100); // 注文バナー
+  layout('シャンプー', ['tl', 'mini', 'mg', 'finish', 'mute']); dogCheck('シャンプー', ['mg', 'tl', 'mini', 'finish']);
+  // --- シャンプー：長押し → 緑で離す ---
+  st = meter(); t0 = performance.now();
+  touch('down', innerWidth / 2, innerHeight / 2);
+  await waitFor(() => mg.L >= mg.zoneC - 0.03, 6000);
+  touch('up', innerWidth / 2, innerHeight / 2);
+  info('シャンプー：' + ((performance.now() - t0) / 1000).toFixed(1) + '秒で離す → ★品質 ' + Math.round(careQ.shampoo * 100) + '%');
+  if (careQ.shampoo < 0.99) issue('シャンプー：ボットが緑で離したのに満点にならない');
+  await waitFor(() => phase === 'rinse', 3000); phaseFps('シャンプー', st);
+  // --- すすぎ：針が緑に来たらタップ ×3 ---
+  await sleep(400); layout('すすぎ', ['tl', 'mini', 'mg', 'finish', 'mute']);
+  st = meter(); t0 = performance.now();
+  for (let k = 0; k < 3; k++) {
+    const tk = performance.now();
+    await waitFor(() => Math.abs((0.5 - 0.5 * Math.cos(mg.t * mg.speed)) - mg.zoneC) < mg.zoneW * 0.25, 6000);
+    touch('down', innerWidth / 2, innerHeight / 2); touch('up', innerWidth / 2, innerHeight / 2);
+    info('すすぎ' + (k + 1) + '回目：' + ((performance.now() - tk) / 1000).toFixed(1) + '秒待ってタップ');
+    await sleep(250);
+  }
+  info('すすぎ：品質 ' + Math.round(careQ.rinse * 100) + '%');
+  if (careQ.rinse < 0.99) issue('すすぎ：緑でタップしたのに◎にならない回がある（判定ずれの可能性）');
+  await waitFor(() => phase === 'dry', 3000); phaseFps('すすぎ', st);
+  // --- ドライヤー：連打 ---
+  await sleep(1400); // ブルブル水しぶきの間
+  layout('ドライヤー', ['tl', 'mini', 'mg', 'finish', 'mute']);
+  st = meter(); t0 = performance.now();
+  const tapMs = +(location.hash.match(/tap(\d+)/) || [0, 140])[1]; // 人の連打 ≒ 7回/秒
+  for (let k = 0; k < 60 && !mg.done; k++) { touch('down', innerWidth / 2, innerHeight / 2); touch('up', innerWidth / 2, innerHeight / 2); await sleep(tapMs); }
+  info('ドライヤー：' + mg.presses + '/' + dryNeed() + '回連打、' + ((performance.now() - t0) / 1000).toFixed(1) + '秒 → ふわふわ ' + Math.round(careQ.dry * 100) + '%');
+  await waitFor(() => phase === 'cut', 3000); phaseFps('ドライヤー', st);
+  // --- カット：刈る必要のある毛をねらってドラッグ ---
+  await sleep(1700);
+  layout('カット', ['tl', 'mini', 'accWrap', 'finish', 'mute', 'bottom']); dogCheck('カット', ['tl', 'mini', 'accWrap', 'bottom', 'finish', 'mute']);
+  st = meter(); t0 = performance.now();
+  const atGoal = +(location.hash.match(/goal(\d+)/) || [0, 93])[1];
+  let strokes = 0, misses = 0;
+  const v = new THREE.Vector3();
+  while (performance.now() - t0 < 30000) {
+    const acc = computeAcc(); if (acc >= atGoal) break;
+    // まだ長すぎる毛をさがす
+    let best = null;
+    for (let tries = 0; tries < 400 && !best; tries++) {
+      const g = (Math.random() * 3) | 0, G = dog.groups[g]; if (!G.n) continue; const i = (Math.random() * G.n) | 0;
+      if (G.len[i] - G.tg[i] < 0.05 || G.tg[i] > 0.4) continue;
+      v.set(G.root[i * 3], G.root[i * 3 + 1], G.root[i * 3 + 2]); G.obj.localToWorld(v);
+      const n = v.clone().sub(camera.position).normalize(); // 裏側はスキップ
+      _dw.set(G.dir[i * 3], G.dir[i * 3 + 1], G.dir[i * 3 + 2]).transformDirection(G.obj.matrixWorld);
+      if (_dw.dot(n) > 0.1) continue;
+      v.project(camera); const x = (v.x + 1) / 2 * innerWidth, y = (1 - v.y) / 2 * innerHeight;
+      if (x < 20 || x > innerWidth - 20 || y < 20 || y > innerHeight - 20) continue;
+      best = { x, y, a: ATT.findIndex(a => Math.abs(a.len - G.tg[i]) < 0.001) };
+    }
+    if (!best) { cam.theta += 0.9; await sleep(120); continue; }
+    if (best.a >= 0 && best.a !== attIdx) setAtt(best.a);
+    touch('down', best.x, best.y);
+    if (!cutting) misses++;
+    for (let k = 1; k <= 4; k++) { await sleep(16); touch('move', best.x + k * 6, best.y + (k % 2 ? 4 : -4)); }
+    touch('up', best.x + 24, best.y); strokes++;
+    if (strokes % 25 === 0) cam.theta += 0.7;
+    await sleep(8);
+  }
+  phaseFps('カット', st);
+  const accEnd = computeAcc();
+  info('カット：' + strokes + 'ストローク、' + ((performance.now() - t0) / 1000).toFixed(1) + '秒で一致度 ' + Math.round(accEnd) + '%（ハゲ ' + stats.bald + '本）');
+  if (misses / Math.max(1, strokes) > 0.2) issue('カット：わんこの上をタップしても刈れないことが多い（' + misses + '/' + strokes + '）');
+  if (accEnd < 85) issue('カット：ボットが30秒刈っても一致度 ' + Math.round(accEnd) + '%（刈り残しを見つけにくい／届かない場所がある）');
+  // --- 結果 ---
+  $('finish').click();
+  await waitFor(() => state === 'result', 6000); await sleep(900);
+  layout('結果', ['card', 'mini', 'tl', 'site']); dogCheck('結果', ['card', 'mini']);
+  info('結果：' + lastResult.acc + '点「' + lastResult.rank + '」 内訳 一致' + scoreParts.acc.toFixed(1) + ' そろい' + scoreParts.sym.toFixed(1) + ' ピカ' + scoreParts.clean.toFixed(1) + ' ふわ' + scoreParts.fluffy.toFixed(1) + ' 速さ' + scoreParts.speed.toFixed(1) + '（' + cutT.toFixed(1) + '秒）');
+  info('妨害：' + evLog.length + '回（' + evLog.join('・') + '）');
+  if (cutT > 6 && evLog.length === 0) issue('カット中に妨害が1回も起きない');
+  st = meter(); await sleep(1500); phaseFps('結果', st);
+  // --- じっくり見る ---
+  setPeek(true); await sleep(2300);
+  layout('じっくり見る', ['peekBar', 'mini', 'tl', 'site']);
+  const b = dogCheck('じっくり見る', ['peekBar']), vf = photoRect();
+  const inVf = Math.max(0, Math.min(b.x1, vf.x + vf.w) - Math.max(b.x0, vf.x)) * Math.max(0, Math.min(b.y1, vf.y + vf.h) - Math.max(b.y0, vf.y)) / Math.max(1, (b.x1 - b.x0) * (b.y1 - b.y0));
+  info('じっくり見る：わんこの ' + Math.round(inVf * 100) + '% が撮影枠に入る');
+  if (inVf < 0.85) issue('じっくり見る：わんこが撮影枠からはみ出す（' + Math.round(inVf * 100) + '%しか入らない）');
+  setPeek(false);
+  // --- カットからリトライ ---
+  t0 = performance.now(); $('retryCut').click();
+  if (phase !== 'cut' || state !== 'play') issue('カットから：カット工程から始まらない'); else info('カットから：OK（' + Math.round(performance.now() - t0) + 'ms）');
+  // --- レポート表示 ---
+  const box = document.createElement('div'); box.id = 'atReport';
+  box.style.cssText = 'position:fixed;inset:8px;z-index:99;background:rgba(255,255,255,.97);border-radius:14px;padding:12px;overflow:auto;font-size:12px;line-height:1.5;color:#3d2a2e;box-shadow:0 6px 30px rgba(0,0,0,.3)';
+  box.innerHTML = '<b style="font-size:15px">🤖 自動テスト結果 ' + R.vp + '</b><br><b style="color:#d02a4f">問題 ' + R.issues.length + '件</b><ol style="margin:4px 0 8px;padding-left:1.4em">' + R.issues.map(t => '<li>' + t + '</li>').join('') + '</ol><b>計測</b><ul style="margin:4px 0;padding-left:1.2em">' + R.info.map(t => '<li>' + t + '</li>').join('') + '</ul>';
+  document.body.appendChild(box);
+  console.log('[AT] REPORT ' + JSON.stringify(R));
+  window.__autotest = R;
+}
+
+// ===================== 点数の散らばりテスト（URLの最後に #simtest） =====================
+// 腕前のちがう3人のボットを、時間をシミュレーションで進めて遊ばせる（画面が隠れていても正確に測れる）
+async function runSimtest() {
+  try { await runSimtest_(); } catch (e) {
+    window.__sim = false;
+    const b = document.createElement('div'); b.style.cssText = 'position:fixed;left:8px;right:8px;top:8px;z-index:100;background:#fff;color:#c00;padding:10px;font-size:12px;white-space:pre-wrap';
+    b.textContent = 'SIM ERROR: ' + e.message + '\n' + (e.stack || '').slice(0, 900); document.body.appendChild(b);
+  }
+}
+async function runSimtest_() {
+  window.__sim = true;
+  const gauss = () => { let u = 0, v = 0; while (!u) u = Math.random(); while (!v) v = Math.random(); return Math.sqrt(-2 * Math.log(u)) * Math.cos(2 * Math.PI * v); };
+  const step = d => { if (freeze > 0) freeze = Math.max(0, freeze - d); update(d, d, d); camera.updateMatrixWorld(); if (dog) dog.root.updateMatrixWorld(true); };
+  const run = sec => { for (let t = 0; t < sec - 1e-6; t += 1 / 30) step(Math.min(1 / 30, sec - t)); };
+  const touch = (type, x, y) => canvas.dispatchEvent(new PointerEvent('pointer' + type, { clientX: x, clientY: y, pointerId: 7, pointerType: 'touch', isPrimary: true, bubbles: true, button: 0, buttons: type === 'up' ? 0 : 1 }));
+  const C = () => [innerWidth / 2, innerHeight / 2];
+  const PRO = [
+    { name: 'うまい人', sham: 0.05, rin: 0.035, tap: 8.5, goal: 92, stroke: 0.11, aim: 0, wait: 1, care: 1 },
+    { name: 'ふつうの人', sham: 0.12, rin: 0.07, tap: 6.8, goal: 86, stroke: 0.17, aim: 6, wait: 0.7, care: 0.8 },
+    { name: 'はじめての人', sham: 0.22, rin: 0.12, tap: 5.5, goal: 76, stroke: 0.24, aim: 14, wait: 0.3, care: 0.3 },
+  ];
+  let nanN = 0, nanInfo = ''; const simRay = new THREE.Raycaster();
+  const ROUNDS = +(location.hash.match(/n(\d+)/) || [0, 3])[1];
+  const rows = [];
+  const v = new THREE.Vector3();
+  for (const pr of PRO) for (let r = 0; r < ROUNDS; r++) {
+    startRound(); run(0.5);
+    // シャンプー：緑の真ん中で離したつもり＋ばらつき
+    touch('down', ...C());
+    let e = gauss() * pr.sham, guard = 0;
+    while (!mg.done && mg.L < mg.zoneC + e * (0.3 + 0.55 * mg.L) && guard++ < 600) step(1 / 60);
+    if (!mg.done) touch('up', ...C());
+    let g2 = 0; while (phase === 'shampoo' && g2++ < 300) step(1 / 30);
+    // すすぎ：針が緑に来たらタップ（ばらつき分おくれる/早まる）
+    run(0.3);
+    for (let k = 0; k < 3 && phase === 'rinse'; k++) {
+      let gg = 0; while (Math.abs((0.5 - 0.5 * Math.cos(mg.t * mg.speed)) - mg.zoneC) > 0.02 && gg++ < 600) step(1 / 120);
+      run(Math.abs(gauss() * pr.rin));
+      touch('down', ...C()); touch('up', ...C()); run(0.3);
+    }
+    g2 = 0; while (phase === 'rinse' && g2++ < 300) step(1 / 30);
+    run(1.4);
+    // ドライヤー：連打
+    g2 = 0; while (phase === 'dry' && !mg.done && g2++ < 200) { touch('down', ...C()); touch('up', ...C()); run(Math.max(0.05, 1 / pr.tap * (1 + gauss() * 0.15))); }
+    const dryP = mg.presses + '/' + dryNeed();
+    g2 = 0; while (phase === 'dry' && g2++ < 300) step(1 / 30);
+    run(1.6);
+    // カット
+    let strokes = 0, attentive = Math.random() < pr.wait;
+    while (phase === 'cut' && state === 'play' && cutT < 62) {
+      if (computeAcc() >= pr.goal) break;
+      if (shakeState !== 0) { if (attentive) { run(0.2); continue; } } else attentive = Math.random() < pr.wait;
+      let best = null;
+      for (let tries = 0; tries < 400 && !best; tries++) {
+        const g = (Math.random() * 3) | 0, G = dog.groups[g]; if (!G.n) continue; const i = (Math.random() * G.n) | 0;
+        if (G.len[i] - G.tg[i] < 0.05 || G.tg[i] > 0.4) continue;
+        // 人と同じく⚠（切っちゃダメな毛）のそばは避ける
+        let edge = false; const rx = G.root[i * 3], ry = G.root[i * 3 + 1], rz = G.root[i * 3 + 2], R2 = Math.pow(P.cutRadius * 1.6, 2);
+        for (let q = 0; q < 160 && !edge; q++) { const j = (Math.random() * G.n) | 0; if (G.tg[j] > G.tg[i] + 0.05 && (G.root[j * 3] - rx) ** 2 + (G.root[j * 3 + 1] - ry) ** 2 + (G.root[j * 3 + 2] - rz) ** 2 < R2) edge = true; }
+        if (edge && Math.random() < pr.care) continue;
+        v.set(G.root[i * 3], G.root[i * 3 + 1], G.root[i * 3 + 2]); G.obj.localToWorld(v);
+        const n = v.clone().sub(camera.position).normalize();
+        // ほかの部位のかげに隠れていないか（人は見えている所しか刈らない）
+        simRay.set(camera.position, n); const hh = simRay.intersectObjects(dog.skins, false);
+        if (hh.length && hh[0].distance < camera.position.distanceTo(v) - 0.08) continue;
+        _dw.set(G.dir[i * 3], G.dir[i * 3 + 1], G.dir[i * 3 + 2]).transformDirection(G.obj.matrixWorld);
+        if (_dw.dot(n) > 0.1) continue;
+        v.project(camera); const x = (v.x + 1) / 2 * innerWidth, y = (1 - v.y) / 2 * innerHeight;
+        if (!isFinite(x) || !isFinite(y)) { nanN++; nanInfo = [camera.position.x, cam.dist, cam.theta, dog.root.position.x, dog.root.position.y].map(q => +(+q).toFixed(2)).join(','); continue; }
+        if (x < 20 || x > innerWidth - 20 || y < 20 || y > innerHeight - 20) continue;
+        best = { x: x + gauss() * pr.aim, y: y + gauss() * pr.aim, a: ATT.findIndex(a => Math.abs(a.len - G.tg[i]) < 0.001) };
+      }
+      if (!best) { cam.theta += 0.9; run(0.3); continue; }
+      if (best.a >= 0 && best.a !== attIdx) { setAtt(best.a); run(0.15); }
+      touch('down', best.x, best.y);
+      for (let k = 1; k <= 4; k++) { run(pr.stroke / 5); if (shakeState !== 0 && attentive) break; touch('move', best.x + k * 6, best.y + (k % 2 ? 4 : -4)); }
+      touch('up', best.x + 24, best.y); run(pr.stroke / 5); strokes++;
+      if (strokes % 25 === 0) { cam.theta += 0.7; run(0.3); }
+    }
+    const cutSec = cutT, acc = computeAcc(), evs = evLog.slice();
+    $('finish').click();
+    g2 = 0; while (state !== 'result' && g2++ < 300) step(1 / 30);
+    const S = scoreParts;
+    rows.push({ who: pr.name, breed: breed.name.replace('★幻★ ', ''), sham: careQ.shampoo, rin: careQ.rinse, dry: dryP, acc, t: cutSec, S, score: lastResult.acc, rank: lastResult.rank, bald: stats.bald, ev: evs });
+    console.log('[SIM] ' + JSON.stringify(rows[rows.length - 1]));
+    await new Promise(res => setTimeout(res, 0));
+  }
+  window.__sim = false;
+  const f = x => Math.round(x);
+  const box = document.createElement('div'); box.id = 'atReport';
+  box.style.cssText = 'position:fixed;top:6px;left:6px;right:6px;max-height:40%;z-index:99;background:rgba(255,255,255,.98);border-radius:12px;padding:8px;overflow:auto;font-size:10.5px;line-height:1.35;color:#3d2a2e';
+  box.innerHTML = '<b style="font-size:14px">🤖 点数の散らばりテスト</b><table style="border-collapse:collapse;width:100%;margin-top:4px">' +
+    '<tr style="background:#ffe3ea"><th>人</th><th>泡</th><th>湯</th><th>風</th><th>一致</th><th>秒</th><th>点</th><th>内訳 一/そ/ピ/ふ/速</th><th>妨害</th></tr>' +
+    rows.map(o => '<tr style="border-top:1px solid #eee"><td>' + o.who.slice(0, 3) + '</td><td>' + f(o.sham * 100) + '</td><td>' + f(o.rin * 100) + '</td><td>' + o.dry + '</td><td>' + f(o.acc) + '</td><td>' + o.t.toFixed(0) + '</td><td><b>' + o.score + '</b></td><td>' + [o.S.acc, o.S.sym, o.S.clean, o.S.fluffy, o.S.speed].map(f).join('/') + '</td><td>' + o.ev.length + '</td></tr>').join('') +
+    '</table>' + (nanN ? '<div style="color:#c00">NaN ' + nanN + '回 ' + nanInfo + '</div>' : '') + '<div style="margin-top:6px">' + rows.map(o => o.who.slice(0, 3) + '：' + o.rank + '（' + o.breed + '、ハゲ' + o.bald + '、' + o.ev.join('・') + '）').join('<br>') + '</div>';
+  box.addEventListener('click', () => box.remove()); // タップで閉じて結果カードを確認できる
+  document.body.appendChild(box);
+  window.__simResult = rows;
+}
+
+// ===================== 起動 =====================
+setMuted(muted);
+breed = pickBreed(); rebuild(); layout();
+let last = performance.now(), perfT = 0, perfN = 0;
+function frame(now) {
+  requestAnimationFrame(frame);
+  const raw = Math.min(1, Math.max(0, (now - last) / 1000)); const dt = Math.min(0.05, raw); last = now;
+  let sim = dt;
+  if (freeze > 0) { freeze -= dt; sim = 0; }
+  if (window.__sim) return; // シミュレーションテスト中は、テスト側が時間を進める
+  update(sim, dt, freeze > 0 ? 0 : raw); render();
+  // 重さの自動チェック：遊んでいる間の平均fpsが低ければ、次のラウンドから毛を減らす
+  if (state === 'play') { perfT += raw; perfN++; if (perfT > 4) { const f = perfN / perfT; perfT = 0; perfN = 0;
+    if (f < 34 && P.strands > 1400) { P.strands = Math.max(1400, Math.round(P.strands * 0.7)); lsSet('mosamosa_strands', P.strands); console.log('[perf] ' + f.toFixed(0) + 'fps → 毛を ' + P.strands + ' 束に減らします'); } } }
+  if (DEBUG) { fpsT += dt; fpsN++; if (fpsT > 0.5) { fps = Math.round(fpsN / fpsT); fpsT = 0; fpsN = 0; const f = $('fps'); if (f) f.textContent = fps + 'fps'; } }
+}
+requestAnimationFrame(frame);
+if (location.hash.startsWith('#autotest')) setTimeout(runAutotest, 500);
+if (location.hash.startsWith('#simtest')) setTimeout(runSimtest, 800);
+window.__game = { P, get state() { return state; }, startRound, endRound, computeAcc: () => computeAcc(), setAtt, cam, get dog() { return dog; } };
+</script>
+</body>
+</html>
