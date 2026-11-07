@@ -71,6 +71,7 @@ h1 small{display:block;font-family:var(--body);font-weight:900;font-size:13px;le
 .meta{margin-top:auto;display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding-top:6px}
 .tag{font-size:12px;font-weight:900;padding:2px 9px;border:2px solid var(--line);border-radius:999px}
 .date{margin-left:auto;font-size:12px;font-weight:700;color:var(--sub);font-variant-numeric:tabular-nums}
+.thumb.noimg{display:grid;place-items:center;padding:16px;background:var(--pop);color:#fff;font-family:var(--display);font-size:24px;text-align:center}
 .badge{align-self:flex-start;font:900 11px var(--body);letter-spacing:.1em;background:var(--pop);color:#fff;padding:2px 8px;border-radius:4px}
 
 footer{border-top:4px solid var(--line);padding-top:16px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;font-size:13px;font-weight:700}
@@ -108,13 +109,21 @@ footer{border-top:4px solid var(--line);padding-top:16px;display:flex;flex-wrap:
 
 <script>
 /* ゲームを足すときは、ここに1件追加するだけ。
-   slug = GitHubのフォルダ名 / thumb はそのフォルダの og.png を使う */
+   slug = GitHubのフォルダ名 / thumb は省略するとそのフォルダの og.png を使う（og.jpg なら thumb: "og.jpg"） */
 const GAMES = [
+  {
+    slug: "mosamosa-trimming",
+    title: "モサモサわんこトリミング",
+    desc: "モッサモサの犬をシャンプー→ドライヤー→バリカンで、ご注文どおりに刈りそろえろ。刈りすぎるとハゲる。",
+    tags: ["3D", "トリミング", "1分で遊べる"],
+    date: "2026-11-07",
+    thumb: "og.jpg"
+  },
   {
     slug: "yakitori-dart",
     title: "爆速焼き鳥ダーツ",
-    desc: "串は1本、チャンスは1回。ゲージを神タイミングで止めてぶっ飛ばし、焼き鳥を刺しまくりながら宇宙へ。うまくなると惑星まで串に刺さる。",
-    tags: ["3D", "宇宙", "1分で遊べる"],
+    desc: "空を舞う焼き鳥を、ゲージのタイミングで串をぶっ飛ばして刺しまくれ。1本の串に何個刺さる？",
+    tags: ["3D", "タイミング", "1分で遊べる"],
     date: "2026-11-02"
   },
   {
@@ -156,7 +165,7 @@ function render(){
   countEl.textContent = `${list.length}作品`;
   grid.innerHTML = list.map(g => `
     <a class="game" href="/${g.slug}/">
-      <img class="thumb" src="/${g.slug}/og.png" alt="${g.title}の画面" loading="lazy" width="1200" height="630">
+      <img class="thumb" src="/${g.slug}/${g.thumb || 'og.png'}" alt="${g.title}の画面" loading="lazy" width="1200" height="630" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'thumb noimg',textContent:'${g.title}'}))">
       <div class="info">
         ${isNew(g.date) ? '<span class="badge">NEW</span>' : ''}
         <h2>${g.title}</h2>
