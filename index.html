@@ -112,6 +112,13 @@ footer{border-top:4px solid var(--line);padding-top:16px;display:flex;flex-wrap:
    slug = GitHubのフォルダ名 / thumb は省略するとそのフォルダの og.png を使う（og.jpg なら thumb: "og.jpg"） */
 const GAMES = [
   {
+    slug: "ichiman-lighter",
+    title: "1万分の1ライター",
+    desc: "下にじゃっと擦ると、1万分の1で火が点く。それ以外は、なんか変なものが出る。擦りつづけると、なにかがおかしくなっていく。",
+    tags: ["3D", "ガチャ", "図鑑"],
+    date: "2026-11-11"
+  },
+  {
     slug: "mosamosa-trimming",
     title: "モサモサわんこトリミング",
     desc: "モッサモサの犬をシャンプー→ドライヤー→バリカンで、ご注文どおりに刈りそろえろ。刈りすぎるとハゲる。",
@@ -159,13 +166,15 @@ sortSel.addEventListener('change', render);
 function isNew(d){ return (Date.now() - new Date(d + 'T00:00:00+09:00')) / 864e5 < NEW_DAYS; }
 function fmt(d){ const [y,m,dd] = d.split('-'); return `${y}.${m}.${dd}`; }
 
+// パソコンでファイルを直接開いたとき（file://）でも画像とリンクが動くように、相対パスにする
+const LOCAL = location.protocol === 'file:';
 function render(){
   const list = GAMES.filter(g => tag === 'すべて' || g.tags.includes(tag))
     .sort((a, b) => sortSel.value === 'new' ? b.date.localeCompare(a.date) : a.date.localeCompare(b.date));
   countEl.textContent = `${list.length}作品`;
   grid.innerHTML = list.map(g => `
-    <a class="game" href="/${g.slug}/">
-      <img class="thumb" src="/${g.slug}/${g.thumb || 'og.png'}" alt="${g.title}の画面" loading="lazy" width="1200" height="630" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'thumb noimg',textContent:'${g.title}'}))">
+    <a class="game" href="${g.slug}/${LOCAL ? 'index.html' : ''}">
+      <img class="thumb" src="${g.slug}/${g.thumb || 'og.png'}" alt="${g.title}の画面" loading="lazy" width="1200" height="630" onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'thumb noimg',textContent:'${g.title}'}))">
       <div class="info">
         ${isNew(g.date) ? '<span class="badge">NEW</span>' : ''}
         <h2>${g.title}</h2>
