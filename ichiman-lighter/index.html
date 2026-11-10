@@ -86,7 +86,7 @@ canvas#c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-actio
 #soma{position:fixed;inset:0;z-index:3;pointer-events:none;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;transition:opacity .4s}
 #soma.on{opacity:1}
 #soma img{width:min(70vmin,520px);height:min(70vmin,520px);object-fit:contain;opacity:.28;filter:grayscale(.6) sepia(.5) blur(.5px)}
-#soma b{position:absolute;bottom:22%;font-size:min(9vw,44px);font-weight:900;color:rgba(255,235,200,.35);font-variant-numeric:tabular-nums;letter-spacing:.05em}
+#soma b{position:absolute;top:calc(14% + env(safe-area-inset-top));font-size:min(9vw,44px);font-weight:900;color:rgba(255,235,200,.35);font-variant-numeric:tabular-nums;letter-spacing:.05em}
 @keyframes cardIn{from{opacity:0;transform:translate(-50%,24px) scale(.9)}to{opacity:1;transform:translate(-50%,0) scale(1)}}
 #card .top{display:flex;align-items:center;gap:8px}
 .rar{font-size:12px;font-weight:900;padding:2px 8px;border-radius:6px;background:var(--rc);color:#111;letter-spacing:.05em;white-space:nowrap}
@@ -146,13 +146,21 @@ canvas#c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-actio
 
 /* 点火 */
 #fireOv{position:fixed;inset:0;z-index:15;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
-  padding-top:calc(9vh + env(safe-area-inset-top));pointer-events:none}
-#fireOv .big{font-size:min(26vw,140px);font-weight:900;line-height:1;
-  background:linear-gradient(180deg,#fff6c2,#ffb030 45%,#ff3a10);-webkit-background-clip:text;background-clip:text;color:transparent;
-  filter:drop-shadow(0 0 30px rgba(255,120,20,.8));animation:boom .7s cubic-bezier(.2,1.8,.3,1)}
-@keyframes boom{from{transform:scale(3);opacity:0}to{transform:scale(1);opacity:1}}
-#fireOv .s{font-size:16px;font-weight:800;margin-top:10px;text-shadow:0 2px 10px #000;text-align:center}
-#fireOv .act{margin-top:auto;margin-bottom:calc(150px + env(safe-area-inset-bottom));display:flex;gap:10px;pointer-events:auto}
+  padding:calc(5vh + env(safe-area-inset-top)) 12px 0;pointer-events:none}
+#fireOv .big{font-size:min(21vw,150px);font-weight:900;line-height:1;white-space:nowrap;letter-spacing:-.02em;
+  filter:drop-shadow(0 0 26px rgba(255,120,20,.85)) drop-shadow(0 4px 0 rgba(90,20,0,.6))}
+#fireOv .big .ch{display:inline-block;animation:chIn .55s cubic-bezier(.2,1.7,.35,1) backwards;
+  background:linear-gradient(180deg,#fff6c2,#ffb030 48%,#ff3a10);-webkit-background-clip:text;background-clip:text;color:transparent}
+@keyframes chIn{from{transform:translateY(-60%) scale(2.4);opacity:0}to{transform:none;opacity:1}}
+#fireOv .s{font-size:15px;font-weight:800;margin-top:12px;text-shadow:0 2px 10px #000;text-align:center;line-height:1.5;opacity:0;animation:fadeIn .6s .9s forwards}
+#fireOv .s small{display:block;font-size:11px;color:#ffd8a8;opacity:.85;font-weight:700}
+@keyframes fadeIn{to{opacity:1}}
+#fireOv .act{margin-top:auto;margin-bottom:calc(28px + env(safe-area-inset-bottom));display:flex;gap:10px;pointer-events:auto;opacity:0;animation:fadeIn .5s 1.4s forwards}
+/* 着火中・タイトル中はUIを引っ込める */
+#hud,#bottom,#hint{transition:opacity .5s}
+body.cine #hud,body.cine #bottom,body.cine #hint{opacity:0;pointer-events:none}
+body.cine #hud *,body.cine #bottom *{pointer-events:none}
+body.titling #stats{opacity:0}
 .btnX{background:#000;border:1px solid #444;color:#fff}
 .btnFire{background:var(--fire);color:#1a0800;border-color:var(--fire)}
 
@@ -205,12 +213,13 @@ canvas#c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-actio
 
 @media (max-width:520px){
   #dexStats{grid-template-columns:repeat(2,1fr)}
+  #dexStats div:last-child{grid-column:span 2}
   #card .nm{font-size:20px}
 }
 @media (prefers-reduced-motion:reduce){#bgDisco{animation:none}#hint .arw{animation:none}}
 </style>
 </head>
-<body>
+<body class="titling">
 <div id="bg"><div id="bgSpace"></div><div id="bgDisco"></div><div id="bgBlack"></div><div id="bgLit"></div><div id="bgUr"></div><div id="bgKai"></div></div>
 <canvas id="c"></canvas>
 <div id="rain"></div>
@@ -243,7 +252,7 @@ canvas#c{position:fixed;inset:0;width:100%;height:100%;display:block;touch-actio
 </div>
 
 <div id="fireOv" class="hide">
-  <div class="big">点いた。</div>
+  <div class="big" id="fireBig">点いた。</div>
   <div class="s" id="fireSub"></div>
   <div class="act">
     <button class="pill btnX" id="bFireShare">𝕏 自慢する</button>
@@ -524,7 +533,7 @@ function buildLighter(color, opts){
   lg.rotateY(-Math.PI / 2); lg.translate(.22, 0, 0);
   const lever = mesh(lg, opts.gold ? M(0x2a2a2a, { roughness: .3 }) : M(col.clone().multiplyScalar(.7), { roughness: .28, metalness: .05 }), 0, 1.18, .03);
   g.add(lever);
-  const flame = buildFlame(); flame.position.set(0, 1.42, -.08); flame.visible = false; g.add(flame);
+  const flame = buildFlame(); flame.position.set(0, 1.42, -.08); flame.scale.setScalar(1.3); flame.visible = false; g.add(flame);
   g.userData = Object.assign(g.userData, { body, bodyMat, wheel, lever, flame, surf, leverY: 1.18, baseMat: base.material, liqMat: liquid.material, surfMat: surface.material, leverMat: lever.material });
   return g;
 }
@@ -1366,17 +1375,17 @@ function ignite(){
   const o = nozzleWorld();
   burst(o, 300, 0xff7a1a, 6, 2.5, 1.6); burst(o, 200, 0, 8, 4, 2, true); burst(o, 120, 0xffffff, 9, 1, .8);
   shake(.45); hitstop(.16); slowmo(1.4); flash('rgba(255,170,60,.95)', 1, 1.4);
-  bgOn('bgLit', 1); camDistT = baseDist * .8; camLookYT = .3;
-  const it = ITEM_BY.fire; const isNew = !testRun && save.got.fire && save.got.fire.n === 1;
-  showCard(it, isNew, false);
-  $('fireSub').innerHTML = testRun ? 'テスト着火（記録には残りません）' : save.strikes.toLocaleString() + '回目で、確率 1/10000 を引いた。<br>（通算 ' + save.fires + ' 回目の点火）';
+  bgOn('bgLit', 1); document.body.classList.add('cine'); hideCard();
+  const tall = camera.aspect < .8; camDistT = baseDist * (tall ? .95 : .82); camLookYT = tall ? 1.15 : .45;
+  $('fireBig').innerHTML = ['点', 'い', 'た', '。'].map((c, i) => '<span class="ch" style="animation-delay:' + (i * .13) + 's">' + c + '</span>').join('');
+  $('fireSub').innerHTML = testRun ? '' : save.strikes.toLocaleString() + '回目で、確率 1/10000 を引いた。<small>伝説・出現率 0.01%・通算 ' + save.fires + ' 回目の点火</small>';
   setTimeout(() => { $('fireOv').classList.remove('hide'); fireShownAt = performance.now(); }, 650);
   confettiT = 3.5;
 }
 function extinguish(){
   burning = false; LU.flame.visible = false; state = 'lock'; lockT = .3;
   sfx.roarStop(); sfx.out(); puff(nozzleWorld(), 6, 0xbfbfc8);
-  bgOn('bgLit', 0); $('fireOv').classList.add('hide');
+  bgOn('bgLit', 0); $('fireOv').classList.add('hide'); document.body.classList.remove('cine');
   camDistT = baseDist; camLookYT = 0; hideCard();
 }
 
@@ -1388,7 +1397,7 @@ let fs = null;
 const crtEl = $('crt'), somaEl = $('soma');
 function duck(on){ if (!ac || !master) return; const t = ac.currentTime; master.gain.cancelScheduledValues(t); master.gain.setValueAtTime(master.gain.value, t); master.gain.linearRampToValueAtTime(on ? 0 : (save.muted ? 0 : .8), t + (on ? .03 : .01)); }
 function startFireSeq(){
-  state = 'fireseq'; if (autoOn) setAuto(false);
+  state = 'fireseq'; if (autoOn) setAuto(false); document.body.classList.add('cine');
   let steps = [];
   if (fsForce) { steps = fsForce.slice(); fsForce = null; }
   else { if (Math.random() < P.fsFake) steps.push('fake'); if (Math.random() < P.fsPuchun) steps.push('puchun'); steps.push('silence'); }
@@ -1650,7 +1659,7 @@ function dudeScale(){ return halfW(0) < 2.6 ? .55 : .8; }
 // 1 暗闇の目
 defP({ id:'eyes', lv:1, name:'暗闇の目', desc:'まわりの暗闇に目が現れて、こっちを見てくる。', dur:24,
   start(a){ a.st.eyes = []; const n = 7; let tries = 0;
-    while (a.st.eyes.length < n && tries++ < 80) { const z = -3 - Math.random() * 4; const hw = halfW(z), hh = halfH(z); const x = (Math.random() * 2 - 1) * (hw - .5), y = -.4 + (Math.random() * 2 - 1) * (hh - .5);
+    while (a.st.eyes.length < n && tries++ < 80) { const z = -3 - Math.random() * 4; const hw = halfW(z), hh = halfH(z); const x = (Math.random() * 2 - 1) * (hw - .6), y = -.4 - hh * .1 + (Math.random() * 2 - 1) * hh * .6;
       if (Math.abs(x) < 1.6 + (-z) * .25 && y > -3 && y < 3) continue;
       const r = .16 + Math.random() * .12; const pair = new THREE.Group(); pair.position.set(x, y, z);
       const e1 = makeEye(r, rpick([0x8a1a1a, 0xc8a020, 0x3a8a4a, 0x6a2a9a])), e2 = makeEye(r, 0); e2.userData.eye.ball.children[1].material = e1.userData.eye.ball.children[1].material;
@@ -2033,8 +2042,8 @@ function renderDex(){
       const n = save.pheno[d.id]; const el = document.createElement('div'); el.className = 'ph' + (n ? '' : ' lock');
       el.innerHTML = '<div class="n"></div><div class="d"></div><div class="c"></div>';
       el.querySelector('.n').textContent = n ? d.name : '？？？';
-      el.querySelector('.d').textContent = n ? d.desc : '異常度 ' + '●'.repeat(d.lv) + '○'.repeat(4 - d.lv) + ' くらいで起きるかも';
-      el.querySelector('.c').textContent = n ? '遭遇 ' + n + ' 回・異常度 ' + d.lv : '連続 ' + Math.max(LV_AT[d.lv], P.phFirstMin) + ' 回〜';
+      el.querySelector('.d').textContent = n ? d.desc : 'まだ起きたことがない。';
+      el.querySelector('.c').textContent = n ? '遭遇 ' + n + ' 回' : '連続 ' + Math.max(LV_AT[d.lv], P.phFirstMin) + ' 回くらい擦りつづけると…';
       grid.appendChild(el);
     });
   }
@@ -2069,7 +2078,7 @@ function startGame(){
   if (state !== 'title') return;
   audioInit(); sfx.ui();
   recolorLighter(randomLighterColor());
-  $('title').classList.add('hide'); state = 'idle'; camLookYT = 0; updateHud();
+  $('title').classList.add('hide'); document.body.classList.remove('titling'); state = 'idle'; camLookYT = 0; updateHud();
   if (REC) recStart();
 }
 ['pointerdown', 'pointerup', 'click', 'touchend'].forEach(ev => $('title').addEventListener(ev, e => { if (e.cancelable) e.preventDefault(); startGame(); }));
@@ -2082,7 +2091,7 @@ $('tabPheno').addEventListener('click', () => { dexTab = 'pheno'; sfx.ui(); rend
 $('bShare').addEventListener('click', () => share(save.fires ? 'fire' : 'normal'));
 $('bDexShare').addEventListener('click', () => share(save.fires ? 'fire' : 'normal'));
 $('bFireShare').addEventListener('click', () => share('fire'));
-$('bFireOk').addEventListener('click', () => { sfx.ui(); $('fireOv').classList.add('hide'); });
+$('bFireOk').addEventListener('click', () => { sfx.ui(); $('fireOv').classList.add('hide'); document.body.classList.remove('cine'); });
 $('bAuto').addEventListener('click', () => { sfx.ui(); if (state === 'fire') return; setAuto(!autoOn); });
 if (save.strikes > 0) $('titleRec').textContent = 'これまで ' + save.strikes.toLocaleString() + ' 回・図鑑 ' + gotCount() + '/' + ITEMS.length + '・現象 ' + phCount() + '/' + PH_LIST.length + (save.fires ? '・点火 ' + save.fires + ' 回' : '');
 
