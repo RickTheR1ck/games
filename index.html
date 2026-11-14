@@ -75,6 +75,9 @@ h1 small{display:block;font-family:var(--body);font-weight:900;font-size:13px;le
 .badge{align-self:flex-start;font:900 11px var(--body);letter-spacing:.1em;background:var(--pop);color:#fff;padding:2px 8px;border-radius:4px}
 
 footer{border-top:4px solid var(--line);padding-top:16px;display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;font-size:13px;font-weight:700}
+.foot-nav{display:flex;flex-wrap:wrap;gap:6px 16px;width:100%;padding-bottom:4px}
+.foot-nav a{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
+.foot-nav a:hover{color:var(--pop)}
 @media (prefers-reduced-motion:reduce){.game{transition:none}}
 </style>
 </head>
@@ -102,6 +105,11 @@ footer{border-top:4px solid var(--line);padding-top:16px;display:flex;flex-wrap:
   <main class="grid" id="grid"></main>
 
   <footer>
+    <nav class="foot-nav" aria-label="サイト情報">
+      <a href="about/">このサイトについて</a>
+      <a href="privacy/">プライバシーポリシー</a>
+      <a href="contact/">お問い合わせ</a>
+    </nav>
     <span>© 2026 リックザリック</span>
     <span>rickther1ck.com</span>
   </footer>
@@ -192,6 +200,8 @@ function render(){
     </a>`).join('');
 }
 render();
+// フッターのリンクも、file:// で開いたときは index.html を付ける
+if (LOCAL) document.querySelectorAll('.foot-nav a').forEach(a => a.setAttribute('href', a.getAttribute('href') + 'index.html'));
 </script>
 </body>
 </html>
