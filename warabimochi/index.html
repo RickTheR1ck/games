@@ -363,7 +363,7 @@ cv.addEventListener('pointerup',upH);cv.addEventListener('pointercancel',upH);
 // ================= ソフトボディ（2D：x,y = ワールドx,z×100） =================
 function circleOffs(r,n,wob=0){const a=[];const ph=Math.random()*9;for(let i=0;i<n;i++){const t=i/n*Math.PI*2;const rr=r*(1+wob*Math.sin(t*3+ph)*.5+wob*Math.sin(t*5+ph*2)*.3);a.push({x:Math.cos(t)*rr,y:Math.sin(t)*rr});}return a;}
 function rrectOffs(w,h,n,p=4.5){const a=[];for(let i=0;i<n;i++){const t=i/n*Math.PI*2;const c=Math.cos(t),s=Math.sin(t);a.push({x:w/2*Math.sign(c)*Math.pow(Math.abs(c),2/p),y:h/2*Math.sign(s)*Math.pow(Math.abs(s),2/p)});}return a;}
-class Blob{
+class MochiBlob{
  constructor(x,y,offs){this.n=offs.length;this.rest=offs;this.p=offs.map(o=>({x:x+o.x,y:y+o.y,vx:0,vy:0}));this.k=CFG.mochiK;this.damp=.86;this.scale=1;this.rot=false;this.cx=x;this.cy=y;this.ang=0;this.cov=0;this.syrup=0;this.milk=0;this.warm=0;this.burn=0;this.bvx=0;this.bvy=0;this.alive=true;this.pin=true;this.hs=1;this.hv=0;this.dome=new Dome(offs.length,11);}
  step(){let cx=0,cy=0;const P=this.p,R=this.rest,n=this.n;for(const q of P){cx+=q.x;cy+=q.y}cx/=n;cy/=n;
   let c=1,s=0;if(this.rot){let A=0,B=0;for(let i=0;i<n;i++){const dx=P[i].x-cx,dy=P[i].y-cy;A+=R[i].x*dx+R[i].y*dy;B+=R[i].x*dy-R[i].y*dx;}this.ang=Math.atan2(B,A);c=Math.cos(this.ang);s=Math.sin(this.ang);}
@@ -473,7 +473,7 @@ const S1={live(){const rem=this.lumps.filter(l=>l.s>0).length;const sp=IN.down?M
 // =============== 工程2：練る ===============
 const S2={live(){const c=this.cook;let a=c<.3?'ドロドロ（白い液体）。混ぜ続けて':c<.6?'もったり固まってきた':c<.95?'じわじわ透明に…まだ白い':c<1.25?'透明になった！もう少し練るとコシが出る':c<1.6?'コシが出てきた！今が止めどき':c<1.9?'⚠️ 固くなってきた…早く止めて':'⚠️ カチカチ…';
  if(this.stir<CFG.stirNeed&&c>.15)a=this.burn>.2?'⚠️ 焦げてる！混ぜて！':'⚠️ 手が止まってる！焦げるよ';return a;},name:'練る',adv:'止めると焦げる。透明になってから少し練るとコシが出る',sub:'混ぜ続けて透明に。透明になってから少し練るとコシが出る',hint:'止めると焦げる！透明になったら「火を止める」',time:16,plane:.3,
- init(){setCam({elev:60,w:3.9,d:3.4,t:[0,0,.1]});this.done=false;this.R=140;this.b=new Blob(0,0,circleOffs(this.R-8,40,0));Object.assign(this.b,{k:.015,damp:.9,milk:1,rot:true,pin:false});
+ init(){setCam({elev:60,w:3.9,d:3.4,t:[0,0,.1]});this.done=false;this.R=140;this.b=new MochiBlob(0,0,circleOffs(this.R-8,40,0));Object.assign(this.b,{k:.015,damp:.9,milk:1,rot:true,pin:false});
   this.dinged=false;this.cook=0;this.burn=0;this.stir=0;this.nerin=0;this.sx=40;this.sy=40;this.sang=0;this.heat=0;this.fire=new Loop('lowpass',300,.7);this.sizz=new Loop('highpass',4000,.5);this.status='';},
  begin(){btn('火を止める！',true,()=>this.finish());SFX.dosa();},
  cleanup(){this.fire.stop();this.sizz.stop();},
@@ -514,9 +514,9 @@ function resample(P,n){const L=[0];for(let i=0;i<P.length;i++){const p=P[i],q=P[
 function polyOffs(P,sc=1){const c=polyCent(P);let per=0;for(let i=0;i<P.length;i++){const p=P[i],q=P[(i+1)%P.length];per+=Math.hypot(q.x-p.x,q.y-p.y);}const n=clamp(Math.round(per*sc/7),14,44);return{c,offs:resample(P,n).map(p=>({x:(p.x-c.x)*sc,y:(p.y-c.y)*sc}))};}
 const S3={live(){if(this.ice>0)return'';const A=this.cells,N=A.length;if(N===1)return'包丁を入れよう。斜めにも切れる';const m=A.reduce((a,b)=>a+b,0)/N;const cv=Math.sqrt(A.reduce((a,b)=>a+(b-m)**2,0)/N)/m;const ev=clamp(1-cv*1.6,0,1);
  let a=N<9?`${N}切れ…もっと細かく`:N<=16?`${N}切れ！ちょうどいい`:`⚠️ ${N}切れ…切りすぎ`;return a+'<br><small>'+(ev>.8?'大きさそろってる':ev>.5?'大きさ少しバラバラ':'⚠️ 大きさバラバラ')+'</small>';},name:'切る',adv:'斜めにも切れる。同じ大きさで9〜16切れがベスト',sub:'スワイプで包丁。ひと口大に、そろえて切れ',hint:'スワイプで切る',time:12,plane:.22,
- init(){setCam({elev:64,w:3.9,d:3.0,t:[0,0,.1]});this.done=false;const tooHard=G.cook>1.8;this.W=260*(tooHard?.85:1);this.H=this.W*.74;this.L=-this.W/2;this.T=-this.H/2;this.polys=[rrectOffs(this.W,this.H,56,5)];this.knife=null;this.drag=null;this.ice=1.5;this.plopped=false;this.drop=new Blob(0,0,circleOffs(60,32,.05));Object.assign(this.drop,{milk:G.milk,warm:G.warm,burn:G.burn,k:.12});this.build(0);},
+ init(){setCam({elev:64,w:3.9,d:3.0,t:[0,0,.1]});this.done=false;const tooHard=G.cook>1.8;this.W=260*(tooHard?.85:1);this.H=this.W*.74;this.L=-this.W/2;this.T=-this.H/2;this.polys=[rrectOffs(this.W,this.H,56,5)];this.knife=null;this.drag=null;this.ice=1.5;this.plopped=false;this.drop=new MochiBlob(0,0,circleOffs(60,32,.05));Object.assign(this.drop,{milk:G.milk,warm:G.warm,burn:G.burn,k:.12});this.build(0);},
  begin(){btn('切り終わり',false,()=>this.finish());},
- build(j){this.blobs=[];this.cells=[];for(const P of this.polys){const{c,offs}=polyOffs(P);const b=new Blob(c.x,c.y,offs);Object.assign(b,{milk:G.milk,warm:G.warm,burn:(G.burn||0)*.6,k:G.cook>1.8?.25:CFG.mochiK*1.2,damp:.85});if(j&&P.fresh){b.squash(P.fresh.x,P.fresh.y,j*.8);b.hv=-.06;}else if(j===-1){b.jiggle(4);b.hv=-.05;}this.blobs.push(b);this.cells.push(polyArea(P));}for(const P of this.polys)delete P.fresh;},
+ build(j){this.blobs=[];this.cells=[];for(const P of this.polys){const{c,offs}=polyOffs(P);const b=new MochiBlob(c.x,c.y,offs);Object.assign(b,{milk:G.milk,warm:G.warm,burn:(G.burn||0)*.6,k:G.cook>1.8?.25:CFG.mochiK*1.2,damp:.85});if(j&&P.fresh){b.squash(P.fresh.x,P.fresh.y,j*.8);b.hv=-.06;}else if(j===-1){b.jiggle(4);b.hv=-.05;}this.blobs.push(b);this.cells.push(polyArea(P));}for(const P of this.polys)delete P.fresh;},
  finish(){if(this.done)return;const N=this.cells.length;const mean=this.cells.reduce((a,b)=>a+b,0)/N;const sd=Math.sqrt(this.cells.reduce((a,b)=>a+(b-mean)**2,0)/N);const cvv=N>1?sd/mean:0;
   const cnt=N>=9&&N<=16?1:N<9?(N-1)/8*.8:Math.max(.35,1-(N-16)*.05);const even=N>1?clamp(1-cvv*1.6,0,1):.2;Object.assign(G,{N,even,cells:this.cells.slice(),polys:this.polys.map(P=>P.map(p=>({x:p.x,y:p.y})))});
   endStep(20*(.45*cnt+.55*even),N===1?'丸ごと!?':N>30?'細切れすぎ':even>.8?`${N}切れ・きれい！`:even>.5?`${N}切れ`:`${N}切れ・バラバラ`);},
@@ -556,7 +556,7 @@ const S4={live(){const ps=this.pieces.filter(p=>p.alive);if(!ps.length)return'�
   const polys=G.polys||[rrectOffs(240,180,40,5)];const cells=polys.map(polyArea);const N=cells.length;const cols=Math.ceil(Math.sqrt(N*1.3)),rows=Math.ceil(N/cols);const sumA=cells.reduce((a,b)=>a+b,0);const sf=Math.min(1,Math.sqrt(.36*this.TW*this.TH/sumA));
   this.pieces=[];polys.forEach((P,i)=>{const{offs}=polyOffs(P,sf);let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;for(const o of offs){x0=Math.min(x0,o.x);y0=Math.min(y0,o.y);x1=Math.max(x1,o.x);y1=Math.max(y1,o.y);}const w=x1-x0,h=y1-y0;
    const cx=-this.TW/2+(i%cols+.5)*this.TW/cols+rand(-5,5),cy=-this.TH/2+(((i/cols)|0)+.5)*this.TH/rows+rand(-5,5);
-   const b=new Blob(cx,cy,offs);Object.assign(b,{milk:G.milk,warm:G.warm,burn:(G.burn||0)*.6,k:G.cook>1.8?.25:CFG.mochiK,damp:.86,rot:true,rr:Math.sqrt(cells[i]*sf*sf)/2,hw:w/2,hh:h/2,hgt:Math.min(.34,Math.sqrt(cells[i])*sf*.011),covT:0,covB:0,srcA:cells[i]});this.pieces.push(b);});
+   const b=new MochiBlob(cx,cy,offs);Object.assign(b,{milk:G.milk,warm:G.warm,burn:(G.burn||0)*.6,k:G.cook>1.8?.25:CFG.mochiK,damp:.86,rot:true,rr:Math.sqrt(cells[i]*sf*sf)/2,hw:w/2,hh:h/2,hgt:Math.min(.34,Math.sqrt(cells[i])*sf*.011),covT:0,covB:0,srcA:cells[i]});this.pieces.push(b);});
   this.bed=cnv(512,512,(x,w,h)=>{x.fillStyle=x.createPattern(FLV.powC,'repeat');x.fillRect(0,0,w,h);const g=x.createRadialGradient(w/2,h/2,10,w/2,h/2,w*.75);g.addColorStop(0,'rgba(255,240,200,.12)');g.addColorStop(1,'rgba(90,60,20,.3)');x.fillStyle=g;x.fillRect(0,0,w,h);});
   if(this.bedTex)gl.deleteTexture(this.bedTex);this.bedTex=canvasTex(this.bed,false);this.bedDirty=0;this.setH();},
  draw2(c){if(this.intro>0||this.done)return;const lab=[];for(const b of this.pieces){if(!b.alive||b.flip)continue;const t=b.covT<.6,d=b.covB<.6;if(!t&&!d)continue;const p=project(b.cx*.01,.085+b.hgt+.06,b.cy*.01);lab.push([p,t,d]);}
@@ -613,7 +613,7 @@ const S5={live(){const id=CFG.pourIdeal,a=this.amt,ps=this.pieces;const miss=ps.
  init(){this.sub=`餅を1つずつ押して${FLV.syrName}をかける。かけすぎ注意！`;this.hint=`餅の上を押して${FLV.syrName}をかける`;CFG.pourIdeal=clamp(((G.pieces||[]).length||1)*.25+.4,1.2,7);this.adv=`押しっぱなしより、餅を1つずつ短く押して${FLV.syrName}をかけるとムラなく仕上がる`;this.held=0;setCam({elev:60,w:4.0,d:3.8,t:[0,0,.1]});this.done=false;this.R=150;this.amt=0;this.rate=0;this.puds=[];this.flow=null;this.pour=new Loop('bandpass',500,1.5);this.drips=[];this.sea=false;
   const src=G.pieces||[];const n=src.length;this.pieces=[];
   if(n){let tot=0;for(const b of src){const[x0,y0,x1,y1]=b.bbox();tot+=(x1-x0)*(y1-y0);}const sf=Math.min(1.25,Math.sqrt(Math.PI*(this.R*.72)**2*.55/tot));
-   src.forEach((b,i)=>{const r=n===1?0:this.R*.62*Math.sqrt((i+.5)/n),a=i*2.39996;const nb=new Blob(Math.cos(a)*r,Math.sin(a)*r,b.rest.map(o=>({x:o.x*sf,y:o.y*sf})));
+   src.forEach((b,i)=>{const r=n===1?0:this.R*.62*Math.sqrt((i+.5)/n),a=i*2.39996;const nb=new MochiBlob(Math.cos(a)*r,Math.sin(a)*r,b.rest.map(o=>({x:o.x*sf,y:o.y*sf})));
     Object.assign(nb,{srcA:b.srcA,milk:b.milk,warm:b.warm,burn:b.burn,cov:b.cov,covT:b.covT,covB:b.covB,k:b.k,rr:b.rr*sf,hgt:b.hgt*Math.min(1.2,sf)});nb.jiggle(2);this.pieces.push(nb);});}
   this.strm=null;},
  begin(){btn('完成！',false,()=>this.finish());},
@@ -668,7 +668,7 @@ const FINAL={plane:.05,table:'cloth',
     if(!res)return null;out.push(res);}return out;};
   let gs=1,L=null;for(const rx of[0,1,2]){gs=1;for(let k=0;k<8&&!(L=tryLayout(gs,rx));k++)gs*=.9;if(L)break;}if(!L)L=[];
   const boost=this.mode==='ok'?clamp((this.tot-45)/45,0,1):0;this.boost=boost;
-  L.forEach((r,k)=>{const sb=r.sh.sb;const b=new Blob(r.x,r.y,r.o);Object.assign(b,{milk:raw?Math.max(.7,sb.milk):sb.milk,warm:sb.warm,burn:sb.burn,covT:(()=>{const v=.35+.65*Math.min(1,sb.covT??sb.cov);return v+(1-v)*boost*.9})(),covB:(()=>{const v=.3+.7*Math.min(1,sb.covB??sb.cov);return v+(1-v)*boost*.9})(),syrup:0,k:raw?.05:.12});
+  L.forEach((r,k)=>{const sb=r.sh.sb;const b=new MochiBlob(r.x,r.y,r.o);Object.assign(b,{milk:raw?Math.max(.7,sb.milk):sb.milk,warm:sb.warm,burn:sb.burn,covT:(()=>{const v=.35+.65*Math.min(1,sb.covT??sb.cov);return v+(1-v)*boost*.9})(),covB:(()=>{const v=.3+.7*Math.min(1,sb.covB??sb.cov);return v+(1-v)*boost*.9})(),syrup:0,k:raw?.05:.12});
    b.hgt=r.hgt;b.layer=r.base-.05;b.y=1.8+k*.05;b.vy=0;b.landed=false;b.delay=.3+k*Math.max(.05,.17-L.length*.004);this.pcs.push(b);});
   setCam({elev:40,w:2.9,d:2.5,t:[0,.18,.1]},true);},
  onDown(){if(this.fz>0||this.white>.3)return;if(this.done){if(this.t>.3)restart();return;}if(!this.revealed){this.skip=true;}else if(this.rt>.4)showResult();},
@@ -771,10 +771,10 @@ addEventListener('keydown',e=>{if($('flavor').style.display==='flex'&&e.key>='1'
 // =============== タイトル ===============
 function demoFinal(score){initAudio();newGame();G.demo=true;const sc=score>=95?[20,20,19,19,19]:[19,19,18,18,18];G.sc=sc;G.note=['ダマなし！','透明＆コシ！','12切れ・きれい！','粉まみれ！','ちょうどいい！'];
  Object.assign(G,{cook:1.4,q2:.95,nerin:3,milk:.05,warm:0,burn:0,N:12,even:.9,cov:.96,covT:.96,covB:.95,syrup:2.4,lost:0,left:0,spill:0,pq:.95,over:0});
- const ps=[];for(let i=0;i<12;i++){const b=new Blob(0,0,rrectOffs(rand(40,46),rand(36,42),28));Object.assign(b,{srcA:260*192/12,milk:.05,covT:.96,covB:.94,syrup:.6,cov:.95});ps.push(b);}G.pieces5=ps;
+ const ps=[];for(let i=0;i<12;i++){const b=new MochiBlob(0,0,rrectOffs(rand(40,46),rand(36,42),28));Object.assign(b,{srcA:260*192/12,milk:.05,covT:.96,covB:.94,syrup:.6,cov:.95});ps.push(b);}G.pieces5=ps;
  ['title','flavor','result','dex'].forEach(id=>$(id).style.display='none');$('card').style.display='none';parts=[];setScene(FINAL);}
 const TITLE={plane:.1,table:'cloth',
- init(){setCam({elev:44,w:3.0,d:3.0,t:[0,.12,.35]},true);this.bl=[];const P=[[-38,-20],[34,-24],[-30,36],[38,30],[2,4]];for(let i=0;i<5;i++){const f=FLAVORS[i%4];const b=new Blob(P[i][0],P[i][1],rrectOffs(rand(56,62),rand(52,58),26));Object.assign(b,{flv:f,milk:.04,covT:i===4?0:.95,covB:i===4?0:.9,syrup:i===4?.6:0,rot:true,k:.1,hgt:.42});if(i===4){b.flv=FLAVORS[0];}this.bl.push(b);}this.tt=0;},
+ init(){setCam({elev:44,w:3.0,d:3.0,t:[0,.12,.35]},true);this.bl=[];const P=[[-38,-20],[34,-24],[-30,36],[38,30],[2,4]];for(let i=0;i<5;i++){const f=FLAVORS[i%4];const b=new MochiBlob(P[i][0],P[i][1],rrectOffs(rand(56,62),rand(52,58),26));Object.assign(b,{flv:f,milk:.04,covT:i===4?0:.95,covB:i===4?0:.9,syrup:i===4?.6:0,rot:true,k:.1,hgt:.42});if(i===4){b.flv=FLAVORS[0];}this.bl.push(b);}this.tt=0;},
  onDown(){showFlavor();},
  update(dt){this.tt+=dt;CAM.yaw=Math.sin(this.tt*.25)*.35;if(Math.random()<dt*.9){const b=this.bl[(Math.random()*this.bl.length)|0];b.jiggle(1.4);b.hv-=.03;}for(const b of this.bl)b.step();updParts(dt);},
  draw3(){addShadow(.12,.18,4.2,4.2,0,.75);add('op',GEO.sqplate,M4.RY(.06),mat({col:[.8,.8,.84],tex:TX.plate,texMode:0,spec:1.1,shin:90,env:.18}));
