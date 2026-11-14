@@ -10,6 +10,7 @@
 <meta property="og:description" content="5工程でわらび餅を作って、最後に何cm伸びるか。100点満点。">
 <meta property="og:url" content="https://rickther1ck.com/warabimochi/">
 <link rel="canonical" href="https://rickther1ck.com/warabimochi/">
+<script src="../play-count.js" defer></script>
 <meta property="og:image" content="https://rickther1ck.com/warabimochi/og.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="わらび餅職人">
@@ -759,7 +760,7 @@ $('bRetry').onclick=e=>{e.stopPropagation();restart();};
 $('bDex').onclick=e=>{e.stopPropagation();showDex();};$('tDex').onclick=e=>{e.stopPropagation();initAudio();showDex();};$('dexClose').onclick=e=>{e.stopPropagation();if(performance.now()-(window._dexT||0)<450)return;$('dex').style.display='none';};$('dex').addEventListener('pointerdown',e=>e.stopPropagation());$('tDex').addEventListener('pointerdown',e=>e.stopPropagation());
 $('bFlv').onclick=e=>{e.stopPropagation();$('result').style.display='none';showFlavor();};
 ['bRetry','bShare','bImg','bFlv','bDex'].forEach(id=>$(id).addEventListener('pointerdown',e=>e.stopPropagation()));
-function restart(){initAudio();cv.style.filter='';$('result').style.display='none';$('title').style.display='none';$('flavor').style.display='none';$('toast').style.opacity=0;parts=[];newGame();startStep(0);}
+function restart(){if(window.rickPlay)rickPlay('warabimochi');initAudio();cv.style.filter='';$('result').style.display='none';$('title').style.display='none';$('flavor').style.display='none';$('toast').style.opacity=0;parts=[];newGame();startStep(0);}
 function showFlavor(){window._flvT=performance.now();$('title').style.display='none';const f=$('flavor');f.style.display='flex';$('flvList').innerHTML=FLAVORS.map((v,i)=>`<button data-i="${i}" class="${v===FLV?'on':''}"><i style="background:${v.chip}"></i><b>${i+1}. ${v.name}</b><small>${v.desc}</small></button>`).join('');}
 $('flvList').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;e.stopPropagation();if(performance.now()-(window._flvT||0)<450)return;pickFlavor(+b.dataset.i);});
 $('flavor').addEventListener('pointerdown',e=>e.stopPropagation());

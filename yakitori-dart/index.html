@@ -9,6 +9,7 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://rickther1ck.com/yakitori-dart/">
 <link rel="canonical" href="https://rickther1ck.com/yakitori-dart/">
+<script src="../play-count.js" defer></script>
 <meta property="og:image" content="https://rickther1ck.com/yakitori-dart/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -1749,6 +1750,7 @@ function clearWorld(){
 }
 function start(){
   demoT = 0;
+  if (!DEMO && window.rickPlay) rickPlay('yakitori-dart');
   if (DEMO) setTimeout(() => { if (DEMO && state === 'aim'){ gauge = 1; launch(); } }, 1300);
   initAudio();
   clearWorld(); fillField(-170);

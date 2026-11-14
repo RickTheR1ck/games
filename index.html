@@ -71,6 +71,7 @@ h1 small{display:block;font-family:var(--body);font-weight:900;font-size:13px;le
 .info p{margin:0;font-size:14px;color:#333;min-width:0}
 .meta{margin-top:auto;display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding-top:6px}
 .tag{font-size:12px;font-weight:900;padding:2px 9px;border:2px solid var(--line);border-radius:999px}
+.info p.plays{margin:2px 0 0;font-size:12px;font-weight:700;color:var(--sub);font-variant-numeric:tabular-nums}
 .date{margin-left:auto;font-size:12px;font-weight:700;color:var(--sub);font-variant-numeric:tabular-nums}
 .thumb.noimg{display:grid;place-items:center;padding:16px;background:var(--pop);color:#fff;font-family:var(--display);font-size:24px;text-align:center}
 .badge{align-self:flex-start;font:900 11px var(--body);letter-spacing:.1em;background:var(--pop);color:#fff;padding:2px 8px;border-radius:4px}
@@ -186,6 +187,9 @@ function fmt(d){ const [y,m,dd] = d.split('-'); return `${y}.${m}.${dd}`; }
 
 // パソコンでファイルを直接開いたとき（file://）でも画像とリンクが動くように、相対パスにする
 const LOCAL = location.protocol === 'file:';
+// プレイ回数（サーバーから読めたときだけ表示。読めなくても一覧はそのまま出る）
+let counts = {};
+if (!LOCAL) fetch('/api/counts').then(r => r.ok ? r.json() : {}).then(c => { counts = c || {}; render(); }).catch(() => {});
 function render(){
   const list = GAMES.filter(g => tag === 'すべて' || g.tags.includes(tag))
     .sort((a, b) => sortSel.value === 'new' ? b.date.localeCompare(a.date) : a.date.localeCompare(b.date));
@@ -197,6 +201,7 @@ function render(){
         ${isNew(g.date) ? '<span class="badge">NEW</span>' : ''}
         <h2>${g.title}</h2>
         <p>${g.desc}</p>
+        ${counts[g.slug] != null ? `<p class="plays">プレイ回数：${counts[g.slug].toLocaleString('ja-JP')}回</p>` : ''}
         <div class="meta">${g.tags.map(t => `<span class="tag">${t}</span>`).join('')}<span class="date">${fmt(g.date)}</span></div>
       </div>
     </a>`).join('');

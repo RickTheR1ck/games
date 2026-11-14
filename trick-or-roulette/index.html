@@ -10,6 +10,7 @@
 <meta property="og:description" content="〇〇を〇〇なきゃ〇〇するぞ！をスロットで決めるハロウィンゲーム。ちょうちんお化けにおどされよう。">
 <meta property="og:url" content="https://rickther1ck.com/trick-or-roulette/">
 <link rel="canonical" href="https://rickther1ck.com/trick-or-roulette/">
+<script src="../play-count.js" defer></script>
 <meta property="og:image" content="https://rickther1ck.com/trick-or-roulette/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -438,6 +439,7 @@ function startReach(){
 }
 function endReach(){ reaching=false; document.body.classList.remove('reach'); reels[2].el.classList.remove('reach'); heartbeat(false); }
 function startSpin(){
+  if(window.rickPlay) rickPlay('trick-or-roulette');
   A(); try{speechSynthesis.cancel()}catch(e){}
   endReach(); obake.classList.remove('shout','open');
   phase='spinning'; next=0; pull();

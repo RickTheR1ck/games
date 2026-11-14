@@ -6,6 +6,7 @@
 <title>モサモサわんこトリミング</title>
 <meta name="description" content="モッサモサの犬を、ご注文どおりにバリカンで刈りそろえる3Dトリミングゲーム。">
 <link rel="canonical" href="https://rickther1ck.com/mosamosa-trimming/">
+<script src="../play-count.js" defer></script>
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="rickther1ck.com">
 <meta property="og:title" content="モサモサわんこトリミング">
@@ -1001,6 +1002,7 @@ function computeAcc() {
 let lastCare = null; // 前回のピカピカ・ふわふわ（カットからリトライ用）
 function startRound(cutOnly) {
   initAudio();
+  if (window.rickPlay) rickPlay('mosamosa-trimming');
   if (cutOnly && !lastCare) cutOnly = false;
   breed = pickBreed(); lastBreedId = breed.id;
   rebuild();
