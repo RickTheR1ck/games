@@ -101,6 +101,7 @@ footer{border-top:4px solid var(--line);padding-top:16px;display:flex;flex-wrap:
       <select id="sort">
         <option value="new">新しい順</option>
         <option value="old">古い順</option>
+        <option value="popular">人気順</option>
       </select>
     </label>
   </div>
@@ -194,7 +195,11 @@ let counts = {};
 if (!LOCAL) fetch('/api/counts').then(r => r.ok ? r.json() : {}).then(c => { counts = c || {}; render(); }).catch(() => {});
 function render(){
   const list = GAMES.filter(g => tag === 'すべて' || g.tags.includes(tag))
-    .sort((a, b) => sortSel.value === 'new' ? b.date.localeCompare(a.date) : a.date.localeCompare(b.date));
+    .sort((a, b) => {
+      // 人気順：プレイ回数の多い順（回数が読めないときや同じ回数のときは新しい順）
+      if (sortSel.value === 'popular') return ((counts[b.slug] || 0) - (counts[a.slug] || 0)) || b.date.localeCompare(a.date);
+      return sortSel.value === 'new' ? b.date.localeCompare(a.date) : a.date.localeCompare(b.date);
+    });
   countEl.textContent = `${list.length}作品`;
   grid.innerHTML = list.map(g => `
     <a class="game" href="${g.slug}/${LOCAL ? 'index.html' : ''}">
