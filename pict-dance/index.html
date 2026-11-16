@@ -1347,7 +1347,7 @@ const TITLES = [
   { id: 'byTurn', name: '振り返ればヤツがいる', hint: '振り返った人に撮られる', test: r => r.caughtBy === 'turn' },
   { id: 'byJog', name: 'ランナーズハイ', hint: 'ジョギングの人に撮られる', test: r => r.caughtBy === 'jog' },
   { id: 'byKid', name: '子どもの目はごまかせない', hint: '子どもに撮られる', test: r => r.caughtBy === 'kid' },
-  { id: 'fast', name: '秒でバレた', hint: '始まって10秒以内に撮られる', test: r => !r.dawn && r.time < 10 },
+  { id: 'fast', name: '秒でバレた', hint: '始まって15秒以内に撮られる', test: r => !r.dawn && r.time < 15 },
   { id: 'still', name: 'ほんとにただの標識', hint: 'ほとんど何もしない', test: r => r.taps < 5 },
   { id: 'escape', name: '夜明けの逃亡者', hint: '朝まで見つからず、最後は固まる', test: r => r.dawn && !r.buzz },
   { id: 'buzz', name: '朝の奇跡', hint: '朝まで見つからず、最後まで踊る', test: r => r.buzz },
@@ -1356,9 +1356,9 @@ const TITLES = [
   { id: 'exit', name: '非常口まで来た', hint: '？？？を呼ぶ', test: r => r.exit },
   { id: 'ur', name: '伝説を見た', hint: 'URの踊りを踊らせる', test: r => r.rar.UR > 0 },
   { id: 'ssr3', name: 'SSRコレクター', hint: '1回でSSRを3回踊らせる', test: r => r.rar.SSR + r.rar.UR >= 3 },
-  { id: 'solo3', name: 'ソロ三昧', hint: '1回でソロを3回決める', test: r => r.solos >= 3 },
+  { id: 'solo3', name: 'ソロ三昧', hint: '1回でソロを2回決める', test: r => r.solos >= 2 },
   { id: 'rapid', name: '連打の鬼', hint: '1秒に12回連打する', test: r => r.peak >= 12 },
-  { id: 'saver', name: 'やりすごしの達人', hint: '1回で8回人をやりすごす', test: r => r.saved >= 8 },
+  { id: 'saver', name: 'やりすごしの達人', hint: '1回で7回人をやりすごす', test: r => r.saved >= 7 },
   { id: 'dance30', name: '踊り狂い', hint: '1回で30回踊りを決める', test: r => r.dances >= 30 },
 ];
 function earnTitles(r) {
