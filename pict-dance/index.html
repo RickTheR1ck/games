@@ -1,0 +1,1735 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>ピクトさん、踊りだす</title>
+<meta name="description" content="人が見ていない間だけ、標識の人たちはこっそり踊っている。連打で踊らせて、人が来たらピタッと止まれ。見つかったら撮られる。">
+<meta property="og:title" content="ピクトさん、踊りだす">
+<meta property="og:description" content="人が見ていない間だけ、標識の人たちはこっそり踊っている。連打で踊らせて、人が来たらピタッと止まれ。">
+<meta property="og:url" content="https://rickther1ck.com/pict-dance/">
+<link rel="canonical" href="https://rickther1ck.com/pict-dance/">
+<script src="../play-count.js" defer></script>
+<meta property="og:type" content="website">
+<meta property="og:image" content="https://rickther1ck.com/pict-dance/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://rickther1ck.com/pict-dance/og.png">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<style>
+:root{color-scheme:light;--ink:#1d2340;--blue:#1d5fd1;--red:#ff3b4e;--gold:#ffc21a}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:#bfe3ff;color:var(--ink);
+  font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",Meiryo,sans-serif;
+  user-select:none;-webkit-user-select:none;touch-action:none}
+button{font:inherit;color:inherit;cursor:pointer;border:none;background:none}
+.hide{display:none!important}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block}
+#hud{position:fixed;left:0;right:0;top:0;padding:calc(8px + env(safe-area-inset-top)) 12px 0;z-index:5;pointer-events:none;text-align:center}
+#hypeLab{font-size:11px;font-weight:800;color:#fff;letter-spacing:.15em;text-shadow:0 1px 3px #0006}
+#hype{font-size:42px;font-weight:900;line-height:1;color:#fff;text-shadow:0 3px 0 #1d2340,0 0 12px #0004;display:inline-block}
+#nextBar{width:min(260px,60vw);height:7px;border-radius:4px;background:#ffffff66;margin:6px auto 0;overflow:hidden}
+#nextBar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,#ffc21a,#ff6b3d);transition:width .15s}
+#nextLab{font-size:11px;font-weight:800;color:#fff;margin-top:3px;text-shadow:0 1px 3px #0008}
+#timer{position:absolute;left:12px;top:calc(12px + env(safe-area-inset-top));background:#1d2340cc;color:#fff;font-weight:900;font-size:15px;border-radius:999px;padding:6px 12px}
+#timer.hurry{background:#ff6b3d;animation:pulse .5s ease-in-out infinite}
+#mute{pointer-events:auto;position:absolute;right:12px;top:calc(8px + env(safe-area-inset-top));width:40px;height:40px;border-radius:50%;background:#ffffffaa;font-size:18px;display:grid;place-items:center}
+#hint{position:fixed;left:0;right:0;bottom:calc(6% + env(safe-area-inset-bottom));text-align:center;z-index:5;pointer-events:none;font-weight:900;font-size:clamp(20px,6.4vw,30px);color:#fff;text-shadow:0 3px 0 #1d2340,0 0 14px #0006;transition:opacity .2s}
+#vig{position:fixed;inset:0;z-index:4;pointer-events:none;box-shadow:inset 0 0 0 0 #ff3b4e00;transition:box-shadow .15s}
+#vig.on{box-shadow:inset 0 0 70px 18px #ff3b4ecc}
+#vig.spurt{box-shadow:inset 0 0 60px 14px #ff9d3dcc;animation:spurtPulse .4s ease-in-out infinite alternate}
+@keyframes spurtPulse{to{box-shadow:inset 0 0 90px 22px #ffd23dcc}}
+#spot{position:fixed;inset:0;z-index:3;pointer-events:none;opacity:0;background:radial-gradient(ellipse 55% 45% at 50% 55%,#0000 0,#0000 45%,#000c 100%)}
+#vig.warn{box-shadow:inset 0 0 50px 8px #ffc21a99}
+.arrow{position:fixed;left:50%;bottom:calc(6% + 52px + env(safe-area-inset-bottom));translate:-50% 0;z-index:5;white-space:nowrap;pointer-events:none;background:#fff;border-radius:14px;padding:6px 10px;font-weight:900;font-size:14px;box-shadow:0 4px 0 #1d2340;animation:bob .5s ease-in-out infinite alternate}
+#watchLab{background:#ff3b4e;color:#fff;font-size:18px}
+@keyframes bob{to{transform:translateY(-4px)}}
+.pop{position:fixed;z-index:6;pointer-events:none;font-weight:900;font-size:28px;color:#ffd23d;white-space:nowrap;-webkit-text-stroke:1.5px #1d2340;paint-order:stroke fill;text-shadow:0 3px 0 #1d2340,0 0 10px #0009;transform:translate(-50%,-50%)}
+.ov{position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;align-items:center;padding:calc(20px + env(safe-area-inset-top)) 18px calc(20px + env(safe-area-inset-bottom));text-align:center}
+#title{justify-content:space-between;cursor:pointer;background:linear-gradient(180deg,#0000 0,#0000 70%,#1d234055 100%)}
+#title h1{font-size:clamp(32px,10vw,56px);font-weight:900;line-height:1.05;color:#fff;text-shadow:0 4px 0 #1d2340,0 0 20px #0003}
+#title h1 small{display:block;font-size:.34em;letter-spacing:.18em;color:#fff;margin-bottom:6px;text-shadow:0 2px 0 #1d2340}
+#title .lead{margin-top:10px;font-weight:800;font-size:15px;color:#fff;text-shadow:0 2px 0 #1d2340,0 0 8px #0006;line-height:1.55}
+#go{padding:16px 34px;border-radius:999px;background:var(--blue);color:#fff;font-size:22px;font-weight:900;box-shadow:0 6px 0 #0f3a86;animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.06)}}
+#tbot{display:flex;flex-direction:column;align-items:center;gap:10px;margin-bottom:18px}
+#dex{display:flex;gap:6px;justify-content:center;flex-wrap:wrap}
+#dex span{width:30px;height:30px;border-radius:8px;background:#ffffffcc;display:grid;place-items:center;font-size:12px;font-weight:900;color:#1d2340}
+#dex span.no{background:#1d234055;color:#fff}
+#dexLab,#best{font-size:12px;font-weight:800;color:#fff;text-shadow:0 1px 3px #000a}
+#site{position:fixed;right:10px;bottom:calc(8px + env(safe-area-inset-bottom));font-size:11px;color:#fff;text-decoration:none;z-index:11;text-shadow:0 1px 3px #000a}
+#result{background:#11162ef0;color:#fff;overflow-y:auto;cursor:pointer}
+#result .card{max-width:400px;width:100%;margin:auto 0}
+#phone{background:#fff;color:#1d2340;border-radius:18px;padding:10px;box-shadow:0 10px 30px #0008;transform:rotate(-2deg);text-align:left;animation:drop .5s cubic-bezier(.2,1.4,.4,1)}
+@keyframes drop{from{transform:translateY(-60px) rotate(-8deg) scale(.8);opacity:0}}
+#phone .who{display:flex;align-items:center;gap:8px;font-size:12px;font-weight:800}
+#phone .who i{width:26px;height:26px;border-radius:50%;background:#ffc21a;display:grid;place-items:center;font-style:normal}
+#phone .cap{font-size:13px;margin:6px 0;font-weight:700}
+#photo{width:100%;aspect-ratio:4/5;object-fit:cover;border-radius:10px;display:block;background:#ccc}
+#likes{margin-top:6px;font-size:13px;font-weight:900;color:#ff3b6b}
+#rTitle{margin-top:16px;font-size:clamp(22px,7vw,30px);font-weight:900;color:var(--gold)}
+#rHype{font-size:15px;font-weight:800;margin-top:2px}
+#rHype b{font-size:34px}
+#rNew{color:#ff6b8a;font-weight:900;font-size:13px;min-height:16px}
+#rCount{margin-top:6px;font-size:15px;font-weight:800}
+#rPers{margin-top:8px;font-size:13px;background:#ffffff14;border-radius:10px;padding:8px 10px;line-height:1.55}
+.btns{display:flex;gap:8px;margin-top:12px;justify-content:center;flex-wrap:wrap}
+.btn{padding:12px 18px;border-radius:999px;font-weight:800;font-size:15px}
+#retry{background:var(--blue);color:#fff;box-shadow:0 5px 0 #0f3a86;font-size:18px;padding:14px 30px;width:100%}
+#shareX{background:#000;color:#fff;border:1px solid #fff4}
+#shareImg{background:#2a3566;color:#fff}
+#tapHint{font-size:11px;color:#9aa6c8;margin-top:6px}
+#more{margin-top:16px;border-top:1px solid #ffffff1a;padding-top:12px}
+#more .lab{font-size:12px;color:#9aa6c8;margin-bottom:8px}
+#moreList{display:flex;gap:8px;justify-content:center}
+#moreList a{flex:1;max-width:120px;color:#fff;text-decoration:none;font-size:11px;font-weight:700;line-height:1.3}
+#moreList img{width:100%;aspect-ratio:1200/630;object-fit:cover;border-radius:8px;display:block;margin-bottom:4px;background:#333}
+#allGames{display:inline-block;margin-top:10px;font-size:13px;color:#9cc4ff}
+#solo{margin:6px auto 0;width:min(300px,80vw);background:linear-gradient(135deg,#ff6b3d,#ff3b8a);border-radius:14px;padding:7px 12px 8px;box-shadow:0 4px 0 #8a1d4a,0 0 18px #ff6b3d88;color:#fff;animation:soloIn .35s cubic-bezier(.2,1.6,.4,1)}
+@keyframes soloIn{from{transform:scale(.4) rotate(-6deg);opacity:0}}
+.soloTop{display:flex;align-items:center;gap:8px;justify-content:center;font-weight:900;font-size:15px;white-space:nowrap}
+.soloTag{background:#fff;color:#ff3b6b;font-size:11px;border-radius:6px;padding:2px 6px}
+#soloBar{height:7px;border-radius:4px;background:#ffffff44;margin-top:5px;overflow:hidden}
+#soloBar>i{display:block;height:100%;width:0;background:#fff}
+#soloSub{font-size:11px;font-weight:800;margin-top:3px;opacity:.95}
+#solo.done{background:linear-gradient(135deg,#ffc21a,#ff6b3d)}
+#danceBox{margin:6px auto 0;display:inline-block;background:#1d2340cc;border-radius:12px;padding:5px 10px 6px;min-width:170px}
+#danceName{font-size:15px;font-weight:900;color:#fff;white-space:nowrap}
+#danceName.spin{opacity:.7}
+.rar{display:inline-block;font-size:11px;font-weight:900;color:#fff;border-radius:6px;padding:1px 6px;margin-right:6px;vertical-align:2px;text-shadow:0 1px 2px #0006}
+#danceBar{height:5px;border-radius:3px;background:#ffffff33;margin-top:4px;overflow:hidden}
+#danceBar>i{display:block;height:100%;width:0;background:#fff;transition:width .08s}
+.big{position:fixed;left:50%;top:38%;z-index:8;pointer-events:none;text-align:center;transform:translate(-50%,-50%)}
+.big b{display:block;white-space:nowrap;font-size:min(13vw,72px);font-weight:900;line-height:1;-webkit-text-stroke:2px #1d2340;filter:drop-shadow(0 4px 0 #1d2340)}
+.big small{display:inline-block;white-space:nowrap;margin-top:6px;font-size:16px;font-weight:900;color:#fff;background:#1d2340;border-radius:10px;padding:4px 12px}
+.dexBtn{padding:8px 16px;border-radius:999px;background:#ffffffdd;color:#1d2340;font-weight:900;font-size:14px;box-shadow:0 3px 0 #1d234088}
+#dexOv{z-index:20;background:#0b1029;color:#fff;overflow-y:auto;justify-content:flex-start}
+.dexCard{max-width:460px;width:100%}
+.dexHead{display:flex;align-items:center;gap:10px;font-size:18px;margin-bottom:8px}
+.dexHead span{flex:1;text-align:left;font-size:13px;color:#9aa6c8}
+#dexClose{width:40px;height:40px;border-radius:50%;background:#ffffff1a;font-size:18px}
+#dexTabs{display:flex;gap:6px;margin-bottom:10px}
+#dexTabs button{flex:1;padding:9px 0;border-radius:10px;background:#ffffff14;font-weight:900;font-size:14px;color:#9aa6c8}
+#dexTabs button.on{background:#fff;color:#1d2340}
+.ti{display:flex;align-items:center;gap:10px;background:#ffffff10;border-radius:10px;padding:8px 10px;margin-bottom:6px;text-align:left}
+.ti b{font-size:14px}.ti small{display:block;font-size:11px;color:#9aa6c8}.ti i{font-style:normal;font-size:22px}
+.ti.no b{color:#ffffff55}
+#dexRates{font-size:11px;color:#9aa6c8;text-align:left;margin-bottom:10px}
+#tip,#rTip{font-size:12px;font-weight:800;line-height:1.5;border-radius:10px;padding:6px 10px;max-width:340px;margin:0 auto}
+#tip{color:#fff;background:#1d2340aa}
+#rTip{color:#ffd23d;background:#ffffff10;margin-top:8px}
+#dexGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.dx{background:#ffffff10;border-radius:12px;padding:6px;border:2px solid transparent;position:relative}
+.dx canvas{width:100%;aspect-ratio:1;display:block;border-radius:8px}
+.dx .nm{font-size:11px;font-weight:800;margin-top:4px;min-height:2.6em;line-height:1.3}
+.dx .ct{font-size:10px;color:#9aa6c8}
+.dx.no .nm{color:#ffffff55}
+.chips{margin-top:10px;display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.chips span{font-size:12px;font-weight:800;background:#ffffff14;border-radius:8px;padding:4px 8px}
+.chips em{font-style:normal;color:#ff6b8a;margin-left:4px}
+#flash{position:fixed;inset:0;background:#fff;z-index:9;pointer-events:none;opacity:0}
+#dbg{position:fixed;left:8px;bottom:8px;z-index:20;background:#000c;color:#fff;padding:8px;border-radius:8px;font-size:11px;width:230px}
+#dbg label{display:block;margin:3px 0}#dbg input{width:100%}
+#recUI{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:30;background:#000d;color:#fff;padding:20px;border-radius:12px;text-align:center}
+#nogl{position:fixed;inset:0;display:grid;place-items:center;padding:30px;text-align:center;font-weight:800;z-index:50;background:#bfe3ff}
+</style>
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="vig"></div>
+<div id="spot"></div>
+<div id="flash"></div>
+<div id="hud" class="hide">
+  <div id="timer">🌙 1:00</div>
+  <div id="hypeLab">盛り上がり度</div>
+  <div id="hype">0</div>
+  <div id="nextBar"><i></i></div>
+  <div id="nextLab"></div>
+  <div id="danceBox"><div id="danceName"></div><div id="danceBar"><i></i></div></div>
+  <button id="mute" aria-label="音のオン・オフ">🔊</button>
+</div>
+<div id="hint" class="hide"></div>
+<div id="ar" class="arrow hide">🚶 奥から人が来る…</div>
+<div id="watchLab" class="arrow hide">👀 見てる！止まれ！</div>
+
+<div id="title" class="ov">
+  <div>
+    <h1><small>STREET PICTOGRAM DANCE</small>ピクトさん、<br>踊りだす</h1>
+    <p class="lead">人が見ていないうちに<b>連打</b>で踊らせろ。<br>人が来たら、ピタッと止まれ。</p>
+  </div>
+  <div id="tbot">
+    <button id="go">▶ 連打してみる</button>
+    <button id="dexBtn" class="dexBtn">📖 図鑑 <span id="dexCount"></span></button>
+    <div id="dexLab"></div>
+    <div id="dex"></div>
+    <div id="best"></div>
+    <div id="tip"></div>
+  </div>
+</div>
+<a id="site" href="https://rickther1ck.com/">rickther1ck.com ▶ ほかのゲーム</a>
+
+<div id="dexOv" class="ov hide"><div class="dexCard"><div class="dexHead"><b>📖 図鑑</b><span id="dexSum"></span><button id="dexClose">✕</button></div>
+<div id="dexTabs"><button data-t="dance" class="on">💃 踊り</button><button data-t="solo">🎤 ソロ</button><button data-t="title">🏅 称号</button></div>
+<div class="pane" data-p="dance"><div id="dexRates"></div><div id="dexGrid"></div></div>
+<div class="pane hide" data-p="solo"><div id="dexSpLab" style="text-align:left;font-weight:900;margin:4px 0 8px"></div><div id="dexSpecial" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px"></div></div>
+<div class="pane hide" data-p="title"><div id="dexTiLab" style="text-align:left;font-weight:900;margin:4px 0 8px"></div><div id="dexTitles"></div></div>
+</div></div>
+<div id="result" class="ov hide">
+  <div class="card">
+    <div id="phone">
+      <div class="who"><i>📸</i><span id="pWho"></span></div>
+      <div class="cap" id="pCap"></div>
+      <img id="photo" alt="撮られた写真">
+      <div id="likes"></div>
+    </div>
+    <div id="rTitle"></div>
+    <div id="rHype"></div>
+    <div id="rNew"></div>
+    <div id="rCount"></div>
+    <div id="rPers"></div>
+    <div id="rTip"></div>
+    <div id="rTitles" class="chips"></div>
+    <div id="rDances" class="chips"></div>
+    <div class="btns"><button id="retry" class="btn">もう一回おどる（R / Space）</button></div>
+    <div class="btns"><button id="shareX" class="btn">𝕏 でシェア</button><button id="shareImg" class="btn">🖼 写真ごと共有</button></div>
+    <div class="btns"><button id="dexBtn2" class="btn dexBtn">📖 図鑑（踊り・ソロ・称号）</button></div>
+    <div id="tapHint">画面のどこかをタップでもリトライ</div>
+    <div id="more"><div class="lab">ほかのゲームも遊ぶ</div><div id="moreList"></div>
+      <a id="allGames" href="https://rickther1ck.com/">ゲーム一覧へ ▶</a></div>
+  </div>
+</div>
+
+<script>
+'use strict';
+/* ============================================================
+   ピクトさん、踊りだす  (rickther1ck.com/pict-dance/)
+   人が見ていない間に連打で踊らせ、人が来たら止まる。
+   ============================================================ */
+const SLUG = 'pict-dance';
+const URL_GAME = 'https://rickther1ck.com/pict-dance/';
+const Q = new URLSearchParams(location.search);
+const DEBUG = Q.get('debug') === '1';
+const REC = Q.get('rec') === '1';
+const DEMO = /demo/.test(location.hash) || REC;
+const $ = id => document.getElementById(id);
+
+// ---- 調整パラメータ（?debug=1 でいじれる） ----
+const CFG = {
+  tapEnergy: .45,     // 1回の連打でたまる踊りエネルギー
+  decay: 2.0,        // 手を止めたときに静まる速さ
+  tapsPerDance: 10,  // 何回の連打で踊りが1つ決まるか
+  susRate: 2.6,      // 見られているときに怪しまれる速さ
+  spawnMul: 1,       // 通行人の来る間隔（大きいほどゆっくり）
+  shake: 1,          // 画面揺れ
+  hitstop: .05,      // 踊りが決まったときのヒットストップ（秒）
+};
+
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(SLUG + '_' + k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+  set(k, v) { try { localStorage.setItem(SLUG + '_' + k, JSON.stringify(v)); } catch (e) {} }
+};
+
+if (!window.THREE) { document.body.insertAdjacentHTML('beforeend', '<div id="nogl">読み込みに失敗しました。通信状態を確認して、ページを再読み込みしてください。</div>'); throw new Error('three.js not loaded'); }
+
+// ============================================================
+//  ポーズ（ピクトさんの関節）
+//  腕・脚：0=真下、+で画面右、±π/2=水平、±π=真上
+// ============================================================
+const KEYS = ['tl', 'hd', 'la', 'le', 'ra', 're', 'll', 'lk', 'rl', 'rk', 'hy', 'hx', 'rz', 'ry', 'oz', 'sw', 'sc'];
+const P = o => Object.assign({ tl: 0, hd: 0, la: -.12, le: 0, ra: .12, re: 0, ll: -.07, lk: 0, rl: .07, rk: 0, hy: 0, hx: 0, rz: 0, ry: 0, oz: 0, sw: .06, sc: 0 }, o);
+const mirror = p => ({ tl: -p.tl, hd: -p.hd, la: -p.ra, le: -p.re, ra: -p.la, re: -p.le, ll: -p.rl, lk: -p.rk, rl: -p.ll, rk: -p.lk, hy: p.hy, hx: -(p.hx || 0), rz: -(p.rz || 0), ry: -(p.ry || 0), oz: p.oz || 0, sw: p.sw ?? .06, sc: p.sc || 0 });
+const POSE = {
+  stand: P({}),
+  walk: P({ tl: .08, hd: .05, la: .5, le: .35, ra: -.55, re: .25, ll: .4, lk: -.05, rl: -.38, rk: .3 }),       // 横断歩道の人（右へ歩く）
+  walkKid: P({ tl: .05, la: .7, le: .2, ra: -.6, re: .4, ll: .42, lk: -.05, rl: -.35, rk: .35 }),
+  // ---- 標識どおりのポーズ（参考マークに合わせる） ----
+  signWalk: P({ tl: .1, hd: .05, sw: .0, la: -.28, le: .1, ra: .38, re: .6, ll: -.48, lk: .32, rl: .46, rk: -.08, hy: .02 }),
+  signBoy: P({ tl: .08, sw: .0, la: -.35, le: .2, ra: 1.0, re: .2, ll: -.45, lk: .3, rl: .45, rk: -.1, hy: .02 }),
+  signGirl: P({ tl: .04, sw: .0, la: -.95, le: -.1, ra: .4, re: .6, ll: -.35, lk: .25, rl: .38, rk: -.05, hy: .02 }),
+  signAdultFront: P({ la: -.1, ra: .32, ll: -.03, rl: .03 }),
+  signChildFront: P({ la: -.55, ra: .12, ll: -.05, rl: .05 }),
+  signDig: P({ tl: -.7, hd: .35, sw: .0, la: -.05, le: -.5, ra: -.5, re: -.2, ll: -.45, lk: .6, rl: .3, rk: -.05, hy: .08 }),
+  signSignalWalk: P({ tl: .06, sw: .0, la: -.4, le: .1, ra: .45, re: .35, ll: -.42, lk: .2, rl: .42, rk: -.1, hy: .02 }),
+  signExit: P({ tl: -.22, hd: -.1, sw: .0, la: -1.35, le: .45, ra: 1.1, re: 1.05, ll: -.8, lk: .35, rl: .6, rk: .95, hy: -.02 }),
+  signKidRun: P({ tl: .25, sw: .0, la: -.9, le: -.9, ra: 1.0, re: 1.0, ll: -.75, lk: .9, rl: .8, rk: .6 }),
+  run: P({ tl: .32, hd: .1, ra: 2.0, re: .9, la: -.75, le: -1.0, rl: 1.15, rk: -1.35, ll: -.6, lk: -.95, hy: -.02 }),
+  dig: P({ tl: .5, hd: .2, la: .2, le: .9, ra: 1.2, re: .6, ll: -.25, lk: .25, rl: .35, rk: -.1, hy: .06 }),
+  disco: P({ tl: -.12, hd: .15, ra: 2.6, re: .15, la: -.55, le: 2.1, ll: -.28, rl: .12, rk: .55, hy: .03 }),
+  lunge: P({ tl: .18, hd: .1, la: -1.57, ra: 1.57, ll: -.18, rl: .95, rk: -.95, hy: .1 }),
+  knee: P({ tl: -.05, la: -2.3, le: -.7, ra: 2.3, re: .7, ll: -.05, rl: 1.5, rk: -1.55, hy: -.03 }),
+  egypt: P({ tl: .05, hd: .3, la: -1.57, le: -1.57, ra: 1.57, re: 1.57, ll: -.15, lk: .3, rl: .2, rk: .3, hy: .05 }),
+  point: P({ tl: .1, hd: .2, la: -.35, le: 1.7, ra: 1.75, re: 0, ll: -.4, lk: .2, rl: .3, hy: .07 }),
+  yUp: P({ la: -2.55, ra: 2.55, ll: -.38, rl: .38, hy: -.02 }),
+  star: P({ la: -2.1, ra: 2.1, ll: -.75, rl: .75, hy: -.2 }),
+  dab: P({ tl: -.25, hd: -.55, la: -2.15, le: 2.3, ra: 2.25, re: 0, ll: -.3, rl: .3, hy: .03 }),
+  crouch: P({ hy: .14, la: -.5, ra: .5, lk: .9, rk: -.9, ll: -.5, rl: .5 }),
+};
+// 1つの踊り＝2つのポーズを連打ごとに行き来する
+// ============================================================
+//  踊り（連打で進む振り付け）。r=レア度
+// ============================================================
+const RARITY = {
+  N: { name: 'N', w: 50, mult: 1, col: '#9aa6c8' },
+  R: { name: 'R', w: 30, mult: 2, col: '#4a8cff' },
+  SR: { name: 'SR', w: 14, mult: 3, col: '#b05cff' },
+  SSR: { name: 'SSR', w: 4.5, mult: 5, col: '#ffb400' },
+  UR: { name: 'UR', w: .5, mult: 10, col: 'linear-gradient(90deg,#ff5a7a,#ffc21a,#3ef08a,#4a8cff,#b05cff)' },
+};
+const TAU = Math.PI * 2;
+const SPIN = (pose, n = 4) => [...Array(n + 1)].map((_, i) => ({ ...pose, ry: TAU * i / n }));
+const DANCES = [
+  // N
+  { id: 'radio', icon: 2, name: 'ラジオ体操', r: 'N', loops: 2, keys: [P({}), P({ la: -1.57, ra: 1.57 }), P({ la: -2.95, ra: 2.95, hy: -.03 }), P({ la: -1.57, ra: 1.57 }), P({ hy: .14, ll: -.45, lk: .9, rl: .45, rk: -.9, la: -.3, ra: .3 })] },
+  { id: 'clap', icon: 2, name: '手拍子ステップ', r: 'N', loops: 3, keys: [P({ la: -.5, le: 1.6, ra: .5, re: -1.6, rl: .3, rk: -.4 }), P({ la: -1.1, ra: 1.1 }), P({ la: -2.6, le: .8, ra: 2.6, re: -.8, ll: -.3, lk: .4 }), P({ la: -1.1, ra: 1.1 })] },
+  { id: 'step', icon: 0, name: 'その場足ぶみ', r: 'N', loops: 3, keys: [P({ ll: -1.25, lk: 1.4, la: .5, le: -.5, ra: -.5, re: .5 }), P({}), P({ rl: 1.25, rk: -1.4, la: .5, le: .5, ra: -.5, re: -.5 }), P({})] },
+  { id: 'kussin', icon: 1, name: '屈伸', r: 'N', loops: 3, keys: [P({}), P({ hy: .2, ll: -.6, lk: 1.2, rl: .6, rk: -1.2, la: -1.3, ra: 1.3 })] },
+  { id: 'arm', icon: 1, name: '腕まわし', r: 'N', loops: 3, wrap: false, keys: [0, 1, 2, 3, 4].map(i => P({ la: -TAU * i / 4, ra: TAU * i / 4, hy: i % 2 ? .04 : 0 })) },
+  { id: 'banzai', icon: 1, name: 'バンザイ', r: 'N', loops: 3, keys: [P({}), P({ la: -2.85, ra: 2.85, hy: -.06, ll: -.2, rl: .2 })] },
+  // R
+  { id: 'disco', icon: 0, name: 'ディスコ', r: 'R', loops: 3, keys: [POSE.disco, mirror(POSE.disco)] },
+  { id: 'egypt', icon: 0, name: 'エジプト歩き', r: 'R', loops: 3, keys: [{ ...POSE.egypt, hx: -.12 }, { ...mirror(POSE.egypt), hx: .12 }] },
+  { id: 'kenken', icon: 0, name: 'ケンケンパ', r: 'R', loops: 3, keys: [P({ hy: -.15, rl: 1.0, rk: -1.6, la: -1.3, ra: 1.3 }), P({ hy: .03, rl: 1.0, rk: -1.6, la: -1.0, ra: 1.0, lk: .3 }), P({ hy: -.12, ll: -.5, rl: .5, la: -2.4, ra: 2.4 })] },
+  { id: 'jack', icon: 1, name: 'ジャンピングジャック', r: 'R', loops: 4, keys: [P({}), POSE.star] },
+  { id: 'bon', icon: 0, name: '盆おどり', r: 'R', loops: 3, keys: [P({ tl: .08, ra: 2.3, re: .9, la: 1.3, le: 1.2, ll: -.1, rl: .25, rk: -.3, hx: .04 }), P({ tl: -.08, la: -2.3, le: -.9, ra: -1.3, re: -1.2, rl: .1, ll: -.25, lk: .3, hx: -.04 })] },
+  { id: 'yura', icon: 0, name: 'ゆらゆら', r: 'R', loops: 3, keys: [P({ tl: .32, hd: .2, la: -2.6, ra: 2.4, hx: .06 }), P({ tl: -.32, hd: -.2, la: -2.4, ra: 2.6, hx: -.06 })] },
+  // SR
+  { id: 'ymca', icon: 0, name: 'YMCA', r: 'SR', loops: 2, keys: [P({ la: -2.65, ra: 2.65, ll: -.2, rl: .2 }), P({ la: -2.3, le: 2.25, ra: 2.3, re: -2.25 }), P({ tl: -.15, la: -2.4, le: -.9, ra: .9, re: -1.6 }), P({ la: -2.9, le: .45, ra: 2.9, re: -.45 })] },
+  { id: 'cossack', icon: 0, name: 'コサックダンス', r: 'SR', loops: 3, keys: [P({ hy: .3, ll: -1.35, rl: .7, rk: -1.6, la: -1.57, le: 1.75, ra: 1.57, re: -1.75 }), P({ hy: .3, rl: 1.35, ll: -.7, lk: 1.6, la: -1.57, le: 1.75, ra: 1.57, re: -1.75 })] },
+  { id: 'robot', icon: 2, name: 'ロボットダンス', r: 'SR', loops: 2, step: true, keys: [P({ la: -1.57, le: -1.57, ra: .1 }), P({ ra: 1.57, re: 1.57, la: -.1 }), P({ la: -1.57, le: -1.57, ra: 1.57, re: 1.57, hd: .5 }), P({ hd: -.5, la: -.7, ra: .7, hy: .05 })] },
+  { id: 'moon', icon: 0, name: 'ムーンウォーク', r: 'SR', loops: 2, keys: [{ ...POSE.walk, hx: .16 }, { ...mirror(POSE.walk), hx: .05, hd: .2 }, { ...POSE.walk, hx: -.06 }, { ...mirror(POSE.walk), hx: -.16, hd: .2 }, { ...POSE.walk, hx: -.05 }, { ...mirror(POSE.walk), hx: .06 }] },
+  { id: 'dab', icon: 0, name: 'ダブ連打', r: 'SR', loops: 4, keys: [POSE.dab, { ...mirror(POSE.dab), hy: .05 }] },
+  // SSR
+  { id: 'handstand', icon: 2, name: '逆立ち', r: 'SSR', loops: 2, keys: [POSE.crouch, P({ rz: Math.PI, la: -2.95, ra: 2.95, ll: -.5, rl: .5 }), P({ rz: Math.PI, la: -2.95, ra: 2.95, ll: -1.3, lk: .7, rl: .3, rk: .9 }), P({ rz: Math.PI, la: -2.95, ra: 2.95, rl: 1.3, rk: -.7, ll: -.3, lk: -.9 })] },
+  { id: 'cartwheel', icon: 2, name: '側転', r: 'SSR', loops: 2, wrap: false, keys: [0, 1, 2, 3, 4].map(i => ({ ...POSE.star, rz: TAU * i / 4, hy: -.05 })) },
+  { id: 'spin', icon: 0, name: 'フィギュアスピン', r: 'SSR', loops: 3, wrap: false, keys: SPIN(P({ la: -2.8, ra: 2.8, rl: .95, hy: -.04 })) },
+  { id: 'awa', icon: 0, name: '阿波おどり', r: 'SSR', loops: 3, keys: [P({ tl: .15, la: -2.4, le: -.6, ra: 2.6, re: .6, hy: .08, rl: .9, rk: -1.3, ll: -.2 }), P({ tl: -.15, ra: 2.4, re: .6, la: -2.6, le: -.6, hy: .08, ll: -.9, lk: 1.3, rl: .2 })] },
+  // ---- 追加の踊り ----
+  { id: 'nod', icon: 1, name: 'うなずきステップ', r: 'N', loops: 4, keys: [P({ hd: .45, hy: .05, lk: .3, rk: -.3, ll: -.15, rl: .15 }), P({ hd: -.2 })] },
+  { id: 'wave', icon: 0, name: 'バイバイ', r: 'N', loops: 3, keys: [P({ ra: 2.5, re: .5, la: -.15 }), P({ ra: 2.5, re: -.5, la: -.15, hy: .03 })] },
+  { id: 'nobi', icon: 1, name: '背のび', r: 'N', loops: 2, keys: [P({}), P({ la: -2.95, ra: 2.95, hy: -.1, tl: .15 }), P({}), P({ la: -2.95, ra: 2.95, hy: -.1, tl: -.15 })] },
+  { id: 'side', icon: 0, name: 'サイドステップ', r: 'N', loops: 3, keys: [P({ hx: -.12, ll: -.3, rl: .05, la: -.6, ra: .3 }), P({ hx: .12, rl: .3, ll: -.05, ra: .6, la: -.3 })] },
+  { id: 'twist', icon: 0, name: 'ツイスト', r: 'N', loops: 4, keys: [P({ tl: .25, hy: .08, lk: .4, rk: -.4, la: -1.0, le: 1.4, ra: 1.0, re: -1.4 }), P({ tl: -.25, hy: .08, lk: .4, rk: -.4, la: -1.0, le: 1.4, ra: 1.0, re: -1.4 })] },
+  { id: 'salute', icon: 0, name: '敬礼', r: 'N', loops: 3, keys: [P({ ra: 2.1, re: 1.6, ll: -.03, rl: .03 }), P({ ra: 2.1, re: 1.6, hd: .2, hy: .02 })] },
+  { id: 'chicken', icon: 0, name: 'チキンダンス', r: 'R', loops: 4, keys: [P({ la: -.8, le: 2.4, ra: .8, re: -2.4, hy: .1, lk: .5, rk: -.5, ll: -.3, rl: .3 }), P({ la: -1.4, le: 2.4, ra: 1.4, re: -2.4, hy: .04, hd: .3 })] },
+  { id: 'seiken', icon: 0, name: '正拳突き', r: 'R', loops: 3, step: true, keys: [P({ ra: 1.57, la: -.8, le: 2.2, rl: .7, rk: -.4, ll: -.3, hy: .08 }), P({ la: -1.57, ra: .8, re: -2.2, ll: -.7, lk: .4, rl: .3, hy: .08 })] },
+  { id: 'swim', icon: 1, name: 'クロール', r: 'R', loops: 2, wrap: false, keys: [0, 1, 2, 3, 4].map(i => P({ la: -TAU * i / 4, ra: Math.PI - TAU * i / 4, tl: Math.sin(i * Math.PI / 2) * .15 })) },
+  { id: 'hula', icon: 0, name: 'フラダンス', r: 'R', loops: 3, keys: [P({ hx: .1, tl: -.08, la: -1.7, le: .4, ra: 1.3, re: .5, lk: .3, rk: -.2 }), P({ hx: -.1, tl: .08, la: -1.3, le: -.5, ra: 1.7, re: -.4, lk: .2, rk: -.3 })] },
+  { id: 'gorilla', icon: 1, name: 'ゴリラ', r: 'R', loops: 4, keys: [P({ hy: .14, la: -.5, le: .2, ra: .5, re: -.2, ll: -.45, lk: .5, rl: .45, rk: -.5, tl: .1 }), P({ hy: .1, la: -.9, le: 2.5, ra: .9, re: -2.5, ll: -.45, lk: .4, rl: .45, rk: -.4, hd: -.3 })] },
+  { id: 'zombie', icon: 0, name: 'ゾンビダンス', r: 'SR', loops: 3, keys: [P({ tl: .2, hd: .5, la: 1.5, ra: 1.6, ll: -.2, rl: .4, rk: -.4 }), P({ tl: .1, hd: -.3, la: 1.6, ra: 1.5, rl: .2, ll: -.4, lk: .4, hy: .04 })] },
+  { id: 'wota', icon: 0, name: 'ヲタ芸', r: 'SR', loops: 4, keys: [P({ la: -2.9, le: .3, ra: 2.0, re: .4, hy: .08, lk: .5, rk: -.5, ll: -.3, rl: .3 }), P({ la: -2.0, le: -.4, ra: 2.9, re: -.3, hy: .08, lk: .5, rk: -.5, ll: -.3, rl: .3 }), P({ la: -2.6, le: .9, ra: 2.6, re: -.9, hy: .02 })] },
+  { id: 'para', icon: 1, name: 'パラパラ', r: 'SR', loops: 2, step: true, keys: [P({ ra: 2.4, re: .8, la: -.4 }), P({ la: -2.4, le: -.8, ra: .4 }), P({ ra: 1.57, re: 1.57, la: -1.57, le: -1.57 }), P({ ra: .9, re: -2.2, la: -.9, le: 2.2, hy: .04 })] },
+  { id: 'karate', icon: 1, name: '空手の型', r: 'SR', loops: 2, keys: [P({ la: -1.0, le: 1.9, ra: .9, re: -1.9, hy: .1, ll: -.4, lk: .5, rl: .4, rk: -.4 }), P({ tl: -.3, rl: 1.9, rk: 0, ll: -.15, la: -1.5, le: 1.6, ra: 2.3, hy: -.02 }), P({ la: -1.57, ra: 1.0, re: -1.9, hy: .1, ll: -.45, lk: .5, rl: .4 })] },
+  { id: 'kabuki', icon: 1, name: '見得を切る', r: 'SR', loops: 2, step: true, keys: [P({ hy: .1, ll: -.6, lk: .5, rl: .5, rk: -.2, la: -.5, le: 1.5, ra: .5, re: -1.5 }), P({ hd: .6, tl: .15, hy: .12, ll: -.7, lk: .6, rl: .6, rk: -.3, ra: 2.0, re: 0, la: -1.0, le: 1.8 })] },
+  { id: 'headspin', icon: 2, name: 'ヘッドスピン', r: 'SSR', loops: 2, wrap: false, keys: [0, 1, 2, 3, 4].map(i => P({ rz: Math.PI, ry: TAU * i / 4, ll: -.9, rl: .9, la: -1.2, ra: 1.2, hy: -.15 })) },
+  { id: 'backflip', icon: 2, name: 'バク転', r: 'SSR', loops: 2, wrap: false, keys: [POSE.crouch, { ...POSE.star, rz: -Math.PI / 2, hy: -.25 }, { ...P({ hy: -.3, ll: -.6, lk: 1.4, rl: .6, rk: -1.4, la: -2.5, ra: 2.5 }), rz: -Math.PI }, { ...POSE.star, rz: -Math.PI * 1.5, hy: -.25 }, { ...POSE.yUp, rz: -TAU }] },
+  { id: 'matrix', icon: 1, name: 'マトリックスよけ', r: 'SSR', loops: 2, keys: [P({}), P({ tl: -1.15, hd: -.3, la: -2.3, le: .6, ra: -.9, re: 1.2, ll: .2, lk: .9, rl: .45, rk: .8, hy: .12 }), P({ tl: -1.2, hd: -.4, la: -2.6, le: -.6, ra: -.6, re: 1.6, ll: .2, lk: .9, rl: .45, rk: .8, hy: .12 })] },
+  // UR
+  { id: 'jumpout', icon: 3, name: '標識から飛び出す', r: 'UR', loops: 1, wrap: false, keys: [POSE.crouch, { ...POSE.star, oz: .9 }, { ...POSE.star, oz: 1.4, ry: Math.PI }, { ...POSE.yUp, oz: 1.4, ry: TAU }, { ...POSE.dab, oz: 1.0, ry: TAU }, { ...P({}), oz: 0, ry: TAU }] },
+  { id: 'giant', icon: 2, name: '巨大化', r: 'UR', loops: 1, keys: [POSE.crouch, { ...POSE.yUp, sc: 1.2, oz: .3 }, { ...POSE.star, sc: 1.6, oz: .4 }, { ...POSE.dab, sc: 1.6, oz: .4 }, { ...mirror(POSE.dab), sc: 1.2, oz: .3 }] },
+];
+// 図鑑で N → R → SR → SSR → UR の順に並ぶように
+const R_ORDER = { N: 0, R: 1, SR: 2, SSR: 3, UR: 4 };
+DANCES.sort((a, b) => R_ORDER[a.r] - R_ORDER[b.r]);
+const DANCE_BY = Object.fromEntries(DANCES.map(d => [d.id, d]));
+function drawDance(exclude) {
+  let tot = 0; for (const k in RARITY) tot += RARITY[k].w;
+  let r = Math.random() * tot, rar = 'N'; for (const k in RARITY) { r -= RARITY[k].w; if (r <= 0) { rar = k; break; } }
+  const list = DANCES.filter(d => d.r === rar && d.id !== exclude);
+  return list[Math.random() * list.length | 0] || DANCES[0];
+}
+const smooth = t => t * t * (3 - 2 * t);
+const ROT_KEYS = ['ry', 'rz', 'la', 'ra'];
+function unwind(f) { ROT_KEYS.forEach(n => { const k = Math.round(f.cur[n] / TAU); if (k) f.cur[n] -= k * TAU; }); }
+// 踊りの進み具合(0〜1)からポーズを作る
+function samplePose(d, prog) {
+  const K = d.keys.length, segs = d.wrap === false ? K - 1 : K;
+  const u = Math.min(.9999, Math.max(0, prog)) * d.loops * segs;
+  const seg = Math.floor(u) % segs, f = u - Math.floor(u);
+  const A = d.keys[seg], B = d.keys[(seg + 1) % K];
+  const k = d.step ? (f < .5 ? 0 : 1) : smooth(f);
+  const loopI = Math.floor(u / segs), first = d.keys[0], lastK = d.keys[K - 1];
+  const out = {}; KEYS.forEach(n => { out[n] = (A[n] || 0) + ((B[n] || 0) - (A[n] || 0)) * k; if (d.wrap === false && ROT_KEYS.includes(n)) out[n] += loopI * ((lastK[n] || 0) - (first[n] || 0)); }); return out;
+}
+function blendPose(a, b, w) { const o = {}; KEYS.forEach(n => o[n] = (a[n] || 0) + ((b[n] || 0) - (a[n] || 0)) * w); return o; }
+// 2Dでピクトさんを描く（図鑑のアイコン用）
+function drawPict2D(x, cx, cy, s, p, color) {
+  const J = figJoints(s, p);
+  x.save(); x.translate(cx, cy + .08 * s); x.rotate(p.rz || 0); x.scale(Math.cos(p.ry || 0) || .05, 1);
+  x.strokeStyle = x.fillStyle = color; x.lineCap = 'round'; x.lineJoin = 'round';
+  const ln = (pts, w) => { x.lineWidth = w * s; x.beginPath(); x.moveTo(pts[0][0], pts[0][1]); pts.slice(1).forEach(q => x.lineTo(q[0], q[1])); x.stroke(); };
+  ln([J.hipL, J.lkn, J.lf], .13); ln([J.hipR, J.rkn, J.rf], .13); ln([J.shL, J.lel, J.lh], .1); ln([J.shR, J.rel, J.rh], .1);
+  x.beginPath(); x.moveTo(J.shL[0] - J.rt[0] * .05 * s, J.shL[1] - J.rt[1] * .05 * s); x.lineTo(J.shR[0] + J.rt[0] * .05 * s, J.shR[1] + J.rt[1] * .05 * s); x.lineTo(J.hipR[0] + J.rt[0] * .05 * s, J.hipR[1] + J.rt[1] * .05 * s); x.lineTo(J.hipL[0] - J.rt[0] * .05 * s, J.hipL[1] - J.rt[1] * .05 * s); x.closePath(); x.fill();
+  x.beginPath(); x.arc(J.head[0], J.head[1], .105 * s, 0, 7); x.fill(); x.restore();
+
+}
+
+function figJoints(s, p) {
+  const hip = [(p.hx || 0) * s, p.hy * s], t = p.tl, up = [Math.sin(t), -Math.cos(t)], rt = [Math.cos(t), Math.sin(t)];
+  const neck = [hip[0] + up[0] * .34 * s, hip[1] + up[1] * .34 * s];
+  const sh = [hip[0] + up[0] * .29 * s, hip[1] + up[1] * .29 * s];
+  const sw = (p.sw ?? .06) * s, hw = .035 * s;
+  const shL = [sh[0] - rt[0] * sw, sh[1] - rt[1] * sw], shR = [sh[0] + rt[0] * sw, sh[1] + rt[1] * sw];
+  const hipL = [hip[0] - rt[0] * hw, hip[1] - rt[1] * hw], hipR = [hip[0] + rt[0] * hw, hip[1] + rt[1] * hw];
+  const ha = t + p.hd;
+  const head = [neck[0] + Math.sin(ha) * .15 * s, neck[1] - Math.cos(ha) * .15 * s];
+  const seg = (o, a, len) => [o[0] + Math.sin(a) * len * s, o[1] + Math.cos(a) * len * s];
+  const law = p.la - t, raw = p.ra - t;
+  const lel = seg(shL, law, .165), lh = seg(lel, law + p.le, .16);
+  const rel = seg(shR, raw, .165), rh = seg(rel, raw + p.re, .16);
+  const lkn = seg(hipL, p.ll, .215), lf = seg(lkn, p.ll + p.lk, .215);
+  const rkn = seg(hipR, p.rl, .215), rf = seg(rkn, p.rl + p.rk, .215);
+  return { hip, neck, sh, shL, shR, hipL, hipR, head, lel, lh, rel, rh, lkn, lf, rkn, rf, ha, rt, up };
+}
+
+// ============================================================
+//  three.js の準備
+// ============================================================
+const cv = $('c');
+const renderer = new THREE.WebGLRenderer({ canvas: cv, antialias: true });
+// 画面の細かさ（重いと自動で下げ、軽いと戻す）
+const PR_MAX = Math.min(2, devicePixelRatio || 1);
+let pixelRatio = Math.min(PR_MAX, matchMedia('(pointer:coarse)').matches ? 1.5 : 2);
+renderer.setPixelRatio(pixelRatio);
+// 影：動くもの（標識・人）だけ。2コマに1回だけ計算する
+renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFShadowMap; renderer.shadowMap.autoUpdate = false;
+let shadowTick = 0;
+const perf = { acc: 0, n: 0, slow: 0, fast: 0 };
+function adaptQuality(dt) {
+  perf.acc += dt; perf.n++;
+  if (perf.acc < 1) return;
+  const ms = perf.acc / perf.n * 1000; perf.acc = 0; perf.n = 0;
+  if (ms > 24) { perf.slow++; perf.fast = 0; } else if (ms < 15) { perf.fast++; perf.slow = 0; } else { perf.slow = perf.fast = 0; }
+  let next = pixelRatio;
+  if (perf.slow >= 1 && pixelRatio > 1) next = Math.max(1, pixelRatio - .25); // 1より下げると文字がぼやけるので止める
+  if (perf.fast >= 4 && pixelRatio < PR_MAX) next = Math.min(PR_MAX, pixelRatio + .25);
+  if (next !== pixelRatio) { pixelRatio = next; perf.slow = perf.fast = 0; renderer.setPixelRatio(pixelRatio); resize(); }
+}
+const scene = new THREE.Scene();
+scene.fog = new THREE.Fog(0xcfe6fb, 32, 85);
+const CLOUDS = [];
+// ---- 夜 → 夜明け ----
+const SKY = (() => { const c = document.createElement('canvas'); c.width = 4; c.height = 256; const t = new THREE.CanvasTexture(c); return { c, tex: t, k: -1 }; })();
+const NIGHT = { winM: null, lampM: null };
+const lerpC = (a, b, k) => new THREE.Color(a).lerp(new THREE.Color(b), k);
+function setDawn(k) {
+  k = Math.max(0, Math.min(1, k)); if (Math.abs(k - SKY.k) < .004) return; SKY.k = k;
+  const x = SKY.c.getContext('2d'), g = x.createLinearGradient(0, 0, 0, 256);
+  g.addColorStop(0, '#' + lerpC(0x0a1230, 0x4a78c8, k).getHexString());
+  g.addColorStop(.55, '#' + lerpC(0x1a2758, 0xf4a878, k).getHexString());
+  g.addColorStop(1, '#' + lerpC(0x2b3a70, 0xffdca0, k).getHexString());
+  x.fillStyle = g; x.fillRect(0, 0, 4, 256); SKY.tex.needsUpdate = true;
+  scene.fog.color.copy(lerpC(0x1a2550, 0xf2c9a0, k));
+  hemi.color.copy(lerpC(0x9aa8e0, 0xfff1e0, k)); hemi.groundColor.copy(lerpC(0x2a3050, 0x8a8070, k)); hemi.intensity = .62 + k * .2;
+  sun.color.copy(lerpC(0xa8b8ff, 0xffb070, k)); sun.intensity = .32 + k * .55; sun.position.set(6 - k * 14, 14 - k * 8, 8);
+  if (NIGHT.winM) NIGHT.winM.emissive.copy(lerpC(0x8a6420, 0x000000, k));
+  if (NIGHT.lampM) NIGHT.lampM.emissive.copy(lerpC(0xffe2a0, 0x222222, k));
+}
+const camera = new THREE.PerspectiveCamera(42, 1, .1, 200);
+const hemi = new THREE.HemisphereLight(0xffffff, 0x8a9bb5, .75); scene.add(hemi);
+const sun = new THREE.DirectionalLight(0xfff3e0, .75);
+sun.position.set(6, 14, 8); sun.castShadow = true;
+sun.shadow.mapSize.set(512, 512); Object.assign(sun.shadow.camera, { left: -7, right: 7, top: 7, bottom: -7, near: 1, far: 40 });
+scene.add(sun);
+
+const CYL = new THREE.CylinderGeometry(1, 1, 1, 12);
+const SPH = new THREE.SphereGeometry(1, 14, 10);
+const BOX = new THREE.BoxGeometry(1, 1, 1);
+const matCache = {};
+const basic = c => matCache['b' + c] || (matCache['b' + c] = new THREE.MeshBasicMaterial({ color: c }));
+const lam = c => matCache['l' + c] || (matCache['l' + c] = new THREE.MeshLambertMaterial({ color: c }));
+function mesh(geo, mat, sh = false) { const m = new THREE.Mesh(geo, mat); m.castShadow = sh; return m; }
+
+// ---- 地面と街 ----
+function canvasTex(w, h, draw, rep) { const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h); const t = new THREE.CanvasTexture(c); if (rep) { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(rep[0], rep[1]); } t.anisotropy = 4; return t; }
+const texMat = (t, opt = {}) => new THREE.MeshLambertMaterial(Object.assign({ map: t }, opt));
+const JP_FONT = '"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans CJK JP","Yu Gothic",sans-serif';
+const STATIC = [];
+function addStatic(o) { scene.add(o); STATIC.push(o); return o; }
+(function buildWorld() {
+  // 空（グラデーション）
+  scene.background = SKY.tex;
+  // 雲
+  for (let i = 0; i < 9; i++) {
+    const cl = new THREE.Group(); const n = 3 + (Math.random() * 3 | 0);
+    for (let k = 0; k < n; k++) { const b = mesh(SPH, lam(0xffffff)); const r = 1.6 + Math.random() * 1.8; b.scale.set(r * 1.4, r * .7, r); b.position.set(k * 2.2 - n, Math.random() * .8, Math.random()); cl.add(b); }
+    cl.position.set(-40 + i * 10 + Math.random() * 5, 22 + Math.random() * 8, -55 - Math.random() * 15); cl.userData.cloud = .3 + Math.random() * .4; scene.add(cl); CLOUDS.push(cl);
+  }
+  // 地面：タイルの歩道
+  const tile = canvasTex(128, 128, (x, w, h) => { x.fillStyle = '#cfc7b8'; x.fillRect(0, 0, w, h); x.fillStyle = '#c3baa9'; x.fillRect(0, 0, 64, 64); x.fillRect(64, 64, 64, 64); x.strokeStyle = '#b9b1a2'; x.lineWidth = 3; x.strokeRect(0, 0, 64, 64); x.strokeRect(64, 64, 64, 64); x.strokeRect(64, 0, 64, 64); x.strokeRect(0, 64, 64, 64); }, [80, 80]);
+  const ground = mesh(new THREE.PlaneGeometry(160, 160), texMat(tile)); ground.rotation.x = -Math.PI / 2; ground.receiveShadow = true; addStatic(ground);
+  // 点字ブロック（黄色）
+  const tenji = canvasTex(64, 64, (x, w, h) => { x.fillStyle = '#f2c230'; x.fillRect(0, 0, w, h); x.fillStyle = '#d9a91c'; for (let i = 0; i < 4; i++) for (let j = 0; j < 4; j++) { x.beginPath(); x.arc(8 + i * 16, 8 + j * 16, 4, 0, 7); x.fill(); } }, [1, 1]);
+  [[-1.3, 1.25], [1.3, 1.25]].forEach(([x, z]) => { const t = mesh(new THREE.PlaneGeometry(.6, .6), texMat(tenji)); t.rotation.x = -Math.PI / 2; t.position.set(x, .02, z); addStatic(t); });
+  // 手前の車道
+  const asph = canvasTex(128, 128, (x, w, h) => { x.fillStyle = '#5b606b'; x.fillRect(0, 0, w, h); for (let i = 0; i < 600; i++) { x.fillStyle = Math.random() < .5 ? '#666b77' : '#51555f'; x.fillRect(Math.random() * w, Math.random() * h, 2, 2); } }, [30, 3]);
+  const road = mesh(new THREE.PlaneGeometry(160, 9), texMat(asph)); road.rotation.x = -Math.PI / 2; road.position.set(0, .01, 6.2); road.receiveShadow = true; addStatic(road);
+  for (let i = -6; i <= 6; i++) { const st = mesh(new THREE.PlaneGeometry(.5, 6.4), lam(0xf4f4f4)); st.rotation.x = -Math.PI / 2; st.position.set(i * .95, .02, 6.2); st.receiveShadow = true; addStatic(st); }
+  for (let x = -60; x < 60; x += 4) { if (Math.abs(x) < 7) continue; const ln = mesh(new THREE.PlaneGeometry(2.2, .14), lam(0xf4f4f4)); ln.rotation.x = -Math.PI / 2; ln.position.set(x, .02, 6.2); addStatic(ln); }
+  const curb = mesh(BOX, lam(0xe9eaec)); curb.scale.set(160, .16, .32); curb.position.set(0, .08, 1.72); curb.receiveShadow = true; addStatic(curb);
+  // 奥へのびる道
+  const back = mesh(new THREE.PlaneGeometry(4.6, 70), texMat(asph.clone())); back.material.map.repeat.set(2, 30); back.material.map.needsUpdate = true; back.rotation.x = -Math.PI / 2; back.position.set(0, .012, -39); back.receiveShadow = true; addStatic(back);
+  for (let z = -8; z > -70; z -= 3) { const ln = mesh(new THREE.PlaneGeometry(.12, 1.4), lam(0xf4f4f4)); ln.rotation.x = -Math.PI / 2; ln.position.set(0, .02, z); addStatic(ln); }
+  [-1, 1].forEach(sd => { const c = mesh(BOX, lam(0xe9eaec)); c.scale.set(.2, .14, 66); c.position.set(sd * 2.4, .07, -38); addStatic(c); });
+  const stop = mesh(new THREE.PlaneGeometry(4.4, .3), lam(0xf4f4f4)); stop.rotation.x = -Math.PI / 2; stop.position.set(0, .02, -5.2); addStatic(stop);
+  const tomare = mesh(new THREE.PlaneGeometry(2.2, 1.6), new THREE.MeshLambertMaterial({ map: canvasTex(256, 192, (x, w, h) => { x.fillStyle = '#f4f4f4'; x.font = `900 120px ${JP_FONT}`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.save(); x.scale(1, 1.5); x.fillText('止まれ', w / 2, h / 3); x.restore(); }), transparent: true }));
+  tomare.rotation.x = -Math.PI / 2; tomare.position.set(0, .021, -6.6); addStatic(tomare);
+  const manhole = mesh(new THREE.CircleGeometry(.35, 24), new THREE.MeshLambertMaterial({ map: canvasTex(64, 64, (x) => { x.fillStyle = '#6e6a63'; x.beginPath(); x.arc(32, 32, 32, 0, 7); x.fill(); x.strokeStyle = '#59554e'; x.lineWidth = 3; for (let r = 8; r < 32; r += 8) { x.beginPath(); x.arc(32, 32, r, 0, 7); x.stroke(); } }) }));
+  manhole.rotation.x = -Math.PI / 2; manhole.position.set(-.9, .022, -11); addStatic(manhole);
+
+  // ---- 建物 ----
+  const WALLS = [0xf3e3c8, 0xd7e6f2, 0xf6ecc0, 0xe8d6ea, 0xd2eadb, 0xf2cdbd, 0xe4e4e4, 0xc9b7a3, 0xb9c7d6];
+  const SHOPS = [['カフェ', '#7a4a2a'], ['薬局', '#2a8a4a'], ['ラーメン', '#c8312a'], ['コンビニ', '#1f6fd1'], ['本屋', '#4a3a8a'], ['花屋', '#d8558a'], ['クリーニング', '#2aa0b8'], ['パン', '#c9822a'], ['不動産', '#3a4a5a'], ['床屋', '#c03a3a']];
+  const winM = new THREE.MeshLambertMaterial({ color: 0xffffff }), frameM = lam(0xf8f8f8); NIGHT.winM = winM;
+  const winList = [], frameList = [], acList = [];
+  function building(x, z, w, h, d, yaw, shop) {
+    const g = new THREE.Group(); g.position.set(x, 0, z); g.rotation.y = yaw;
+    const col = WALLS[Math.random() * WALLS.length | 0];
+    const b = mesh(BOX, lam(col), true); b.scale.set(w, h, d); b.position.set(0, h / 2, -d / 2); b.receiveShadow = true; g.add(b);
+    const par = mesh(BOX, lam(new THREE.Color(col).multiplyScalar(.85).getHex())); par.scale.set(w + .15, .3, d + .15); par.position.set(0, h + .1, -d / 2); g.add(par);
+    // 1階のお店
+    if (shop) {
+      const [name, sc] = SHOPS[Math.random() * SHOPS.length | 0];
+      const sw = Math.min(w - .4, 3.6);
+      const glass = mesh(new THREE.PlaneGeometry(sw, 1.5), new THREE.MeshLambertMaterial({ color: 0xfff2c8, emissive: 0x6a5a30 })); glass.position.set(0, .95, .01); g.add(glass);
+      const awn = mesh(new THREE.BoxGeometry(sw + .2, .06, .9), new THREE.MeshLambertMaterial({ map: canvasTex(128, 16, (x, cw, ch) => { for (let i = 0; i < 8; i++) { x.fillStyle = i % 2 ? '#ffffff' : sc; x.fillRect(i * 16, 0, 16, ch); } }) }));
+      awn.position.set(0, 1.95, .4); awn.rotation.x = .28; awn.castShadow = true; g.add(awn);
+      const sign = mesh(new THREE.PlaneGeometry(sw * .8, .42), new THREE.MeshLambertMaterial({ map: canvasTex(256, 64, (x, cw, ch) => { x.fillStyle = sc; x.fillRect(0, 0, cw, ch); x.fillStyle = '#fff'; x.font = `900 ${name.length > 4 ? 34 : 42}px ${JP_FONT}`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(name, cw / 2, ch / 2 + 2); }) }));
+      sign.position.set(0, 2.45, .02); g.add(sign);
+    }
+    g.updateMatrixWorld(true);
+    const cols = Math.max(1, Math.floor((w - .6) / 1.1)), x0 = -(cols - 1) * 1.1 / 2;
+    for (let r = shop ? 1 : 0; r < Math.floor((h - .6) / 1.5); r++) for (let c = 0; c < cols; c++) {
+      const v = new THREE.Vector3(x0 + c * 1.1, 1.1 + r * 1.5, .015).applyMatrix4(g.matrixWorld);
+      winList.push([v, yaw]); frameList.push([new THREE.Vector3(x0 + c * 1.1, 1.1 + r * 1.5, .008).applyMatrix4(g.matrixWorld), yaw]);
+      if (Math.random() < .12) acList.push([new THREE.Vector3(x0 + c * 1.1 + .3, .75 + r * 1.5, .2).applyMatrix4(g.matrixWorld), yaw]);
+    }
+    if (Math.random() < .5) { const tank = mesh(CYL, lam(0x9aa3ad), true); tank.scale.set(.5, .8, .5); tank.position.set((Math.random() - .5) * (w - 1.2), h + .65, -d / 2); g.add(tank); }
+    addStatic(g);
+  }
+  // 手前の通りぞい（正面を向く）
+  for (let i = 0; i < 20; i++) {
+    const w = 3.4 + Math.random() * 2.4, h = 5 + Math.random() * 10, x = -34 + i * 4.2 + Math.random() * .6;
+    if (Math.abs(x) - w / 2 < 2.6) continue;
+    building(x, -6.6, w, h, 4, 0, Math.abs(x) < 16);
+  }
+  // 奥へのびる道の両側（道の方を向く）
+  for (let z = -13.4; z > -72; z -= 5.2) [-1, 1].forEach(sd => { const w = 4.2 + Math.random() * .8, h = 5 + Math.random() * 12; building(sd * 2.6, z, w, h, 4.5, sd < 0 ? Math.PI / 2 : -Math.PI / 2, z > -40); });
+  // 窓・エアコンをまとめて描く
+  const inst = (geo, mat, list, col) => { const im = new THREE.InstancedMesh(geo, mat, list.length); const m = new THREE.Matrix4(), q = new THREE.Quaternion(), c = new THREE.Color(); list.forEach(([v, yaw], i) => { q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), yaw); m.compose(v, q, new THREE.Vector3(1, 1, 1)); im.setMatrixAt(i, m); if (col) im.setColorAt(i, c.setHex(col())); }); addStatic(im); return im; };
+  inst(new THREE.PlaneGeometry(.66, .86), frameM, frameList);
+  inst(new THREE.PlaneGeometry(.56, .76), winM, winList, () => [0x7fa9d6, 0x6a93c2, 0x9cc2e6, 0xf2e2a8][Math.random() * 4 | 0]);
+  inst(new THREE.BoxGeometry(.6, .4, .3), lam(0xeef0f2), acList);
+
+  // ---- 電柱と電線 ----
+  const poles = [];
+  function denchu(x, z) {
+    const p = mesh(CYL, lam(0xb8b4ab), true); p.scale.set(.13, 9, .13); p.position.set(x, 4.5, z); addStatic(p);
+    const arm = mesh(BOX, lam(0x8f8b83), true); arm.scale.set(1.6, .1, .1); arm.position.set(x, 8.2, z); addStatic(arm);
+    const tr = mesh(CYL, lam(0x9aa0a8), true); tr.scale.set(.25, .6, .25); tr.position.set(x + .35, 7.2, z); addStatic(tr);
+    const plate = mesh(new THREE.PlaneGeometry(.22, .9), lam(0xf0f0f0)); plate.position.set(x, 2.6, z + .135); addStatic(plate);
+    poles.push(new THREE.Vector3(x, 8.25, z));
+  }
+  [-1, 1].forEach(sd => { const row = []; for (let z = -12; z > -72; z -= 10) { denchu(sd * 2.1, z); row.push(poles[poles.length - 1]); } wireRow(row); });
+  const front = []; for (let x = -42; x <= 42; x += 12) { if (Math.abs(x) < 6) continue; denchu(x, 2.2); front.push(poles[poles.length - 1]); }
+  wireRow(front.filter(p => p.x < 0)); wireRow(front.filter(p => p.x > 0));
+  function wireRow(row) {
+    const mat = new THREE.LineBasicMaterial({ color: 0x2a2a2a });
+    for (let i = 0; i < row.length - 1; i++) for (const off of [-.6, 0, .6]) {
+      const a = row[i], b = row[i + 1], pts = [];
+      for (let k = 0; k <= 12; k++) { const t = k / 12; const p = a.clone().lerp(b, t); p.y -= Math.sin(t * Math.PI) * .6; const along = b.clone().sub(a).normalize(); const side = new THREE.Vector3(-along.z, 0, along.x); p.addScaledVector(side, off); pts.push(p); }
+      addStatic(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), mat));
+    }
+  }
+  // 街灯
+  [-9, 9].forEach(x => { const p = mesh(CYL, lam(0x6c737d), true); p.scale.set(.06, 4.2, .06); p.position.set(x, 2.1, 1.4); addStatic(p); const arm = mesh(BOX, lam(0x6c737d)); arm.scale.set(.06, .06, .9); arm.position.set(x, 4.15, 1.8); addStatic(arm); NIGHT.lampM = NIGHT.lampM || new THREE.MeshLambertMaterial({ color: 0xffffff }); const lamp = mesh(BOX, NIGHT.lampM); lamp.scale.set(.3, .1, .5); lamp.position.set(x, 4.1, 2.25); addStatic(lamp); });
+  // ガードレール（横断歩道の外側）
+  [-1, 1].forEach(sd => { for (let x = 7; x < 40; x += 2) { const post = mesh(CYL, lam(0xf2f2f2), true); post.scale.set(.05, .8, .05); post.position.set(sd * x, .4, 1.45); addStatic(post); } const rail = mesh(BOX, lam(0xf8f8f8), true); rail.scale.set(33, .22, .05); rail.position.set(sd * 23.5, .68, 1.48); addStatic(rail); });
+  // 自販機
+  const vend = canvasTex(64, 128, (x, w, h) => { x.fillStyle = '#e8eef5'; x.fillRect(0, 0, w, h); for (let r = 0; r < 4; r++) for (let c = 0; c < 5; c++) { x.fillStyle = ['#d33', '#36c', '#2a2', '#fb2', '#fff', '#a3c'][(r * 5 + c) % 6]; x.fillRect(4 + c * 12, 8 + r * 18, 8, 13); } x.fillStyle = '#222'; x.fillRect(8, 90, 48, 10); x.fillStyle = '#999'; x.fillRect(8, 108, 48, 14); });
+  [[-4.0, 0xd72e2e], [-3.2, 0x2e6ad7]].forEach(([x, c]) => { const v = new THREE.Group(); const b = mesh(BOX, lam(c), true); b.scale.set(.75, 1.8, .7); b.position.y = .9; v.add(b); const f = mesh(new THREE.PlaneGeometry(.62, 1.5), new THREE.MeshLambertMaterial({ map: vend, emissive: 0x333333 })); f.position.set(0, .95, .351); v.add(f); v.position.set(x, 0, -4.4); addStatic(v); });
+  // 郵便ポスト
+  const post = new THREE.Group(); const pb = mesh(BOX, lam(0xd8262e), true); pb.scale.set(.42, 1.05, .38); pb.position.y = .78; post.add(pb); const pt = mesh(CYL, lam(0xd8262e), true); pt.scale.set(.21, .38, .21); pt.rotation.z = Math.PI / 2; pt.position.y = 1.3; post.add(pt); const leg = mesh(BOX, lam(0x333333)); leg.scale.set(.18, .3, .18); leg.position.y = .15; post.add(leg); post.position.set(3.6, 0, -4.3); addStatic(post);
+  // 植え込みと木
+  function tree(x, z, s = 1) {
+    const t = mesh(CYL, lam(0x7a5a3c), true); t.scale.set(.12 * s, 1.8 * s, .12 * s); t.position.set(x, .9 * s, z); addStatic(t);
+    [[0, 2.3, 0, 1], [.5, 2.0, .2, .75], [-.45, 2.1, -.1, .8], [.1, 2.8, -.1, .7]].forEach(([dx, dy, dz, r], i) => { const l = mesh(new THREE.IcosahedronGeometry(1, 1), lam([0x5fae5a, 0x6fbf66, 0x4f9a4c, 0x7ccf72][i]), true); l.scale.setScalar(r * s); l.position.set(x + dx * s, dy * s, z + dz * s); addStatic(l); });
+    const box = mesh(BOX, lam(0x9a9288)); box.scale.set(1.1, .35, 1.1); box.position.set(x, .175, z); addStatic(box);
+  }
+  [-12, -6.2, 6.2, 12].forEach(x => tree(x, -4.75));
+  [-14, 14].forEach(x => tree(x, 1.0, .9));
+  // 花壇
+  [-5.2, 5.2].forEach(x => { const bed = mesh(BOX, lam(0xb8afa0)); bed.scale.set(1.6, .3, .6); bed.position.set(x, .15, 1.0); addStatic(bed); for (let i = 0; i < 6; i++) { const f = mesh(SPH, lam([0xff6b8a, 0xffd23d, 0xffffff][i % 3])); f.scale.setScalar(.09); f.position.set(x - .6 + i * .24, .36, 1.0 + (i % 2 ? .12 : -.12)); addStatic(f); } });
+  STATIC.forEach(o => { o.traverse(m => { m.matrixAutoUpdate = false; m.updateMatrix(); }); });
+  mergeStatic();
+})();
+// 動かない背景を、材質ごとに1つにまとめて描画回数を減らす（スマホを軽く）
+function mergeStatic() {
+  scene.updateMatrixWorld(true);
+  const groups = new Map(), victims = [];
+  STATIC.forEach(o => o.traverse(m => {
+    if (!m.isMesh || m.isInstancedMesh) return;
+    const key = m.material.uuid;
+    if (!groups.has(key)) groups.set(key, { mat: m.material, list: [], cast: false });
+    const gr = groups.get(key); gr.list.push(m); gr.cast = gr.cast || m.castShadow; victims.push(m);
+  }));
+  groups.forEach(gr => {
+    let n = 0; const parts = gr.list.map(m => { let g = m.geometry.index ? m.geometry.toNonIndexed() : m.geometry.clone(); g.applyMatrix4(m.matrixWorld); n += g.attributes.position.count; return g; });
+    const pos = new Float32Array(n * 3), nor = new Float32Array(n * 3), uv = new Float32Array(n * 2); let o3 = 0, o2 = 0;
+    parts.forEach(g => { pos.set(g.attributes.position.array, o3); if (g.attributes.normal) nor.set(g.attributes.normal.array, o3); if (g.attributes.uv) uv.set(g.attributes.uv.array, o2); o3 += g.attributes.position.count * 3; o2 += g.attributes.position.count * 2; g.dispose(); });
+    const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(pos, 3)); geo.setAttribute('normal', new THREE.BufferAttribute(nor, 3)); geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+    const mm = new THREE.Mesh(geo, gr.mat); mm.castShadow = false; /* 背景は影を落とさない（軽くするため） */ mm.receiveShadow = true; mm.matrixAutoUpdate = false; scene.add(mm);
+  });
+  victims.forEach(m => m.parent && m.parent.remove(m));
+}
+
+// ============================================================
+//  ピクトさん（3Dの部品で組み立てる。正面から見ると標識の絵）
+// ============================================================
+const TAPER = new THREE.CylinderGeometry(.82, 1.12, 1, 10);
+const FCYL = new THREE.CylinderGeometry(1, 1, 1, 8), FSPH = new THREE.SphereGeometry(1, 10, 7);     // 根元が太い手足
+const TORSO = new THREE.CylinderGeometry(1.3, .95, 1, 12);      // 肩幅が広い胴
+const SKIRT = new THREE.CylinderGeometry(1.75, .75, 1, 12);
+const DOME = new THREE.SphereGeometry(1, 12, 6, 0, Math.PI * 2, 0, Math.PI / 2);
+class PictFig {
+  constructor(parent, color, s, cx, cy, rest, opt = {}) {
+    this.g = new THREE.Group(); parent.add(this.g);
+    this.s = s; this.cx = cx; this.cy = cy; this.rest = rest; this.opt = opt; this.face = opt.face || 1;
+    const m = basic(color); this.m = m;
+    this.seg = {}; this.jt = {};
+    this.seg.torso = mesh(TORSO, m); this.g.add(this.seg.torso);
+    ['lua', 'lla', 'rua', 'rla', 'lth', 'lsh', 'rth', 'rsh', 'lft', 'rft', 'neckS'].forEach(k => { this.seg[k] = mesh(k === 'lft' || k === 'rft' || k === 'neckS' ? FCYL : TAPER, m); this.g.add(this.seg[k]); });
+    ['shL', 'shR', 'lel', 'lh', 'rel', 'rh', 'lkn', 'lf', 'rkn', 'rf', 'hipL', 'hipR'].forEach(k => { this.jt[k] = mesh(FSPH, m); this.g.add(this.jt[k]); });
+    this.head = mesh(FSPH, m); this.g.add(this.head);
+    const hat = opt.hat;
+    if (hat) {
+      this.hat = new THREE.Group(); this.g.add(this.hat);
+      if (hat === 'fedora') { const brim = mesh(FCYL, m); brim.scale.set(.155 * s, .026 * s, .04 * s); brim.position.y = .075 * s; const crown = mesh(FCYL, m); crown.scale.set(.085 * s, .09 * s, .04 * s); crown.position.y = .125 * s; const dent = mesh(FSPH, m); dent.scale.set(.085 * s, .03 * s, .04 * s); dent.position.y = .17 * s; this.hat.add(brim, crown, dent); }
+      if (hat === 'cap') { const c = mesh(DOME, m); c.scale.set(.118 * s, .1 * s, .045 * s); c.position.y = .015 * s; const bill = mesh(BOX, m); bill.scale.set(.12 * s, .028 * s, .04 * s); bill.position.set(this.face * .1 * s, .03 * s, 0); this.hat.add(c, bill); }
+      if (hat === 'helmet') { const c = mesh(DOME, m); c.scale.set(.13 * s, .13 * s, .045 * s); c.position.y = .01 * s; const brim = mesh(BOX, m); brim.scale.set(.33 * s, .03 * s, .04 * s); brim.position.set(this.face * .015 * s, .015 * s, 0); this.hat.add(c, brim); }
+      if (hat === 'bow') { [-1, 1].forEach(k => { const b = mesh(FSPH, m); b.scale.set(.06 * s, .035 * s, .03 * s); b.rotation.z = k * .6; b.position.set(-this.face * .05 * s + k * .05 * s, .13 * s, 0); this.hat.add(b); }); }
+    }
+    if (opt.skirt) { this.skirt = mesh(SKIRT, m); this.g.add(this.skirt); }
+    if (opt.bag) { this.bag = mesh(BOX, m); this.g.add(this.bag); }
+    if (opt.shovel) { this.shovel = mesh(FCYL, m); this.blade = mesh(BOX, m); this.g.add(this.shovel, this.blade); }
+    this.cur = { ...rest }; this.vel = Object.fromEntries(KEYS.map(k => [k, 0])); this.tgt = rest;
+    this.buildMerged();
+    this.apply();
+  }
+  // 部品をまとめて1回で描く（スマホを軽く）
+  buildMerged() {
+    const list = []; this.g.traverse(o => { if (o.isMesh) list.push(o); });
+    let nv = 0, ni = 0; list.forEach(m => { nv += m.geometry.attributes.position.count; ni += m.geometry.index.count; });
+    const pos = new Float32Array(nv * 3), idx = new Uint32Array(ni); let ov = 0, oi = 0;
+    this.parts = list.map(m => {
+      const src = m.geometry.attributes.position.array, ix = m.geometry.index.array;
+      for (let i = 0; i < ix.length; i++) idx[oi + i] = ix[i] + ov;
+      const part = { m, src, off: ov * 3 }; ov += src.length / 3; oi += ix.length; m.visible = false; return part;
+    });
+    const geo = new THREE.BufferGeometry(); geo.setAttribute('position', new THREE.BufferAttribute(pos, 3)); geo.setIndex(new THREE.BufferAttribute(idx, 1));
+    this.merged = new THREE.Mesh(geo, this.m); this.merged.frustumCulled = false; this.g.add(this.merged); this.mpos = pos;
+  }
+  writeMerged() {
+    const tmp = PictFig.tmp || (PictFig.tmp = new THREE.Matrix4()), pos = this.mpos;
+    for (const pt of this.parts) {
+      const m = pt.m; m.updateMatrix(); let e = m.matrix.elements;
+      if (m.parent !== this.g) { m.parent.updateMatrix(); tmp.multiplyMatrices(m.parent.matrix, m.matrix); e = tmp.elements; }
+      const src = pt.src; let o = pt.off;
+      for (let i = 0; i < src.length; i += 3) { const x = src[i], y = src[i + 1], z = src[i + 2]; pos[o++] = e[0] * x + e[4] * y + e[8] * z + e[12]; pos[o++] = e[1] * x + e[5] * y + e[9] * z + e[13]; pos[o++] = e[2] * x + e[6] * y + e[10] * z + e[14]; }
+    }
+    this.merged.geometry.attributes.position.needsUpdate = true;
+  }
+  P(j) { return [j[0], -.08 * this.s - j[1]]; }
+  place(m, a, b, r, rz) {
+    const A = this.P(a), B = this.P(b), dx = B[0] - A[0], dy = B[1] - A[1], L = Math.hypot(dx, dy) || 1e-4;
+    m.position.set((A[0] + B[0]) / 2, (A[1] + B[1]) / 2, .03); m.scale.set(r, L, rz ?? r * .4); m.rotation.z = Math.atan2(dy, dx) - Math.PI / 2;
+  }
+  ball(m, j, r) { const p = this.P(j); m.position.set(p[0], p[1], .03); m.scale.set(r, r, r * .4); }
+  apply() {
+    const s = this.s, J = figJoints(s, this.cur), c = this.cur, f = this.face;
+    this.g.position.set(this.cx + (this.offX || 0), this.cy + (this.offY || 0), (c.oz || 0)); this.g.rotation.set(0, c.ry || 0, -(c.rz || 0)); this.g.scale.setScalar(Math.max(.2, 1 + (c.oz || 0) * .35 + (c.sc || 0)));
+    const ua = .056 * s, fa = .047 * s, th = .074 * s, sn = .06 * s;
+    this.place(this.seg.torso, J.hip, J.sh, .088 * s, .04 * s);
+    this.place(this.seg.neckS, J.sh, J.neck, .04 * s);
+    this.place(this.seg.lua, J.shL, J.lel, ua); this.place(this.seg.lla, J.lel, J.lh, fa);
+    this.place(this.seg.rua, J.shR, J.rel, ua); this.place(this.seg.rla, J.rel, J.rh, fa);
+    this.place(this.seg.lth, J.hipL, J.lkn, th); this.place(this.seg.lsh, J.lkn, J.lf, sn);
+    this.place(this.seg.rth, J.hipR, J.rkn, th); this.place(this.seg.rsh, J.rkn, J.rf, sn);
+    // 足（つま先は向いている方向へ）
+    const toe = (a) => [a[0] + f * .095 * s * Math.cos(c.tl * .3), a[1] + .01 * s];
+    this.place(this.seg.lft, J.lf, toe(J.lf), .042 * s); this.place(this.seg.rft, J.rf, toe(J.rf), .042 * s);
+    this.ball(this.jt.shL, J.shL, ua * 1.05); this.ball(this.jt.shR, J.shR, ua * 1.05);
+    this.ball(this.jt.lel, J.lel, ua * .9); this.ball(this.jt.rel, J.rel, ua * .9);
+    this.ball(this.jt.lh, J.lh, fa * 1.1); this.ball(this.jt.rh, J.rh, fa * 1.1);
+    this.ball(this.jt.lkn, J.lkn, th * .88); this.ball(this.jt.rkn, J.rkn, th * .88);
+    this.ball(this.jt.lf, J.lf, sn * .85); this.ball(this.jt.rf, J.rf, sn * .85);
+    this.ball(this.jt.hipL, J.hipL, th * 1.05); this.ball(this.jt.hipR, J.hipR, th * 1.05);
+    const hp = this.P(J.head); this.head.position.set(hp[0], hp[1], .03); this.head.scale.set(.105 * s, .108 * s, .042 * s);
+    if (this.hat) { this.hat.position.set(hp[0], hp[1] + (this.hatLift || 0), .03); this.hat.rotation.z = -J.ha + (this.hatSpin || 0); }
+    if (this.skirt) { const w = [J.hip[0] + J.up[0] * .1 * s, J.hip[1] + J.up[1] * .1 * s], b = [J.hip[0] - J.up[0] * .12 * s, J.hip[1] - J.up[1] * .12 * s]; this.place(this.skirt, w, b, .09 * s, .04 * s); }
+    if (this.bag) { const bp = this.P([J.sh[0] - f * J.rt[0] * .1 * s - J.up[0] * .06 * s, J.sh[1] - f * J.rt[1] * .1 * s - J.up[1] * .06 * s]); this.bag.position.set(bp[0], bp[1], .03); this.bag.scale.set(.13 * s, .17 * s, .04 * s); this.bag.rotation.z = -c.tl; }
+    if (this.shovel) {
+      const A = J.lh, B = J.rh; let dx = B[0] - A[0], dy = B[1] - A[1]; const L = Math.hypot(dx, dy) || 1; dx /= L; dy /= L;
+      const end = [B[0] + dx * .32 * s, B[1] + dy * .32 * s];
+      this.place(this.shovel, [A[0] - dx * .06 * s, A[1] - dy * .06 * s], end, .017 * s);
+      const e = this.P(end); this.blade.position.set(e[0], e[1], .03); this.blade.scale.set(.1 * s, .13 * s, .02 * s); this.blade.rotation.z = Math.atan2(-dy, dx) - Math.PI / 2;
+    }
+    if (this.merged) this.writeMerged();
+  }
+  update(dt) {
+    const n = Math.ceil(dt / .006), h = dt / n;
+    for (let i = 0; i < n; i++) KEYS.forEach(k => { const a = (this.tgt[k] - this.cur[k]) * 950 - this.vel[k] * 27; this.vel[k] += a * h; this.cur[k] += this.vel[k] * h; });
+    // 動いていないときは計算を省く
+    let sig = (this.offX || 0) * 7 + (this.offY || 0) * 11 + (this.hatLift || 0) * 13 + (this.hatSpin || 0) * 17; KEYS.forEach((k, i) => sig += this.cur[k] * (i + 1.37));
+    if (this.lastSig !== undefined && Math.abs(sig - this.lastSig) < 1e-5) return;
+    this.lastSig = sig; this.apply();
+  }
+}
+
+// ============================================================
+//  標識（形・色・ピクトさん）
+// ============================================================
+function roundedShape(pts, r) {
+  const sh = new THREE.Shape(), n = pts.length;
+  for (let i = 0; i < n; i++) {
+    const p0 = pts[(i - 1 + n) % n], p1 = pts[i], p2 = pts[(i + 1) % n];
+    const v1 = [p0[0] - p1[0], p0[1] - p1[1]], v2 = [p2[0] - p1[0], p2[1] - p1[1]];
+    const l1 = Math.hypot(...v1), l2 = Math.hypot(...v2);
+    const a = [p1[0] + v1[0] / l1 * r, p1[1] + v1[1] / l1 * r], b = [p1[0] + v2[0] / l2 * r, p1[1] + v2[1] / l2 * r];
+    if (i === 0) sh.moveTo(a[0], a[1]); else sh.lineTo(a[0], a[1]);
+    sh.quadraticCurveTo(p1[0], p1[1], b[0], b[1]);
+  }
+  sh.closePath(); return sh;
+}
+const triPts = k => [[0, .58 * k], [.6 * k, -.42 * k], [-.6 * k, -.42 * k]];
+const diaPts = k => [[0, .55 * k], [.55 * k, 0], [0, -.55 * k], [-.55 * k, 0]];
+function flat(parent, shape, color, z) { const m = mesh(new THREE.ShapeGeometry(shape, 12), basic(color)); m.position.z = z; parent.add(m); return m; }
+function pill(parent, w, h, x, y, color = 0xffffff) { const r = h / 2, sh = new THREE.Shape(); sh.moveTo(-w / 2 + r, -r); sh.lineTo(w / 2 - r, -r); sh.absarc(w / 2 - r, 0, r, -Math.PI / 2, Math.PI / 2); sh.lineTo(-w / 2 + r, r); sh.absarc(-w / 2 + r, 0, r, Math.PI / 2, Math.PI * 1.5); const m = mesh(new THREE.ShapeGeometry(sh, 8), basic(color)); m.position.set(x, y, .008); parent.add(m); return m; }
+function rect(parent, w, h, x, y, color, z = .012) { const m = mesh(new THREE.PlaneGeometry(w, h), basic(color)); m.position.set(x, y, z); parent.add(m); return m; }
+function circle(parent, r, color, z) { const m = mesh(new THREE.CircleGeometry(r, 40), basic(color)); m.position.z = z; parent.add(m); return m; }
+
+//  id, 名前, 来る盛り上がり度, 板の高さ
+const SIGN_DEFS = [
+  { id: 'main', name: '横断歩道の人', at: 0, short: '横' },
+  { id: 'oyako', name: '横断歩道の親子', at: 1200, short: '親' },
+  { id: 'hokosha', name: '歩行者専用のふたり', at: 3000, short: '専' },
+  { id: 'gakko', name: '通学路のこどもたち', at: 5500, short: '学' },
+  { id: 'koji', name: '工事中のおじさん', at: 9000, short: '工' },
+  { id: 'shingo', name: '歩行者信号の人', at: 13500, short: '信' },
+  { id: 'exit', name: '非常口の人', at: 22000, short: '非', secret: true },
+];
+const SLOTS = { main: [0, 0], oyako: [-1.25, -.6], hokosha: [1.25, -.6], gakko: [-2.25, .45], koji: [2.25, .45], shingo: [-.45, -1.6], exit: [-.1, 1.0] };
+
+const LED_TEX = canvasTex(64, 64, (x, w, h) => { x.clearRect(0, 0, w, h); x.fillStyle = 'rgba(0,0,0,.45)'; for (let i = 0; i < w; i += 4) { x.fillRect(i, 0, 1, h); x.fillRect(0, i, w, 1); } }); LED_TEX.wrapS = LED_TEX.wrapT = THREE.RepeatWrapping; LED_TEX.repeat.set(3, 3);
+const GLOW_TEX = canvasTex(64, 64, (x, w, h) => { const g = x.createRadialGradient(32, 32, 0, 32, 32, 32); g.addColorStop(0, 'rgba(255,255,255,1)'); g.addColorStop(.4, 'rgba(255,255,255,.35)'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.fillRect(0, 0, w, h); });
+const GALV = new THREE.MeshPhongMaterial({ color: 0xc3c9d0, specular: 0x666666, shininess: 40 });
+const PLATE_BACK = new THREE.MeshPhongMaterial({ color: 0x9aa1aa, specular: 0x444444, shininess: 30 });
+function backing(parent, shape) { // 板の厚み（アルミ板の裏）
+  const g = new THREE.ExtrudeGeometry(shape, { depth: .022, bevelEnabled: true, bevelSize: .006, bevelThickness: .006, bevelSegments: 1, curveSegments: 12 });
+  const m = mesh(g, PLATE_BACK, true); m.position.z = -.034; parent.add(m); return m;
+}
+function auxPlate(body, y, text, w = .62) { // 補助標識
+  const g = new THREE.Group(); g.position.set(0, y, .075);
+  const t = canvasTex(256, 80, (x, cw, ch) => { x.fillStyle = '#fff'; x.fillRect(0, 0, cw, ch); x.strokeStyle = '#1b1d24'; x.lineWidth = 6; x.strokeRect(6, 6, cw - 12, ch - 12); x.fillStyle = '#1b1d24'; x.font = `900 ${text.length > 4 ? 40 : 48}px ${JP_FONT}`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(text, cw / 2, ch / 2 + 2); });
+  const face = mesh(new THREE.PlaneGeometry(w, w * 80 / 256), new THREE.MeshBasicMaterial({ map: t })); g.add(face);
+  const bk = mesh(BOX, PLATE_BACK, true); bk.scale.set(w + .01, w * 80 / 256 + .01, .02); bk.position.z = -.012; g.add(bk);
+  bracket(g, 0); body.add(g); return g;
+}
+function bracket(parent, y) { const b = mesh(BOX, GALV, true); b.scale.set(.13, .045, .07); b.position.set(0, y, -.06); parent.add(b); }
+function buildSign(def) {
+  const extra = {};
+  const root = new THREE.Group(), body = new THREE.Group(); root.add(body);
+  const plate = new THREE.Group(); body.add(plate);
+  const figs = []; let H = 2.15;
+  const pole = (h) => {
+    const p = mesh(CYL, GALV, true); p.scale.set(.038, h, .038); p.position.y = h / 2; body.add(p);
+    const cap = mesh(SPH, GALV); cap.scale.set(.042, .03, .042); cap.position.y = h; body.add(cap);
+    const base = mesh(CYL, lam(0x9a968e), true); base.scale.set(.16, .07, .16); base.position.y = .035; body.add(base);
+  };
+  const brackets = (ys) => ys.forEach(y => bracket(plate, y));
+  switch (def.id) {
+    case 'main': case 'oyako': {
+      H = 2.15; pole(H + .45);
+      const tri = k => roundedShape(triPts(k), .15 * k);
+      backing(plate, tri(1.06));
+      flat(plate, tri(1.06), 0x1d3fae, -.004);
+      flat(plate, tri(.97), 0xffffff, .002);
+      flat(plate, tri(.95), 0x1d3fae, .004);
+      pill(plate, .66, .07, 0, -.27); pill(plate, .17, .065, -.27, -.13); pill(plate, .17, .065, .27, -.13);
+      if (def.id === 'main') figs.push(new PictFig(plate, 0xffffff, .56, -.01, .09, POSE.signWalk, { hat: 'fedora' }));
+      else { figs.push(new PictFig(plate, 0xffffff, .46, -.11, .07, POSE.signBoy, { hat: 'cap', bag: true })); figs.push(new PictFig(plate, 0xffffff, .37, .14, .02, POSE.signGirl, { hat: 'bow', skirt: true })); }
+      brackets([.25, -.25]); plate.position.y = H;
+      if (def.id === 'main') auxPlate(body, H - .66, '横断歩道'); else auxPlate(body, H - .66, 'こども横断', .66);
+      break;
+    }
+    case 'hokosha': {
+      H = 2.15; pole(H + .3);
+      const sh = new THREE.Shape(); sh.absarc(0, 0, .45, 0, Math.PI * 2); backing(plate, sh);
+      circle(plate, .45, 0x1d48c0, 0); circle(plate, .425, 0xffffff, .002); circle(plate, .41, 0x1d48c0, .004);
+      figs.push(new PictFig(plate, 0xffffff, .6, -.07, .02, POSE.signAdultFront, { hat: 'fedora', face: 1 })); figs.push(new PictFig(plate, 0xffffff, .36, .17, -.08, POSE.signChildFront, { skirt: true }));
+      brackets([.2, -.2]); plate.position.y = H; auxPlate(body, H - .6, '歩行者専用'); break;
+    }
+    case 'gakko': case 'koji': {
+      H = 2.15; pole(H + .3);
+      const dia = k => roundedShape(diaPts(k), .06 * k);
+      backing(plate, dia(1));
+      flat(plate, dia(1), 0xffc400, -.003);
+      flat(plate, dia(.93), 0x1b1d24, .002);
+      flat(plate, dia(.9), 0xffc400, .004);
+      if (def.id === 'gakko') { figs.push(new PictFig(plate, 0x1b1d24, .38, -.1, .02, POSE.signKidRun, { hat: 'cap', bag: true })); figs.push(new PictFig(plate, 0x1b1d24, .32, .13, -.02, POSE.signKidRun, { hat: 'bow', skirt: true })); }
+      else { const mound = mesh(new THREE.CircleGeometry(.13, 20, 0, Math.PI), basic(0x1b1d24)); mound.scale.set(1.2, .8, 1); mound.position.set(-.2, -.2, .01); plate.add(mound); figs.push(new PictFig(plate, 0x1b1d24, .46, .06, .05, POSE.signDig, { shovel: true, hat: 'helmet', face: -1 })); }
+      brackets([.25, -.25]); plate.position.y = H;
+      auxPlate(body, H - .72, def.id === 'gakko' ? '通学路' : '工事中'); break;
+    }
+    case 'shingo': {
+      H = 2.95; pole(H + .25);
+      const hm = new THREE.MeshPhongMaterial({ color: 0xd6dadf, specular: 0x555555, shininess: 30 });
+      const dark = new THREE.MeshLambertMaterial({ color: 0x2a2d33 });
+      // 本体（角の丸い箱）を柱の横に取り付ける
+      const box = mesh(new THREE.ExtrudeGeometry(roundedShape([[-.24, .48], [.24, .48], [.24, -.48], [-.24, -.48]], .07), { depth: .2, bevelEnabled: true, bevelSize: .015, bevelThickness: .015, bevelSegments: 2 }), hm, true);
+      box.position.z = -.215; plate.add(box);
+      [.3, -.3].forEach(y => { const arm = mesh(BOX, GALV, true); arm.scale.set(.3, .045, .06); arm.position.set(-.38, y, -.12); plate.add(arm); const band = mesh(CYL, GALV); band.scale.set(.05, .07, .05); band.position.set(-.53, y, -.12); plate.add(band); });
+      plate.position.x = .53; // 柱の右側にぶら下がる
+      [.22, -.22].forEach((y, i) => {
+        rect(plate, .38, .38, 0, y, 0x0c0d10, .002);
+        // ひさし（上と左右）
+        const top = mesh(BOX, hm, true); top.scale.set(.42, .018, .2); top.position.set(0, y + .2, .09); top.rotation.x = -.12; plate.add(top);
+        [-1, 1].forEach(sd => { const side = mesh(BOX, hm, true); side.scale.set(.018, .36, .15); side.position.set(sd * .2, y + .02, .07); plate.add(side); });
+        // LEDのつぶつぶ
+        const led = mesh(new THREE.PlaneGeometry(.36, .36), new THREE.MeshBasicMaterial({ map: LED_TEX, transparent: true, depthWrite: false })); led.position.set(0, y, .07); led.renderOrder = 2; plate.add(led);
+      });
+      // 光っている方はぼんやり光る
+      const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: GLOW_TEX, color: 0x48fff0, blending: THREE.AdditiveBlending, depthWrite: false, transparent: true, opacity: .55 }));
+      glow.scale.set(.75, .75, 1); glow.position.set(0, -.22, .05); plate.add(glow);
+      const red = new PictFig(plate, 0x4a4c52, .28, 0, .22, POSE.signAdultFront, { hat: 'fedora' }); red.fixed = true; extra.redFig = red; extra.glow = glow;
+      figs.push(new PictFig(plate, 0x6ffcf2, .3, 0, -.24, POSE.signSignalWalk, { hat: 'fedora' }));
+      // 押しボタン箱
+      const pb = new THREE.Group(); const pbb = mesh(BOX, lam(0xf1e7c8), true); pbb.scale.set(.2, .3, .12); pb.add(pbb);
+      const btn = mesh(CYL, lam(0xd8262e)); btn.scale.set(.035, .03, .035); btn.rotation.x = Math.PI / 2; btn.position.set(0, -.04, .065); pb.add(btn);
+      const lab = mesh(new THREE.PlaneGeometry(.16, .07), new THREE.MeshBasicMaterial({ map: canvasTex(128, 56, (x, w, h) => { x.fillStyle = '#f1e7c8'; x.fillRect(0, 0, w, h); x.fillStyle = '#c0262e'; x.font = `900 22px ${JP_FONT}`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('おしてください', w / 2, h / 2); }) }));
+      lab.position.set(0, .07, .061); pb.add(lab); pb.position.set(0, 1.1, .1); body.add(pb);
+      plate.position.y = H; break;
+    }
+    case 'exit': {
+      H = .38; // 地面をはねる箱
+      const box = mesh(BOX, lam(0x13a24a), true); box.scale.set(.66, .66, .22); box.position.z = -.12; plate.add(box);
+      rect(plate, .62, .62, 0, 0, 0x13a24a, .002);
+      rect(plate, .4, .5, .03, -.02, 0xffffff, .004);
+      rect(plate, .05, .5, -.2, -.02, 0x13a24a, .006);
+      figs.push(new PictFig(plate, 0x13a24a, .42, .02, .0, POSE.signExit, { face: -1 }));
+      plate.position.y = H; break;
+    }
+  }
+  plate.position.z = .075;
+  root.traverse(o => { if (o.isMesh && o.material.type !== 'MeshBasicMaterial') o.castShadow = true; });
+  return Object.assign({ def, root, body, plate, figs, H, state: 'away', hop: null, pos: new THREE.Vector3() }, extra);
+}
+const signs = SIGN_DEFS.map(buildSign);
+const SIGN = Object.fromEntries(signs.map(s => [s.def.id, s]));
+
+// ============================================================
+//  通行人
+// ============================================================
+const CLOTHES = [0xe85d5d, 0x4a7fd6, 0x3fae6a, 0xf2a93b, 0x8e5ad6, 0x2d2f3a, 0xf0f0f0, 0xd65aa0];
+const PANTS = [0x2d3550, 0x5a4a3a, 0x333333, 0x6a7a8a];
+const SKIN = [0xf3d2b5, 0xe8b996, 0xc98f6a];
+function bubbleTex(text, color = '#1d2340') {
+  const long = text.length > 3, W = long ? 512 : 256;
+  const c = document.createElement('canvas'); c.width = W; c.height = 128; const x = c.getContext('2d');
+  x.fillStyle = '#fff'; x.strokeStyle = '#1d2340'; x.lineWidth = 6;
+  x.beginPath(); x.roundRect ? x.roundRect(8, 8, W - 16, 92, 30) : x.rect(8, 8, W - 16, 92); x.fill(); x.stroke();
+  x.beginPath(); x.moveTo(W / 2 - 18, 98); x.lineTo(W / 2, 124); x.lineTo(W / 2 + 18, 98); x.fill();
+  x.fillStyle = color; x.font = `900 ${long ? Math.min(52, 440 / text.length) : 64}px "Hiragino Sans","Noto Sans CJK JP",sans-serif`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(text, W / 2, 56);
+  const t = new THREE.CanvasTexture(c); t.userData = { wide: long }; return t;
+}
+const texCache = {};
+const btex = (t, c) => texCache[t + c] || (texCache[t + c] = bubbleTex(t, c));
+const PED_LINES = ['…標識、増えた？', 'こんなに標識あった？', '気のせいか…', 'ん？', '…なんか見られてる？', 'ここ交差点だっけ'];
+
+const START_Z = -21, WALK_Z = -3.3, L1 = WALK_Z - START_Z;
+class Ped {
+  constructor(type, dir) {
+    this.type = type; this.dir = dir; this.lane = (Math.random() < .5 ? -1 : 1) * (.9 + Math.random() * .4);
+    this.d = 0; this.x = this.lane; this.z = START_Z;
+    this.g = new THREE.Group(); scene.add(this.g);
+    const kid = type === 'kid', sc = kid ? .62 : 1; this.sc = sc;
+    const shirt = lam(CLOTHES[Math.random() * CLOTHES.length | 0]), pants = lam(PANTS[Math.random() * PANTS.length | 0]), skin = lam(SKIN[Math.random() * SKIN.length | 0]);
+    const body = mesh(BOX, shirt, true); body.scale.set(.44, .62, .26); body.position.y = 1.18; this.g.add(body);
+    this.head = new THREE.Group(); this.head.position.y = 1.62; this.g.add(this.head);
+    const hd = mesh(SPH, skin, true); hd.scale.set(.15, .17, .15); this.head.add(hd);
+    const hair = mesh(SPH, lam(type === 'jog' ? 0xf2a93b : 0x2a2420), true); hair.scale.set(.16, .1, .16); hair.position.set(0, .07, -.02); this.head.add(hair);
+    const eyeL = mesh(SPH, basic(0x111111)); eyeL.scale.set(.022, .028, .02); eyeL.position.set(-.05, .01, .14); const eyeR = eyeL.clone(); eyeR.position.x = .05; this.head.add(eyeL, eyeR);
+    this.legs = [0, 1].map(i => { const p = new THREE.Group(); p.position.set(i ? .11 : -.11, .88, 0); const l = mesh(BOX, pants, true); l.scale.set(.15, .86, .17); l.position.y = -.43; p.add(l); this.g.add(p); return p; });
+    this.arms = [0, 1].map(i => { const p = new THREE.Group(); p.position.set(i ? .29 : -.29, 1.45, 0); const a = mesh(BOX, shirt, true); a.scale.set(.12, .6, .13); a.position.y = -.3; p.add(a); const h = mesh(SPH, skin); h.scale.set(.065, .065, .065); h.position.y = -.62; p.add(h); this.g.add(p); return p; });
+    this.phone = mesh(BOX, basic(0x222833)); this.phone.scale.set(.09, .16, .02); this.phone.position.set(0, -.66, .05); this.arms[1].add(this.phone); this.phone.visible = type === 'phone';
+    this.g.scale.setScalar(sc);
+    this.bubble = new THREE.Sprite(new THREE.SpriteMaterial({ map: btex('？'), depthTest: false })); this.bubble.scale.set(1.1, .55, 1); this.bubble.position.y = 2.35; this.bubble.visible = false; this.g.add(this.bubble); this.bubble.renderOrder = 10;
+    this.speed = { normal: 2.3, phone: 1.9, turn: 2.1, jog: 4.6, kid: 2.0 }[type];
+    // 見ている区間（歩いた距離）
+    this.win = { normal: [L1 - 3.5, L1 + 1.5], phone: null, turn: [L1 - 1.5, L1 + 1], jog: [L1 - 4, L1 + 3.5], kid: [L1 - 1.6, L1 + .8] }[type];
+    this.phase = 'walk'; this.pt = 0; this.walkT = Math.random() * 6; this.watching = false; this.sus = 0; this.lineShown = false; this.faceCam = 0;
+    this.lookups = type === 'phone' ? (Math.random() < .5 ? [L1 - 4 - Math.random() * 3] : [L1 - 8 - Math.random() * 2, L1 + 1.5]) : [];
+    this.stopAt = type === 'kid' ? L1 - .4 : type === 'turn' ? L1 + 5.5 : null;
+    this.lastStep = 0; this.done = false; this.place();
+  }
+  get endD() { return L1 + 14.5 - this.lane * this.dir; }
+  get coming() { return !this.watching && this.win && this.d < this.win[0]; }
+  get pastWatch() { return this.win ? this.d > this.win[1] && !this.stopAt : this.lookups.length === 0; }
+  place() {
+    if (this.d < L1) { this.x = this.lane; this.z = START_Z + this.d; } else { this.x = this.lane + this.dir * (this.d - L1); this.z = WALK_Z; }
+  }
+  setBubble(t, color) { this.bubble.visible = !!t; if (t) { const m = btex(t, color); if (this.bubble.material.map !== m) { this.bubble.material.map = m; this.bubble.material.needsUpdate = true; } if (!this.susMode) this.bubble.scale.set(m.userData.wide ? 2.2 : 1.1, .55, 1); } }
+  update(dt, frozenWorld) {
+    if (this.done) return;
+    this.pt += dt;
+    if (this.type === 'crowd') { // 夜明けの通勤ラッシュ
+      if (this.pt < this.delay) { this.g.position.set(this.x, 0, this.z); return; }
+      const dx = this.tx - this.x, dz = this.tz - this.z, L = Math.hypot(dx, dz), mv = this.phase !== 'caught' && L > .05;
+      if (mv) { const st = Math.min(L, 4.2 * dt); this.x += dx / L * st; this.z += dz / L * st; this.walkT += dt * 12; this.g.rotation.y = Math.atan2(dx, dz); }
+      else this.g.rotation.y *= .8;
+      const sw = mv ? Math.sin(this.walkT) * .6 : 0; this.legs[0].rotation.x = sw; this.legs[1].rotation.x = -sw; this.arms[0].rotation.x = -sw * .8; if (this.phase !== 'caught') this.arms[1].rotation.x = sw * .8;
+      this.head.rotation.set(0, 0, 0);
+      this.g.position.set(this.x, mv ? Math.abs(Math.cos(this.walkT)) * .05 : 0, this.z); return;
+    }
+    let moving = true, look = false; // look=こっちを向いて止まる
+    switch (this.phase) {
+      case 'walk':
+        if (this.lookups.length && this.d >= this.lookups[0]) { this.lookups.shift(); this.phase = 'notice'; this.pt = 0; }
+        else if (this.stopAt != null && this.d >= this.stopAt) { this.phase = this.type === 'kid' ? 'stare' : 'pause'; this.pt = 0; this.stopAt = null; }
+        this.watching = this.phase === 'walk' && !!this.win && this.d >= this.win[0] && this.d <= this.win[1];
+        break;
+      case 'notice': moving = false; this.watching = false; if (this.pt > .7) { this.phase = 'look'; this.pt = 0; } break;
+      case 'look': moving = false; this.watching = true; look = true; if (this.pt > 1.0) { this.phase = 'walk'; this.pt = 0; this.setBubble(null); } break;
+      case 'pause': moving = false; this.watching = false; if (this.pt > .6) { this.phase = 'turnlook'; this.pt = 0; } break;
+      case 'turnlook': moving = false; this.watching = true; look = true; if (this.pt > 1.2) { this.phase = 'walk'; this.pt = 0; this.setBubble(null); } break;
+      case 'stare': moving = false; this.watching = true; look = true; if (this.pt > 1.4) { this.phase = 'walk'; this.pt = 0; } break;
+      case 'caught': moving = false; look = true; break;
+    }
+    if (this.phase === 'notice') this.setBubble('ん？');
+    if (this.phase === 'pause') this.setBubble('…');
+    if (moving && !frozenWorld) { this.d += this.speed * dt; this.walkT += dt * this.speed * 3.2; }
+    this.place();
+    // 向き：歩く方向 / こっちを見る
+    const walkYaw = this.d < L1 ? 0 : (this.dir > 0 ? Math.PI / 2 : -Math.PI / 2);
+    this.faceCam += ((look ? 1 : 0) - this.faceCam) * Math.min(1, dt * 10);
+    this.g.rotation.y = walkYaw * (1 - this.faceCam);
+    // 頭：見ているときはこっち、見ていないときはよそ見
+    let hy = 0, hx = 0;
+    if (this.watching && !look) hy = -this.g.rotation.y * .85;
+    else if (!this.watching && !look) { hy = this.d < L1 ? (this.lane > 0 ? .9 : -.9) : 0; if (this.win && this.d < this.win[0] && this.d > this.win[0] - 1.5) hy *= (this.win[0] - this.d) / 1.5; }
+    if (this.type === 'phone' && !look && this.phase !== 'notice') { hx = .5; hy = 0; }
+    this.head.rotation.y += (hy - this.head.rotation.y) * Math.min(1, dt * 8);
+    this.head.rotation.x += (hx - this.head.rotation.x) * Math.min(1, dt * 8);
+    const sw = moving ? Math.sin(this.walkT) * (this.type === 'jog' ? .9 : .55) : 0;
+    this.legs[0].rotation.x = sw; this.legs[1].rotation.x = -sw;
+    this.arms[0].rotation.x = -sw * .8;
+    if (this.phase !== 'caught') this.arms[1].rotation.x = this.type === 'phone' ? -1.2 : sw * .8;
+    this.g.position.set(this.x, moving ? Math.abs(Math.cos(this.walkT)) * (this.type === 'jog' ? .1 : .04) : 0, this.z);
+    const step = Math.floor(this.walkT / Math.PI);
+    if (moving && step !== this.lastStep) { this.lastStep = step; sfxStep(this.x, this.z, this.type === 'jog'); }
+    if (this.d > this.endD) { this.done = true; scene.remove(this.g); }
+  }
+}
+
+// ============================================================
+//  音（Web Audio）
+// ============================================================
+let AC = null, master = null, musicBus = null, sfxBus = null, recDest = null, noiseBuf = null, musicNext = 0, musicStep = 0;
+let muted = store.get('muted', false);
+function initAudio() {
+  if (AC) { if (AC.state === 'suspended') AC.resume(); return; }
+  try {
+    AC = new (window.AudioContext || window.webkitAudioContext)();
+    master = AC.createGain(); master.gain.value = muted ? 0 : .9;
+    const comp = AC.createDynamicsCompressor(); master.connect(comp); comp.connect(AC.destination);
+    if (REC && AC.createMediaStreamDestination) { recDest = AC.createMediaStreamDestination(); comp.connect(recDest); }
+    musicBus = AC.createGain(); musicBus.gain.value = 0; musicBus.connect(master);
+    sfxBus = AC.createGain(); sfxBus.gain.value = .9; sfxBus.connect(master);
+    noiseBuf = AC.createBuffer(1, AC.sampleRate, AC.sampleRate); const d = noiseBuf.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    musicNext = AC.currentTime + .05;
+  } catch (e) { AC = null; }
+}
+function env(gn, t, a, peak, dec) { gn.gain.setValueAtTime(.0001, t); gn.gain.exponentialRampToValueAtTime(peak, t + a); gn.gain.exponentialRampToValueAtTime(.0001, t + a + dec); }
+function osc(type, f, t, dur, vol, bus, f2, pan) {
+  const o = AC.createOscillator(), g = AC.createGain(); o.type = type; o.frequency.setValueAtTime(f, t); if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + dur);
+  env(g, t, .004, vol, dur); o.connect(g);
+  if (pan != null && AC.createStereoPanner) { const p = AC.createStereoPanner(); p.pan.value = pan; g.connect(p); p.connect(bus); } else g.connect(bus);
+  o.start(t); o.stop(t + dur + .05);
+}
+function noise(t, dur, vol, bus, hp = 6000, lp = 0, pan) {
+  const s = AC.createBufferSource(); s.buffer = noiseBuf; const g = AC.createGain(); let n = s;
+  const f = AC.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = hp; n.connect(f); n = f;
+  if (lp) { const f2 = AC.createBiquadFilter(); f2.type = 'lowpass'; f2.frequency.value = lp; n.connect(f2); n = f2; }
+  env(g, t, .002, vol, dur); n.connect(g);
+  if (pan != null && AC.createStereoPanner) { const p = AC.createStereoPanner(); p.pan.value = pan; g.connect(p); p.connect(bus); } else g.connect(bus);
+  s.start(t); s.stop(t + dur + .05);
+}
+// 踊っている間だけ鳴る曲（手を止めるとピタッと止まる）
+const BPM = 128, E8 = 60 / BPM / 2;
+const ROOTS = [110, 87.31, 130.81, 98], CH = [[220, 261.63, 329.63], [174.61, 220, 261.63], [261.63, 329.63, 392], [196, 246.94, 293.66]];
+const MEL = [5, 0, 4, 0, 3, 2, 3, 0, 5, 0, 4, 0, 6, 5, 4, 0];
+const PENTA = [0, 523.25, 587.33, 659.25, 783.99, 880, 1046.5];
+function musicTick() {
+  if (!AC) return;
+  while (musicNext < AC.currentTime + .12) {
+    const t = musicNext, st = musicStep % 8, bar = Math.floor(musicStep / 8) % 4;
+    if (st % 2 === 0) osc('sine', 150, t, .25, .8, musicBus, 45);
+    if (st === 2 || st === 6) { noise(t, .14, .35, musicBus, 1500); }
+    if (st % 2) noise(t, .04, .15, musicBus, 8000);
+    const bp = [1, 0, 2, 1, 0, 1, 2, 1][st]; if (bp) { osc('sawtooth', ROOTS[bar] * bp, t, E8 * .85, .14, musicBus); }
+    if (st === 3 || st === 7) CH[bar].forEach(f => osc('square', f * 2, t, .1, .035, musicBus));
+    const m = MEL[musicStep % 16]; if (m && bar % 2 === 0) osc('triangle', PENTA[m], t, .12, .09, musicBus);
+    musicNext += E8 / tempoMul; musicStep++;
+  }
+}
+function sfxTap(n) { if (!AC) return; const t = AC.currentTime; osc('square', 880 + (n % 6) * 110, t, .05, .06, sfxBus); }
+function sfxMove(r) { if (!AC) return; const t = AC.currentTime; osc('sine', 1318, t, .09, .2, sfxBus); osc('sine', 1046, t + .08, .14, .18, sfxBus); noise(t, .1, .1, sfxBus, 3000); if (r !== 'N') osc('triangle', 1568, t + .16, .2, .14, sfxBus); }
+function sfxRare(ur, sr) { if (!AC) return; const t = AC.currentTime; const seq = sr ? [784, 988, 1175] : ur ? [523, 659, 784, 1046, 1318, 1568, 2093] : [523, 659, 784, 1046, 1318]; seq.forEach((f, i) => { osc('square', f, t + i * .07, .18, .07, sfxBus); osc('sine', f * 2, t + i * .07, .25, .05, sfxBus); }); if (!sr) noise(t, .8, .15, sfxBus, 5000); }
+function sfxBoing(pan) { if (!AC) return; const t = AC.currentTime; osc('sine', 180, t, .22, .3, sfxBus, 520, pan); }
+function sfxArrive() { if (!AC) return; const t = AC.currentTime; [1318, 1568, 1318, 1568].forEach((f, i) => osc('sine', f, t + i * .08, .07, .16, sfxBus)); }
+function sfxStep(x, z, jog) { if (!AC) return; const v = Math.max(.02, .24 - Math.hypot(x, z) * .009) * (jog ? 1.2 : 1); noise(AC.currentTime, .05, v, sfxBus, 500, 2500, Math.max(-1, Math.min(1, x / 10))); }
+function sfxFreeze() { if (!AC) return; const t = AC.currentTime; osc('sine', 600, t, .08, .08, sfxBus, 300); }
+function sfxSuspicious() { if (!AC) return; const t = AC.currentTime; osc('triangle', 660, t, .12, .12, sfxBus, 990); }
+function sfxCaught() {
+  if (!AC) return; const t = AC.currentTime;
+  osc('square', 880, t, .12, .15, sfxBus); osc('square', 1175, t + .1, .3, .15, sfxBus);
+  // シャッター
+  noise(t + .55, .05, .5, sfxBus, 2000); noise(t + .62, .07, .4, sfxBus, 1500);
+}
+function sfxSafe() { if (!AC) return; const t = AC.currentTime; osc('sine', 784, t, .08, .12, sfxBus); osc('sine', 1046, t + .07, .12, .12, sfxBus); }
+
+// ============================================================
+//  ゲームの状態
+// ============================================================
+let state = 'title'; // title | play | caught | result
+let hype = 0, energy = 0, dance = 0, taps = 0, tapTimes = [], peakRate = 0;
+let peds = [], nextSpawn = 0, spawnCount = 0, gameT = 0, arrivedCount = 1, caughtBy = null, photoURL = '', resultData = null;
+let showK = 0, dispHype = 0, lastCount = 0, dawnT = 0, dawnPhoto = false, dawnBuzz = false, dawnBonus = 0, crowd = [];
+let shakeAmt = 0, hitstopUntil = 0, freezeSnd = false, firstWatchDone = false, hintTimer = 0, savedCount = 0, wasWatched = false;
+let camDist = 4, camLook = new THREE.Vector3(0, 2, 0), camPos = new THREE.Vector3(0, 2, 6);
+let autoplay = false, demoCatchAt = 17000;
+
+function resetSigns() {
+  signs.forEach(s => {
+    scene.remove(s.root);
+    s.state = s.def.id === 'main' ? 'here' : 'away'; s.hop = null;
+    const sl = SLOTS[s.def.id];
+    if (s.state === 'here') { s.root.position.set(sl[0], 0, sl[1]); scene.add(s.root); }
+    s.root.rotation.set(0, 0, 0); s.body.rotation.set(0, 0, 0); s.body.scale.set(1, 1, 1);
+    s.figs.forEach(f => { f.cur = { ...f.rest }; f.tgt = f.rest; f.apply(); });
+  });
+}
+resetSigns();
+
+function resetGame() {
+  cancelSpecial(); runSpecials = []; spurt = false; tempoMul = 1; showK = 0;
+  hype = 0; energy = 0; dance = 0; taps = 0; tapTimes = []; peakRate = 0; danceTaps = 0; dispProg = 0; runDances = []; curDance = drawDance(); setDanceLabel(curDance); updateDanceUI();
+  peds.forEach(p => scene.remove(p.g)); crowd.forEach(p => scene.remove(p.g)); peds = []; nextSpawn = 6.5; spawnCount = 0; gameT = 0; arrivedCount = 1; caughtBy = null; resultData = null;
+  firstWatchDone = false; savedCount = 0; wasWatched = false;
+  dispHype = 0; $('hype').textContent = '0'; lastCount = 0; dawnT = 0; dawnPhoto = false; dawnBuzz = false; dawnBonus = 0; crowd = []; SKY.k = -1; setDawn(0);
+  $('timer').textContent = `🌙 0:${TIME_LIMIT}`; $('timer').classList.remove('hurry');
+  resetSigns();
+}
+function startGame() {
+  initAudio();
+  if (!autoplay && window.rickPlay) rickPlay(SLUG);
+  resetGame();
+  $('title').classList.add('hide'); $('result').classList.add('hide'); $('site').classList.add('hide');
+  $('hud').classList.remove('hide');
+  state = 'play';
+  showHint('連打で踊れ！', 2.5);
+}
+function showHint(t, dur) { const h = $('hint'); h.textContent = t; h.classList.remove('hide'); h.style.opacity = 1; hintTimer = dur; }
+
+// ---- 連打：決まった回数で踊りが1つ決まり、次の踊りを抽選 ----
+let curDance = DANCES[0], danceTaps = 0, dispProg = 0, runDances = [], revealT = 0;
+function tap() {
+  if (state !== 'play' && !(state === 'dawn' && !dawnPhoto)) return;
+  initAudio();
+  energy = Math.min(1, energy + CFG.tapEnergy);
+  taps++; danceTaps++;
+  const now = performance.now(); tapTimes.push(now); while (tapTimes.length && now - tapTimes[0] > 1000) tapTimes.shift(); peakRate = Math.max(peakRate, tapTimes.length);
+  dancingSigns().forEach(s => { s.pulse = 1; });
+  sfxTap(danceTaps);
+  if (danceTaps >= CFG.tapsPerDance) completeDance(now);
+  updateDanceUI();
+}
+function completeDance(now) {
+  const d = curDance, R = RARITY[d.r];
+  // 基本点×100 ＋ 連打の速さボーナス（下の桁がバラけて気持ちいい）
+  const gain = (R.mult * dancingSigns().length * 100 + Math.round(tapTimes.length * (7 + Math.random() * 6))) * (spurt ? 2 : 1);
+  hype += gain;
+  hitstopUntil = now + CFG.hitstop * 1000; shake(.03 + R.mult * .006);
+  sfxMove(d.r);
+  popAt(SIGN.main.root, `+${gain.toLocaleString()}${spurt ? ' ×2' : ''}`); $('hype').animate([{ transform: 'scale(1.25)' }, { transform: 'scale(1)' }], { duration: 250 });
+  burst(dancingSigns(), 6 + R.mult * 3, 1 + R.mult * .08);
+  // 図鑑に記録
+  const dd = store.get('ddex', {}); const isNew = !dd[d.id]; if (!autoplay) { dd[d.id] = (dd[d.id] || 0) + 1; store.set('ddex', dd); }
+  runDances.push({ id: d.id, isNew: isNew && !autoplay });
+  // 次の踊りを抽選
+  curDance = drawDance(d.id); danceTaps = 0; dispProg = 0; revealT = .55;
+  signs.forEach(sg => sg.figs.forEach(unwind));
+  rouletteUI(isNew && !autoplay ? d : null);
+  if (d.r === 'SSR' || d.r === 'UR') { // キマった！
+    hitstopUntil = now + 180; burst(dancingSigns(), 40, 1.8); shake(.1); showBig('キマった！', RARITY[d.r].col, d.name);
+    dancingSigns().forEach(sg => sg.figs.forEach(f => { if (!f.fixed) { f.cur = { ...f.cur, ...POSE.yUp, ry: 0, rz: 0, oz: 0 }; } }));
+  }
+  trySpecial();
+}
+function updateDanceUI() { if (activeSpecial) return; $('danceBar').firstElementChild.style.width = (danceTaps / CFG.tapsPerDance * 100) + '%'; }
+function setDanceLabel(d) {
+  if (activeSpecial) return;
+  const R = RARITY[d.r], el = $('danceName');
+  el.innerHTML = `<span class="rar" style="background:${R.col}">${R.name}</span>${d.name}`;
+}
+function rouletteUI(newDance) {
+  const el = $('danceName'); let n = 0;
+  if (activeSpecial) { updateDanceUI(); return; }
+  const iv = setInterval(() => {
+    const d = DANCES[Math.random() * DANCES.length | 0]; setDanceLabel(d); el.classList.add('spin');
+    if (++n > 6) { clearInterval(iv); setDanceLabel(curDance); el.classList.remove('spin'); revealDance(curDance); }
+  }, 60);
+  updateDanceUI();
+  if (newDance && state === 'play') showHint(`📖 NEW！「${newDance.name}」`, 1.4);
+}
+function revealDance(d) {
+  if (activeSpecial) return;
+  const el = $('danceName');
+  el.animate([{ transform: 'scale(1.5)' }, { transform: 'scale(1)' }], { duration: 300, easing: 'cubic-bezier(.2,1.6,.4,1)' });
+  if (d.r === 'SSR' || d.r === 'UR') {
+    $('flash').animate([{ opacity: .7 }, { opacity: 0 }], { duration: 400 });
+    showBig(`${d.r}！`, RARITY[d.r].col, d.name); sfxRare(d.r === 'UR'); shake(.06);
+  } else if (d.r === 'SR') { sfxRare(false, true); }
+}
+function showBig(t, col, sub) {
+  document.querySelectorAll('.big').forEach(e => e.remove()); // 重ならないように前のを消す
+  const el = document.createElement('div'); el.className = 'big';
+  el.innerHTML = `<b style="background:${col};-webkit-background-clip:text;background-clip:text;color:transparent">${t}</b><small>${sub}</small>`;
+  if (!col.startsWith('linear')) el.querySelector('b').style.cssText = `color:${col}`;
+  document.body.appendChild(el);
+  el.animate([{ transform: 'translate(-50%,-50%) scale(.3) rotate(-10deg)', opacity: 0 }, { transform: 'translate(-50%,-50%) scale(1.15) rotate(3deg)', opacity: 1, offset: .2 }, { transform: 'translate(-50%,-50%) scale(1)', opacity: 1, offset: .8 }, { transform: 'translate(-50%,-50%) scale(1)', opacity: 0 }], { duration: 1500 }).onfinish = () => el.remove();
+}
+const dancingSigns = () => signs.filter(s => s.state === 'here');
+
+function shake(a) { shakeAmt = Math.max(shakeAmt, a * CFG.shake); }
+function popAt(obj, text) {
+  const v = new THREE.Vector3(); obj.getWorldPosition(v); v.y += 2.7; v.project(camera);
+  const el = document.createElement('div'); el.className = 'pop'; el.textContent = text;
+  el.style.left = ((v.x + 1) / 2 * innerWidth + (Math.random() - .5) * 40) + 'px'; el.style.top = ((1 - v.y) / 2 * innerHeight) + 'px';
+  document.body.appendChild(el);
+  el.animate([{ transform: 'translate(-50%,-50%) scale(.5)', opacity: 1 }, { transform: 'translate(-50%,-160%) scale(1.2)', opacity: 1, offset: .3 }, { transform: 'translate(-50%,-260%) scale(1)', opacity: 0 }], { duration: 800, easing: 'ease-out' }).onfinish = () => el.remove();
+}
+// 紙ふぶき
+const PCOLS = [0xff5a7a, 0xffc21a, 0x3ef08a, 0x4a8cff, 0xffffff, 0xff9d3d];
+const parts = [];
+const CONF = new THREE.InstancedMesh(new THREE.PlaneGeometry(.07, .05), new THREE.MeshBasicMaterial({ side: THREE.DoubleSide }), 160); CONF.frustumCulled = false; scene.add(CONF);
+const _cm = new THREE.Matrix4(), _cq = new THREE.Quaternion(), _ce = new THREE.Euler(), _cs = new THREE.Vector3(1, 1, 1), _c0 = new THREE.Vector3(0, 0, 0);
+for (let i = 0; i < 160; i++) { CONF.setColorAt(i, new THREE.Color(PCOLS[i % PCOLS.length])); parts.push({ m: { position: new THREE.Vector3(), rotation: new THREE.Euler(), visible: false }, life: 0, v: new THREE.Vector3(), r: new THREE.Vector3() }); CONF.setMatrixAt(i, _cm.makeScale(0, 0, 0)); }
+let partIdx = 0;
+function burst(list, n = 10, power = 1) {
+  list.forEach(s => {
+    const o = new THREE.Vector3(); s.plate.getWorldPosition(o);
+    for (let i = 0; i < n; i++) { const p = parts[partIdx++ % parts.length]; p.m.visible = true; p.life = 1 + Math.random() * .6; p.m.position.copy(o); p.v.set((Math.random() - .5) * 4 * power, (1.5 + Math.random() * 3) * power, (Math.random() - .2) * 2.5 * power); p.r.set(Math.random() * 9, Math.random() * 9, Math.random() * 9); }
+  });
+}
+
+// ---- 標識が集まってくる ----
+function trySummon() {
+  if (peds.some(p => p.watching)) return;
+  if (signs.some(s => s.state === 'hopping')) return;
+  const s = signs.find(s => s.state === 'away' && hype >= s.def.at);
+  if (!s) return;
+  const sl = SLOTS[s.def.id];
+  const side = sl[0] < 0 ? -1 : sl[0] > 0 ? 1 : (Math.random() < .5 ? -1 : 1);
+  const from = new THREE.Vector3(side * 12, 0, sl[1] + (s.def.id === 'exit' ? 1.5 : -1));
+  s.root.position.copy(from); scene.add(s.root);
+  s.state = 'hopping'; s.hop = { from, to: new THREE.Vector3(sl[0], 0, sl[1]), t: 0, n: 0, total: Math.ceil(from.distanceTo(new THREE.Vector3(sl[0], 0, sl[1])) / 1.3), start: from.clone(), ph: 0 };
+  s.figs.forEach(f => f.tgt = f.rest);
+  showHint(s.def.secret ? '非常口の人まで来た！？' : `${s.def.name}が来た！`, 1.6);
+}
+function updateHop(s, dt, frozen) {
+  const h = s.hop; if (!h) return;
+  if (frozen) { // 人に見られている間は、その場で固まる
+    s.body.position.y += (0 - s.body.position.y) * Math.min(1, dt * 15); s.body.rotation.z *= .8; s.body.scale.y += (1 - s.body.scale.y) * .3;
+    s.figs.forEach(f => f.tgt = f.rest); return;
+  }
+  h.ph += dt / .42; // 1回のジャンプ
+  if (h.ph >= 1) { h.ph = 0; h.n++; h.start = s.root.position.clone(); sfxBoing(Math.max(-1, Math.min(1, s.root.position.x / 8))); }
+  const dirV = h.to.clone().sub(h.start); const dist = dirV.length();
+  if (h.n >= h.total || dist < .05) {
+    s.root.position.copy(h.to); s.body.position.y = 0; s.body.rotation.z = 0; s.body.scale.set(1, 1, 1);
+    s.state = 'here'; s.hop = null; arrivedCount++; sfxArrive(); shake(.05); burst([s], 24, 1.3);
+    const dex = store.get('dex2', ['main']); if (!dex.includes(s.def.id)) { dex.push(s.def.id); store.set('dex2', dex); }
+    return;
+  }
+  const stepLen = Math.min(1.3, dist), p = h.ph;
+  const e = p < .25 ? 0 : (p - .25) / .75; // しゃがんでから跳ぶ
+  const pos = h.start.clone().add(dirV.normalize().multiplyScalar(stepLen * Math.min(1, e)));
+  s.root.position.copy(pos);
+  s.body.position.y = Math.sin(Math.min(1, e) * Math.PI) * .55;
+  const sq = p < .25 ? 1 - Math.sin(p / .25 * Math.PI) * .22 : e > .85 ? 1 - Math.sin((e - .85) / .15 * Math.PI) * .18 : 1 + Math.sin(e * Math.PI) * .12;
+  s.body.scale.set(2 - sq, sq, 1);
+  s.body.rotation.z = -Math.sign(dirV.x || 1) * .22 * Math.sin(e * Math.PI);
+  s.root.rotation.y = Math.sin(h.n * 2.3 + p * 3) * .15;
+}
+
+// ---- 通行人の出現 ----
+function spawnPed() {
+  spawnCount++;
+  const pool = spawnCount === 1 ? ['normal'] : spawnCount === 2 ? ['phone'] : spawnCount === 3 ? ['turn'] : ['normal', 'normal', 'phone', 'phone', 'turn', 'turn', 'jog', 'kid', 'kid'];
+  const type = pool[Math.random() * pool.length | 0];
+  peds.push(new Ped(type, Math.random() < .5 ? 1 : -1));
+}
+const TIME_LIMIT = 60;
+const TYPE_NAME = { dawn: '通勤ラッシュの人たち', normal: '通りすがりの人', phone: 'スマホを見ていた人', turn: '振り返った人', jog: 'ジョギング中の人', kid: 'じーっと見る子ども' };
+
+// ============================================================
+//  見つかった！
+// ============================================================
+
+// ============================================================
+//  夜明け：通勤ラッシュの人たちが一斉に撮る
+// ============================================================
+function startDawn() {
+  state = 'dawn'; dawnT = 0; dawnPhoto = false; dawnBuzz = false; dawnBonus = 0; caughtBy = 'dawn';
+  peds.forEach(p => scene.remove(p.g)); peds = [];
+  $('vig').className = ''; $('ar').classList.add('hide'); $('watchLab').classList.add('hide');
+  $('timer').textContent = '🌅 朝！'; $('timer').classList.remove('hurry');
+  showHint('夜が明けた！最後まで踊れ！', 2.4);
+  $('flash').style.background = '#ffd59a'; $('flash').animate([{ opacity: .8 }, { opacity: 0 }], { duration: 700 }).onfinish = () => $('flash').style.background = '#fff';
+  sfxDawn();
+  crowd = [];
+  const spots = [[-2.6, -2.7], [-1.6, -3.3], [-.6, -2.9], [.6, -3.4], [1.6, -2.8], [2.6, -3.3], [-3.4, -3.6], [3.4, -3.6]];
+  spots.forEach(([x, z], i) => { const p = new Ped(i % 4 === 3 ? 'kid' : 'normal', 1); p.type = 'crowd'; p.tx = x; p.tz = z; p.x = x * .4 + (Math.random() - .5); p.z = -14 - i * 1.3; p.delay = i * .12; p.pt = 0; crowd.push(p); });
+}
+function updateDawn(dt) {
+  dawnT += dt;
+  setDawn(.55 + Math.min(1, dawnT / 2.2) * .45);
+  crowd.forEach(p => p.update(dt, false));
+  if (dawnT > 2.5 && !dawnPhoto) {
+    crowd.forEach(p => { if (p.phase === 'caught') return; p.phase = 'caught'; p.arms[1].rotation.x = -2.6; p.phone.visible = true; p.phone.position.set(0, -.66, .08); p.setBubble(dance > .15 ? '！！' : '？', dance > .15 ? '#ff3b4e' : '#1d2340'); });
+  }
+  if (dawnT > 2.75 && !dawnPhoto) {
+    dawnPhoto = true; dawnBuzz = dance > .15;
+    if (dawnBuzz) { dawnBonus = Math.round(hype * .5) + 1000 + (Math.random() * 99 | 0); hype += dawnBonus; popAt(SIGN.main.root, `バズ +${dawnBonus.toLocaleString()}`); burst(dancingSigns(), 30, 1.6); }
+    takePhoto(); sfxCaught(); if (AC) [.08, .2, .31].forEach(d => noise(AC.currentTime + .6 + d, .05, .35, sfxBus, 2000));
+    $('flash').animate([{ opacity: 1 }, { opacity: 0 }], { duration: 500 }); shake(.08);
+  }
+  if (dawnT > 4.1) showResult();
+}
+function sfxDawn() { if (!AC) return; const t = AC.currentTime; [392, 523, 659, 784, 1046].forEach((f, i) => osc('triangle', f, t + i * .12, .6, .09, sfxBus)); [1568, 1318].forEach((f, i) => osc('sine', f, t + .8 + i * .15, .2, .12, sfxBus)); }
+
+// ============================================================
+//  標識ごとのソロ（踊りが決まったとき、ときどき出る）
+// ============================================================
+const SPECIALS = {
+  main: { name: '帽子トス', dur: 1.7, icon: POSE.yUp, run(s, t, w, k) { const f = s.figs[0]; f.hatLift = Math.sin(Math.min(1, t / 1.4) * Math.PI) * .45 * w; f.hatSpin = t * 14 * w; f.tgt = blendPose(f.rest, t < 1.2 ? P({ la: -2.7, ra: 2.7, hy: -.04, ll: -.2, rl: .2 }) : POSE.dab, w); }, end(s) { s.figs[0].hatLift = 0; s.figs[0].hatSpin = 0; } },
+  oyako: { name: '肩車', dur: 1.8, icon: POSE.yUp, run(s, t, w, k) { const [boy, girl] = s.figs; const u = Math.min(1, t / .5) * w; boy.tgt = blendPose(boy.rest, P({ la: -2.5, le: .9, ra: 2.5, re: -.9, hy: .05 }), w); girl.offX = -.24 * u; girl.offY = .3 * u; girl.tgt = blendPose(girl.rest, P({ la: -2.6, ra: 2.6, ll: -.9, lk: .2, rl: .9, rk: -.2 }), w); }, end(s) { s.figs[1].offX = s.figs[1].offY = 0; } },
+  hokosha: { name: '高い高い', dur: 1.8, icon: POSE.yUp, run(s, t, w, k) { const [ad, ch] = s.figs; const u = (.5 + .5 * Math.sin(t * 9)) * Math.min(1, t / .3) * w; ad.tgt = blendPose(ad.rest, P({ la: -2.6, ra: 2.6, hy: .03 }), w); ch.offX = -.2 * w; ch.offY = (.32 + u * .12) * w; ch.tgt = blendPose(ch.rest, POSE.star, w); }, end(s) { s.figs[1].offX = s.figs[1].offY = 0; } },
+  koji: { name: 'スコップギター', dur: 1.8, icon: P({ tl: -.1, la: -1.3, le: -.3, ra: .2, re: -1.5, ll: -.4, lk: .4, rl: .4, rk: -.4, hy: .06 }), run(s, t, w, k) { const f = s.figs[0]; const st = Math.sin(t * 22) * .35; f.tgt = blendPose(f.rest, P({ tl: -.12 + Math.sin(t * 6) * .1, hd: Math.sin(t * 11) * .3, la: -1.3, le: -.3, ra: .25, re: -1.45 + st, ll: -.45, lk: .45, rl: .45, rk: -.45, hy: .06 }), w); } },
+  gakko: { name: 'ぐるぐるダンス', dur: 1.6, icon: POSE.star, run(s, t, w, k) { s.figs.forEach((f, i) => { f.tgt = blendPose(f.rest, { ...POSE.star, ry: (i ? -1 : 1) * TAU * 2 * Math.min(1, t / 1.5), hy: -.08 }, w); }); }, end(s) { s.figs.forEach(unwind); } },
+  shingo: { name: '赤青高速点滅', dur: 1.8, icon: POSE.disco, run(s, t, w, k) { const on = (t * 9 | 0) % 2 === 0 && w > .5; s.redFig.m.color.setHex(on ? 0xff4646 : 0x4a4c52); s.figs[0].m.color.setHex(on ? 0x2a6a66 : 0x6ffcf2); s.glow.material.color.setHex(on ? 0xff4040 : 0x48fff0); s.glow.position.y = on ? .22 : -.22; s.redFig.tgt = blendPose(s.redFig.rest, (t * 4 | 0) % 2 ? POSE.disco : mirror(POSE.disco), w); s.figs[0].tgt = blendPose(s.figs[0].rest, (t * 4 | 0) % 2 ? mirror(POSE.disco) : POSE.disco, w); s.redFig.update(1 / 60); }, end(s) { s.redFig.m.color.setHex(0x4a4c52); s.figs[0].m.color.setHex(0x6ffcf2); s.glow.material.color.setHex(0x48fff0); s.glow.position.y = -.22; s.redFig.tgt = s.redFig.rest; s.redFig.cur = { ...s.redFig.rest }; s.redFig.apply(); } },
+  exit: { name: '非常口ダッシュ', dur: 1.9, icon: POSE.run, run(s, t, w, k) { const f = s.figs[0]; const dir = Math.cos(t * 4.5); f.tgt = blendPose(f.rest, { ...(dir > 0 ? POSE.run : mirror(POSE.run)), hx: Math.sin(t * 4.5) * .55, oz: .35 * Math.min(1, t / .3) * (t < 1.6 ? 1 : (1.9 - t) / .3) }, w); } },
+};
+let activeSpecial = null;
+// ソロ中の標識に当たるスポットライト
+const SPOT = new THREE.Mesh(new THREE.CylinderGeometry(.35, 1.3, 4.2, 24, 1, true), new THREE.MeshBasicMaterial({ color: 0xfff1b0, transparent: true, opacity: .3, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }));
+SPOT.geometry.translate(0, 2.1, 0); SPOT.visible = false; scene.add(SPOT);
+function trySpecial() {
+  if (activeSpecial || state !== 'play') return;
+  const list = dancingSigns(); if (!list.length || Math.random() > .05) return; // SSRと同じくらい（5%）
+  const s = list[Math.random() * list.length | 0], def = SPECIALS[s.def.id]; if (!def) return;
+  activeSpecial = { s, def, t: 0 };
+  $('danceName').innerHTML = `<span class="rar" style="background:#ff3b8a">SOLO</span>${def.name}`; $('danceBar').firstElementChild.style.width = '0%'; $('danceName').animate([{ transform: 'scale(1.4)' }, { transform: 'scale(1)' }], { duration: 300 }); sfxRare(false, true);
+}
+function updateSpecial(dt, w) {
+  const a = activeSpecial; if (!a) return;
+  if (w > .5) a.t += dt;
+  a.def.run(a.s, a.t, w, a.t / a.def.dur);
+  $('danceBar').firstElementChild.style.width = Math.min(100, a.t / a.def.dur * 100) + '%';
+  SPOT.visible = true; SPOT.position.set(a.s.root.position.x, 0, a.s.root.position.z); SPOT.material.opacity = .28 * w;
+  if (a.t >= a.def.dur) {
+    a.def.end && a.def.end(a.s); a.s.figs.forEach(unwind);
+    const bonus = 2000 + (Math.random() * 999 | 0) + (spurt ? 2000 : 0); hype += bonus;
+    popAt(a.s.root, `ソロ +${bonus.toLocaleString()}`); SPOT.visible = false; burst([a.s], 26, 1.4); shake(.05); sfxMove('SSR');
+    const sd = store.get('sdex', {}); const isNew = !sd[a.s.def.id]; if (!autoplay) { sd[a.s.def.id] = (sd[a.s.def.id] || 0) + 1; store.set('sdex', sd); }
+    runSpecials.push({ id: a.s.def.id, isNew: isNew && !autoplay });
+    if (isNew && !autoplay) showHint(`📖 NEW！ソロ「${a.def.name}」`, 1.4);
+    activeSpecial = null; setDanceLabel(curDance); updateDanceUI();
+  }
+}
+function cancelSpecial() { SPOT.visible = false; if (activeSpecial) { activeSpecial.def.end && activeSpecial.def.end(activeSpecial.s); activeSpecial.s.figs.forEach(f => { f.tgt = f.rest; unwind(f); }); activeSpecial = null; setDanceLabel(curDance); updateDanceUI(); } }
+let runSpecials = [];
+
+// ============================================================
+//  ラストスパート（残り10秒：人が来ない＆点が2倍）
+// ============================================================
+const SPURT = 10;
+let spurt = false, tempoMul = 1;
+function startSpurt() {
+  spurt = true; tempoMul = 1.3;
+  peds.forEach(p => { p.win = null; p.lookups = []; p.stopAt = null; p.watching = false; p.speed *= 3.2; p.phase = 'walk'; p.setBubble('おっと、終電！'); });
+  showHint('🔥ラストスパート！もう人は来ない！点数2倍！', 2.2);
+  $('vig').className = 'spurt'; sfxRare(false);
+}
+
+// ============================================================
+//  コツ
+// ============================================================
+const TIPS = [
+  '人が見る直前、顔がだんだんこっちを向く。それが止める合図',
+  'スマホの人は「ん？」と言ってから顔を上げる',
+  '通り過ぎた人が「…」で立ち止まったら、振り返る合図',
+  '子どもは真ん中で立ち止まって、じーっと見てくる',
+  '標識が多いほど、1つの踊りで入る点が増える',
+  '最後の10秒は人が来ない。点数2倍で連打しまくれ',
+  '夜明けの瞬間に踊っていれば、バズボーナス',
+  'レアな踊りほど点が高い。URは×10',
+  '踊りが決まると、標識がたまに「ソロ」を始める。連打で決めきろう',
+];
+const TIP_FOR = {
+  normal: '人が見る直前、顔がだんだんこっちを向く。それが止める合図！',
+  jog: 'ジョギングの人は速い。足音が速くなったら早めに止まろう',
+  phone: 'スマホの人は「ん？」と言ってから顔を上げる。「ん？」が出たらすぐ止まろう',
+  turn: '通り過ぎた人が「…」で立ち止まったら、振り返る合図',
+  kid: '子どもは真ん中で立ち止まって、じーっと見てくる。近づいてきたら早めに止まろう',
+};
+function sfxTick() { if (!AC) return; osc('square', 1320, AC.currentTime, .06, .08, sfxBus); }
+function caught(p) {
+  cancelSpecial();
+  state = 'caught'; caughtBy = p.type; p.phase = 'caught'; p.setBubble('！！', '#ff3b4e');
+  p.arms[1].rotation.x = -2.6; p.phone.visible = true; p.phone.position.set(0, -.66, .08);
+  sfxCaught(); shake(.12);
+  $('vig').className = 'on'; $('ar').classList.add('hide'); $('watchLab').classList.add('hide');
+  caughtT = 0; photoTaken = false;
+}
+let caughtT = 0, photoTaken = false;
+function takePhoto() {
+  renderer.render(scene, camera);
+  const src = renderer.domElement, w = src.width, h = src.height;
+  const c = document.createElement('canvas'); c.width = 800; c.height = 1000; const x = c.getContext('2d');
+  const tr = 4 / 5; let sw = w, sh = h; if (w / h > tr) sw = h * tr; else sh = w / tr;
+  x.drawImage(src, (w - sw) / 2, (h - sh) / 2, sw, sh, 0, 0, 800, 1000);
+  // スマホのカメラ風
+  x.strokeStyle = '#ffffffaa'; x.lineWidth = 3; [[40, 40, 1, 1], [760, 40, -1, 1], [40, 960, 1, -1], [760, 960, -1, -1]].forEach(([a, b, dx, dy]) => { x.beginPath(); x.moveTo(a, b + dy * 60); x.lineTo(a, b); x.lineTo(a + dx * 60, b); x.stroke(); });
+  x.fillStyle = '#ff3b4e'; x.beginPath(); x.arc(70, 80, 10, 0, 7); x.fill(); x.fillStyle = '#fff'; x.font = '700 26px sans-serif'; x.fillText('REC', 90, 89);
+  photoURL = c.toDataURL('image/jpeg', .88); photoCanvas = c;
+}
+let photoCanvas = null;
+function rankOf(h) {
+  if (h >= 40000) return '都市伝説';
+  if (h >= 25000) return '街の伝説';
+  if (h >= 14000) return '深夜の標識パーティー';
+  if (h >= 6000) return '交差点のダンサー';
+  if (h >= 2000) return 'ちょっと揺れた標識';
+  return 'ただの標識';
+}
+function comparison(n) { return n <= 1 ? 'ひとりで踊っていた' : n <= 2 ? 'ふたりでこっそり' : n <= 4 ? 'ちょっとしたパーティー' : n <= 6 ? 'となりの交差点からも来た' : '建物の中からも来た'; }
+function tapStyle() {
+  if (peakRate >= 12) return `最高 ${peakRate}連打/秒の「連打の鬼」`;
+  if (peakRate >= 9) return `最高 ${peakRate}連打/秒の「ノリノリ派」`;
+  if (peakRate >= 6) return `最高 ${peakRate}連打/秒の「ほどほど派」`;
+  return `最高 ${peakRate}連打/秒の「のんびり派」`;
+}
+
+// ============================================================
+//  称号（条件を満たすともらえる）
+// ============================================================
+const TITLES = [
+  { id: 'r0', name: 'ただの標識', hint: 'まずは遊んでみよう', test: r => r.title === 'ただの標識' },
+  { id: 'r1', name: 'ちょっと揺れた標識', hint: '盛り上がり度 2,000以上', test: r => r.title === 'ちょっと揺れた標識' },
+  { id: 'r2', name: '交差点のダンサー', hint: '盛り上がり度 6,000以上', test: r => r.title === '交差点のダンサー' },
+  { id: 'r3', name: '深夜の標識パーティー', hint: '盛り上がり度 14,000以上', test: r => r.title === '深夜の標識パーティー' },
+  { id: 'r4', name: '街の伝説', hint: '盛り上がり度 25,000以上', test: r => r.title === '街の伝説' },
+  { id: 'r5', name: '都市伝説', hint: '盛り上がり度 40,000以上', test: r => r.title === '都市伝説' },
+  { id: 'byNormal', name: 'うっかり目撃', hint: '通りすがりの人に撮られる', test: r => r.caughtBy === 'normal' },
+  { id: 'byPhone', name: 'スマホの罠', hint: 'スマホの人に撮られる', test: r => r.caughtBy === 'phone' },
+  { id: 'byTurn', name: '振り返ればヤツがいる', hint: '振り返った人に撮られる', test: r => r.caughtBy === 'turn' },
+  { id: 'byJog', name: 'ランナーズハイ', hint: 'ジョギングの人に撮られる', test: r => r.caughtBy === 'jog' },
+  { id: 'byKid', name: '子どもの目はごまかせない', hint: '子どもに撮られる', test: r => r.caughtBy === 'kid' },
+  { id: 'fast', name: '秒でバレた', hint: '始まって10秒以内に撮られる', test: r => !r.dawn && r.time < 10 },
+  { id: 'still', name: 'ほんとにただの標識', hint: 'ほとんど何もしない', test: r => r.taps < 5 },
+  { id: 'escape', name: '夜明けの逃亡者', hint: '朝まで見つからず、最後は固まる', test: r => r.dawn && !r.buzz },
+  { id: 'buzz', name: '朝の奇跡', hint: '朝まで見つからず、最後まで踊る', test: r => r.buzz },
+  { id: 'bigbuzz', name: 'トレンド入り', hint: '盛り上がり度 30,000以上で朝の奇跡', test: r => r.buzz && r.hype >= 30000 },
+  { id: 'all', name: '全員集合', hint: '標識を6本集める', test: r => r.n >= 6 },
+  { id: 'exit', name: '非常口まで来た', hint: '？？？を呼ぶ', test: r => r.exit },
+  { id: 'ur', name: '伝説を見た', hint: 'URの踊りを踊らせる', test: r => r.rar.UR > 0 },
+  { id: 'ssr3', name: 'SSRコレクター', hint: '1回でSSRを3回踊らせる', test: r => r.rar.SSR + r.rar.UR >= 3 },
+  { id: 'solo3', name: 'ソロ三昧', hint: '1回でソロを3回決める', test: r => r.solos >= 3 },
+  { id: 'rapid', name: '連打の鬼', hint: '1秒に12回連打する', test: r => r.peak >= 12 },
+  { id: 'saver', name: 'やりすごしの達人', hint: '1回で8回人をやりすごす', test: r => r.saved >= 8 },
+  { id: 'dance30', name: '踊り狂い', hint: '1回で30回踊りを決める', test: r => r.dances >= 30 },
+];
+function earnTitles(r) {
+  const td = store.get('tdex', {}), got = [];
+  TITLES.forEach(t => { try { if (t.test(r)) { got.push({ t, isNew: !td[t.id] }); if (!autoplay) td[t.id] = (td[t.id] || 0) + 1; } } catch (e) {} });
+  if (!autoplay) store.set('tdex', td); return got;
+}
+function showResult() {
+  state = 'result';
+  const n = arrivedCount, title = rankOf(hype), best = store.get('best3', 0), isNew = hype > best && !autoplay;
+  if (isNew) store.set('best3', hype);
+  resultData = { hype, title, n, caughtBy, comp: comparison(n), isNew };
+  const likes = Math.round((hype * .37 + n * 120 + 3) * (caughtBy === 'dawn' ? (dawnBuzz ? 3 : .3) : 1));
+  const dawn = caughtBy === 'dawn';
+  resultData.dawn = dawn; resultData.buzz = dawnBuzz; resultData.bonus = dawnBonus;
+  $('pWho').textContent = dawn ? '通勤中の人たちの投稿' : `${TYPE_NAME[caughtBy]}の投稿`;
+  $('pCap').textContent = !dawn ? '【拡散希望】標識が踊ってたんだけど…' : dawnBuzz ? '【朝の奇跡】交差点の標識が全員踊ってた' : '朝の交差点、なんか標識多くない？';
+  $('photo').src = photoURL;
+  $('rTitle').textContent = `「${title}」`;
+  $('rHype').innerHTML = `盛り上がり度 <b>${hype.toLocaleString()}</b>`;
+  $('rNew').textContent = isNew ? 'ハイスコア更新！' : best ? `ベスト ${best.toLocaleString()}` : '';
+  $('rCount').textContent = `${n}本の標識が集まった（${resultData.comp}）`;
+  $('rPers').innerHTML = (dawn ? (dawnBuzz ? `<b>朝まで見つからずに踊りきった！</b><br>最後の瞬間も踊っていて、バズボーナス <b>+${dawnBonus.toLocaleString()}</b>` : `<b>朝まで見つからずに逃げきった！</b><br>最後は固まっていた（踊っていればバズボーナスだった…）`) : `<b>${TYPE_NAME[caughtBy]}</b>に撮られた。`) + `<br>${tapStyle()}／人をやりすごした回数 ${savedCount}回`;
+  const rar = { N: 0, R: 0, SR: 0, SSR: 0, UR: 0 }; runDances.forEach(x => rar[DANCE_BY[x.id].r]++);
+  const earned = earnTitles({ title, hype, caughtBy, dawn, buzz: dawn && dawnBuzz, n, exit: SIGN.exit.state !== 'away', rar, solos: runSpecials.length, peak: peakRate, saved: savedCount, dances: runDances.length, taps, time: gameT });
+  $('rTitles').innerHTML = `<div style="width:100%;font-size:12px;color:#9aa6c8">もらった称号</div>` + earned.map(e => `<span>🏅${e.t.name}${e.isNew ? '<em>NEW</em>' : ''}</span>`).join('');
+  $('rTip').textContent = '💡 コツ：' + (dawn ? (dawnBuzz ? '標識が多いほど1つの踊りで入る点が増える。早めに仲間を集めよう' : '夜明けの瞬間に踊っていればバズボーナス！最後は連打しっぱなしでOK') : TIP_FOR[caughtBy] || TIPS[0]);
+  const order = ['UR', 'SSR', 'SR', 'R', 'N'], seen = {};
+  runDances.forEach(r => { if (!seen[r.id]) seen[r.id] = { n: 0, isNew: false }; seen[r.id].n++; seen[r.id].isNew = seen[r.id].isNew || r.isNew; });
+  const ids = Object.keys(seen).sort((a, b) => order.indexOf(DANCE_BY[a].r) - order.indexOf(DANCE_BY[b].r));
+  resultData.best = ids[0] ? DANCE_BY[ids[0]] : null;
+  const spHtml = runSpecials.length ? `<div style="width:100%;font-size:12px;color:#9aa6c8;margin-top:6px">決めたソロ</div>` + runSpecials.map(r => `<span>🎤${SPECIALS[r.id].name}${r.isNew ? '<em>NEW</em>' : ''}</span>`).join('') : '';
+  $('rDances').innerHTML = (ids.length ? `<div style="width:100%;font-size:12px;color:#9aa6c8">今回おどった踊り（${runDances.length}回）</div>` + ids.map(id => { const d = DANCE_BY[id], R = RARITY[d.r]; return `<span><span class="rar" style="background:${R.col}">${R.name}</span>${d.name}${seen[id].n > 1 ? ' ×' + seen[id].n : ''}${seen[id].isNew ? '<em>NEW</em>' : ''}</span>`; }).join('') : '') + spHtml;
+  $('result').classList.remove('hide'); $('hud').classList.add('hide'); $('hint').classList.add('hide'); $('vig').className = ''; $('watchLab').classList.add('hide'); $('ar').classList.add('hide');
+  // いいねが一気に増える
+  const el = $('likes'); const t0 = performance.now();
+  (function roll() { const k = Math.min(1, (performance.now() - t0) / 1400), v = Math.round(likes * (1 - Math.pow(1 - k, 3))); el.textContent = `♥ ${v.toLocaleString()}　🔁 ${Math.round(v * .31).toLocaleString()}　拡散中…`; if (k < 1 && state === 'result') requestAnimationFrame(roll); })();
+  if (AC) { const t = AC.currentTime; [523, 659, 784, 1046].forEach((f, i) => osc('triangle', f, t + i * .09, .3, .1, sfxBus)); }
+  renderDex();
+  if (REC) setTimeout(stopRec, 2500);
+}
+
+// ============================================================
+//  更新ループ
+// ============================================================
+let last = performance.now();
+function frame() {
+  const now = performance.now(); const dt = Math.min(.05, (now - last) / 1000); last = now;
+  const frozenAnim = now < hitstopUntil;
+  adaptQuality(dt);
+  if ((shadowTick++ & 1) === 0) renderer.shadowMap.needsUpdate = true;
+  if (AC) { musicTick(); musicBus.gain.setTargetAtTime((state === 'play' || (state === 'dawn' && !dawnPhoto)) ? Math.min(1, dance * 1.6) * .8 : 0, AC.currentTime, .025); }
+
+  if (state === 'play') {
+    gameT += dt;
+    const left = Math.max(0, TIME_LIMIT - gameT);
+    setDawn(gameT / TIME_LIMIT * .55);
+    $('timer').textContent = `${left < 10 ? '🌅' : '🌙'} 0:${String(Math.ceil(left)).padStart(2, '0')}`; $('timer').classList.toggle('hurry', left < 10);
+    if (left < 5.5 && Math.ceil(left) !== lastCount && left > 0) { lastCount = Math.ceil(left); showHint(`夜明けまで ${lastCount}…`, .9); sfxTick(); }
+    if (left <= SPURT && !spurt && left > 0) startSpurt();
+    if (left <= 0) { cancelSpecial(); startDawn(); }
+    energy = Math.max(0, energy - dt * CFG.decay);
+    dance += (energy - dance) * Math.min(1, dt * (energy > dance ? 25 : 14));
+    dispProg += (danceTaps / CFG.tapsPerDance - dispProg) * Math.min(1, dt * 10);
+    { const w = smooth(Math.min(1, Math.max(0, (dance - .06) / .22))); const pose = samplePose(curDance, dispProg);
+      dancingSigns().forEach((s, i) => { if (activeSpecial && activeSpecial.s === s) return; const ps = activeSpecial ? samplePose(DANCE_BY.clap, (performance.now() / 1800) % 1) : i ? samplePose(curDance, Math.max(0, dispProg - i * .015)) : pose; s.figs.forEach(f => { if (!f.fixed) f.tgt = blendPose(f.rest, ps, w); }); });
+      updateSpecial(dt, w);
+      showK += (((curDance.r === 'SSR' || curDance.r === 'UR') ? w : 0) - showK) * Math.min(1, dt * 5); }
+    // 通行人
+    nextSpawn -= dt;
+    const maxPeds = hype >= 12000 || gameT > 35 ? 2 : 1;
+    const active = peds.filter(p => !p.pastWatch).length;
+    if (nextSpawn <= 0 && active < maxPeds && gameT < TIME_LIMIT - SPURT - 2) {
+      spawnPed();
+      const k = Math.max(.42, 1 - hype / 38000 - gameT / 140);
+      nextSpawn = (2 + Math.random() * 3) * k * CFG.spawnMul + (peds.length > 1 ? 2 : 0);
+    }
+    const watchedAny = peds.some(p => p.watching);
+    peds.forEach(p => {
+      p.update(dt, false);
+      if (p.watching) {
+        if (dance > .12) {
+          p.sus += dt * CFG.susRate * (.5 + dance);
+          if (p.sus > .35 && !p.susShown) { p.susShown = true; sfxSuspicious(); }
+          p.susMode = true; p.setBubble(p.sus > .65 ? '？？' : '？', '#ff3b4e'); p.bubble.scale.set(1.1 + p.sus * .6, .55 + p.sus * .3, 1);
+          if (p.sus >= 1) caught(p);
+        } else {
+          p.sus = Math.max(0, p.sus - dt * .6); p.susMode = false;
+          if (!p.lineShown && arrivedCount >= 2 && p.sus < .2 && Math.random() < dt * 1.2) { p.lineShown = true; p.setBubble(PED_LINES[Math.random() * PED_LINES.length | 0]); }
+          else if (!p.lineShown && p.phase !== 'notice' && p.phase !== 'pause') p.setBubble(null);
+        }
+      }
+    });
+    if (state === 'play') {
+      if (watchedAny && !wasWatched) { sfxFreeze(); if (!firstWatchDone) showHint('人が見てる！手を止めて！', 2.2); }
+      if (!watchedAny && wasWatched) { savedCount++; sfxSafe(); if (!firstWatchDone) { firstWatchDone = true; showHint('セーフ！また踊れ！', 1.6); } }
+      wasWatched = watchedAny;
+    }
+    peds = peds.filter(p => !p.done);
+    trySummon();
+    // UI
+
+    const nx = signs.find(s => s.state === 'away' && !s.def.secret);
+    const prevAt = [...SIGN_DEFS].reverse().find(d => d.at <= hype && !d.secret)?.at || 0;
+    if (nx) { $('nextBar').firstElementChild.style.width = Math.min(100, (hype - prevAt) / (nx.def.at - prevAt) * 100) + '%'; $('nextLab').textContent = hype >= nx.def.at ? `${nx.def.name}が来たがってる…` : `あと${(nx.def.at - hype).toLocaleString()}で ${nx.def.name}が来る`; }
+    else { $('nextBar').firstElementChild.style.width = '100%'; $('nextLab').textContent = signs.some(s => s.state === 'away') ? 'まだ誰か来るかも…？' : '全員集合！'; }
+    const vig = $('vig');
+    const soon = peds.some(p => (p.coming && p.d > p.win[0] - 3.5) || p.phase === 'notice' || p.phase === 'pause');
+    vig.className = spurt ? 'spurt' : watchedAny ? 'on' : soon ? 'warn' : '';
+    const ar = $('ar'); const incoming = peds.some(p => p.coming || p.phase === 'notice' || p.phase === 'pause');
+    ar.classList.toggle('hide', watchedAny || !incoming);
+    ar.textContent = soon ? '⚠ 人が来る！' : '🚶 奥から人が来る…';
+    $('watchLab').classList.toggle('hide', !watchedAny);
+    // デモ：自動で連打
+    if (autoplay) {
+      const danger = peds.some(p => p.watching || (p.coming && p.d > p.win[0] - 3) || p.phase === 'notice' || p.phase === 'pause');
+      if ((!danger || hype >= demoCatchAt) && Math.random() < dt * 10) tap();
+    }
+  }
+  if (hintTimer > 0) { hintTimer -= dt; if (hintTimer <= 0) $('hint').style.opacity = 0; }
+
+  if (state === 'dawn') {
+    energy = Math.max(0, energy - dt * CFG.decay); dance += (energy - dance) * Math.min(1, dt * (energy > dance ? 25 : 14));
+    if (!dawnPhoto) { dispProg += (danceTaps / CFG.tapsPerDance - dispProg) * Math.min(1, dt * 10); const w = smooth(Math.min(1, Math.max(0, (dance - .06) / .22))); const pose = samplePose(curDance, dispProg); dancingSigns().forEach(s => s.figs.forEach(f => { if (!f.fixed) f.tgt = blendPose(f.rest, pose, w); })); }
+    if (autoplay && !dawnPhoto && Math.random() < dt * 10) tap();
+    updateDawn(dt);
+  }
+  if (state === 'caught') {
+    caughtT += dt;
+    peds.forEach(p => p.update(dt, true));
+    if (caughtT > .55 && !photoTaken) {
+      photoTaken = true; takePhoto();
+      $('flash').animate([{ opacity: 1 }, { opacity: 0 }], { duration: 500 });
+    }
+    if (caughtT > 1.5) showResult();
+  }
+  if (state === 'title') {
+    // ソワソワしている
+    const t = now / 1000, f = SIGN.main.figs[0];
+    f.tgt = f.rest; // タイトルでは標識どおりのポーズのまま
+  }
+
+  // 標識
+  const anyWatching = peds.some(p => p.watching) || state === 'caught';
+  signs.forEach(s => {
+    if (s.state === 'hopping') updateHop(s, dt, anyWatching && state === 'play');
+    if ((state !== 'caught' || caughtT < .01) && !(state === 'dawn' && dawnPhoto)) {
+      if (!frozenAnim) s.figs.forEach(f => f.update(dt));
+    }
+    if (s.state === 'here') {
+      s.pulse = Math.max(0, (s.pulse || 0) - dt * 6);
+      const d = state === 'caught' ? s.lastD || 0 : dance;
+      s.lastD = d;
+      if (state !== 'caught') {
+        s.body.rotation.z = Math.sin(now / 1000 * 9 + s.root.position.x) * .06 * d;
+        s.body.scale.set(1 - s.pulse * .03, 1 + s.pulse * .05, 1);
+        s.body.position.y = s.pulse * .04;
+      }
+    }
+  });
+  if (state === 'play' || state === 'dawn') { // 盛り上がり度はくるくる回りながら増える
+    if (dispHype < hype) { dispHype = Math.min(hype, dispHype + Math.max(1, (hype - dispHype) * Math.min(1, dt * 9))); $('hype').textContent = Math.floor(dispHype).toLocaleString(); }
+  }
+  if (state !== 'play') showK *= .9;
+  $('spot').style.opacity = (showK * .85).toFixed(3);
+  CLOUDS.forEach(c => { c.position.x += c.userData.cloud * dt; if (c.position.x > 55) c.position.x = -55; });
+  // 紙ふぶき
+  let confDirty = false;
+  parts.forEach((p, i) => { if (p.life <= 0) { if (p.m.visible) { p.m.visible = false; CONF.setMatrixAt(i, _cm.makeScale(0, 0, 0)); confDirty = true; } return; } p.life -= dt; p.v.y -= 6 * dt; p.v.multiplyScalar(1 - dt * .8); p.m.position.addScaledVector(p.v, dt); p.m.rotation.x += p.r.x * dt; p.m.rotation.y += p.r.y * dt; if (p.life <= 0 || p.m.position.y < 0) { p.life = 0; } _cq.setFromEuler(p.m.rotation); CONF.setMatrixAt(i, _cm.compose(p.m.position, _cq, p.life > 0 ? _cs : _c0)); confDirty = true; });
+  if (confDirty) CONF.instanceMatrix.needsUpdate = true;
+
+  // カメラ：盛り上がるほど引いていく
+  updateCamera(dt);
+  shakeAmt *= Math.pow(.002, dt);
+  if (!(state === 'caught' && photoTaken === false && caughtT > .55)) renderer.render(scene, camera);
+  requestAnimationFrame(frame);
+}
+let safeT = 0, safeTop = 0, safeBot = 0, safeWant = [0, 0];
+function measureSafe() {
+  const H = innerHeight;
+  if (H < 50) return;
+  if (state === 'title') { const a = $('title').firstElementChild.getBoundingClientRect(), b = $('tbot').getBoundingClientRect(); safeWant = [Math.max(0, a.bottom + 6), Math.max(0, H - b.top + 6)]; }
+  else if (state === 'play' || state === 'dawn') { const a = $('hud').getBoundingClientRect(); safeWant = [a.bottom + 8, H * .06 + 100]; }
+}
+const CAM_FRAME = [[.75, 1.1], [1.85, 1.9], [1.85, 1.9], [2.85, 2.3], [2.85, 2.3], [2.9, 2.5], [2.9, 2.6]];
+function updateCamera(dt) {
+  const n = Math.min(CAM_FRAME.length - 1, state === 'title' ? 0 : signs.filter(s => s.state !== 'away').length - 1);
+  const [hw, hh] = CAM_FRAME[n];
+  const vt = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
+  // 文字にかぶらないよう、上下のUIを除いた範囲に標識を収める
+  safeT -= dt; if (safeT <= 0) { safeT = .3; measureSafe(); }
+  safeTop += (safeWant[0] - safeTop) * Math.min(1, dt * 4); safeBot += (safeWant[1] - safeBot) * Math.min(1, dt * 4);
+  // 画面の高さが一瞬0になっても（プレビュー表示など）カメラが壊れないように
+  const H = Math.max(50, innerHeight), avail = Math.max(H * .35, H - safeTop - safeBot);
+  if (!isFinite(camDist)) camDist = 6; if (!isFinite(camPos.x + camPos.y + camPos.z)) camPos.set(0, 2, 8);
+  camera.setViewOffset(Math.max(50, innerWidth), H, 0, -(safeTop - safeBot) / 2, Math.max(50, innerWidth), H);
+  let want = Math.max(hh / (vt * avail / H), hw / (vt * Math.max(.1, camera.aspect || 1))) * (1 - showK * .16);
+  if (!isFinite(want)) want = camDist;
+  camDist += (want - camDist) * Math.min(1, dt * 1.6);
+  const ly = n === 0 ? 2.05 : 1.75;
+  camLook.set(0, ly, n === 0 ? 0 : -.3);
+  if (n === 0) camLook.y = 1.9;
+  const portrait = camera.aspect < .9;
+  if (n > 0 && portrait) camLook.y = 2.3;
+  let cp = new THREE.Vector3(0, n === 0 ? 1.35 : camLook.y + camDist * (portrait ? .2 : .12), camLook.z + camDist);
+  if (state === 'caught') { const k = Math.min(1, caughtT * 3); cp.lerp(new THREE.Vector3(0, ly + camDist * .1, camLook.z + camDist * .82), k); }
+  camPos.lerp(cp, Math.min(1, dt * 6));
+  camera.position.copy(camPos);
+  camera.position.x += (Math.random() - .5) * shakeAmt * 2; camera.position.y += (Math.random() - .5) * shakeAmt * 2;
+  camera.lookAt(camLook);
+}
+function resize() {
+  const w = Math.max(50, innerWidth), h = Math.max(50, innerHeight);
+  renderer.setSize(w, h, false);
+  camera.aspect = w / h; camera.updateProjectionMatrix(); safeT = 0;
+}
+addEventListener('resize', resize); resize();
+camDist = 4.2; camPos.set(0, 1.35, 4.2);
+setDawn(0);
+
+// ============================================================
+//  入力
+// ============================================================
+cv.addEventListener('pointerdown', e => { e.preventDefault(); if ((state === 'play' || state === 'dawn') && !autoplay) tap(); });
+addEventListener('keydown', e => {
+  if (e.repeat) return;
+  if (state === 'play' || state === 'dawn') { if (!autoplay && !['Escape', 'Tab', 'MetaLeft', 'MetaRight', 'AltLeft', 'ControlLeft'].includes(e.code)) { tap(); e.preventDefault(); } return; }
+  if (!$('dexOv').classList.contains('hide')) { if (e.code === 'Escape') $('dexOv').classList.add('hide'); return; }
+  if ((state === 'result' && performance.now() - resultShownAt > 600 || state === 'title') && (e.code === 'Space' || e.code === 'KeyR' || e.code === 'Enter')) { e.preventDefault(); startGame(); }
+});
+let resultShownAt = 0;
+new MutationObserver(() => { if (!$('result').classList.contains('hide')) resultShownAt = performance.now(); }).observe($('result'), { attributes: true });
+$('title').addEventListener('pointerdown', e => { if (REC || DEMO) return; e.preventDefault(); startGame(); tap(); });
+$('result').addEventListener('click', () => { if (performance.now() - resultShownAt > 600) startGame(); });
+$('retry').addEventListener('click', e => { e.stopPropagation(); startGame(); });
+['more', 'site', 'phone', 'rDances'].forEach(id => $(id).addEventListener('click', e => e.stopPropagation()));
+['dexBtn', 'dexBtn2'].forEach(id => { $(id).addEventListener('pointerdown', e => e.stopPropagation()); $(id).addEventListener('click', openDex); });
+$('dexOv').addEventListener('pointerdown', e => e.stopPropagation());
+$('dexTabs').addEventListener('click', e => { const t = e.target.dataset.t; if (!t) return; document.querySelectorAll('#dexTabs button').forEach(b => b.classList.toggle('on', b.dataset.t === t)); document.querySelectorAll('#dexOv .pane').forEach(p => p.classList.toggle('hide', p.dataset.p !== t)); });
+$('dexOv').addEventListener('click', e => { e.stopPropagation(); if (e.target.id === 'dexOv' || e.target.id === 'dexClose') $('dexOv').classList.add('hide'); });
+$('site').addEventListener('pointerdown', e => e.stopPropagation());
+const muteBtn = $('mute');
+function applyMute() { muteBtn.textContent = muted ? '🔇' : '🔊'; if (master) master.gain.value = muted ? 0 : .9; }
+muteBtn.addEventListener('pointerdown', e => e.stopPropagation());
+muteBtn.addEventListener('click', e => { e.stopPropagation(); muted = !muted; store.set('muted', muted); applyMute(); });
+applyMute();
+
+// ============================================================
+//  シェア
+// ============================================================
+function shareText() {
+  const r = resultData;
+  const bd = r.best && r.best.r !== 'N' ? `\n${r.best.r}「${r.best.name}」まで踊らせた` : '';
+  const end = !r.dawn ? `${r.n}本の標識が集まったけど、${TYPE_NAME[r.caughtBy]}に撮られた📸` : r.buzz ? `朝まで見つからずに${r.n}本で踊りきって、最後はバズった🌅` : `朝まで見つからずに逃げきった🌅（${r.n}本）`;
+  return `ピクトさん、踊りだす で盛り上がり度 ${r.hype.toLocaleString()}！「${r.title}」${bd}\n${end}\n#ピクトさん踊りだす`;
+}
+const intent = () => 'https://twitter.com/intent/tweet?text=' + encodeURIComponent(shareText()) + '&url=' + encodeURIComponent(URL_GAME);
+$('shareX').addEventListener('click', e => { e.stopPropagation(); open(intent(), '_blank', 'noopener'); });
+function makeShareImage() {
+  const c = document.createElement('canvas'); c.width = 1080; c.height = 1350; const x = c.getContext('2d');
+  x.fillStyle = '#11162e'; x.fillRect(0, 0, 1080, 1350);
+  x.save(); x.translate(540, 560); x.rotate(-.03);
+  x.fillStyle = '#fff'; x.fillRect(-380, -470, 760, 940);
+  if (photoCanvas) x.drawImage(photoCanvas, -350, -400, 700, 875);
+  x.fillStyle = '#1d2340'; x.font = '800 30px sans-serif'; x.textAlign = 'left'; x.fillText('【拡散希望】標識が踊ってたんだけど…', -350, -425);
+  x.restore();
+  const r = resultData; x.textAlign = 'center';
+  x.fillStyle = '#ffc21a'; x.font = '900 66px sans-serif'; x.fillText(`「${r.title}」`, 540, 1130);
+  x.fillStyle = '#fff'; x.font = '900 48px sans-serif'; x.fillText(`盛り上がり度 ${r.hype.toLocaleString()}・標識${r.n}本`, 540, 1200);
+  x.fillStyle = '#dfe5ff'; x.font = '700 32px sans-serif'; x.fillText(`${TYPE_NAME[r.caughtBy]}に撮られた${r.best ? `／${r.best.r}「${r.best.name}」` : ''}`, 540, 1255);
+  x.fillStyle = '#9aa6c8'; x.font = '600 28px sans-serif'; x.fillText('ピクトさん、踊りだす  rickther1ck.com/pict-dance', 540, 1315);
+  return c;
+}
+$('shareImg').addEventListener('click', async e => {
+  e.stopPropagation();
+  const c = makeShareImage(); const blob = await new Promise(res => c.toBlob(res, 'image/png'));
+  const file = new File([blob], 'pict-dance.png', { type: 'image/png' });
+  try { if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file], text: shareText() + '\n' + URL_GAME }); return; } }
+  catch (err) { if (err && err.name === 'AbortError') return; }
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'pict-dance.png'; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => open(intent(), '_blank', 'noopener'), 400);
+});
+const MORE = [{ slug: 'warabimochi', title: 'わらび餅職人', thumb: 'og.jpg' }, { slug: 'ichiman-lighter', title: '1万分の1ライター', thumb: 'og.png' }, { slug: 'mosamosa-trimming', title: 'モサモサわんこトリミング', thumb: 'og.jpg' }];
+$('moreList').innerHTML = MORE.map(m => `<a href="../${m.slug}/"><img src="../${m.slug}/${m.thumb}" alt="" loading="lazy">${m.title}</a>`).join('');
+
+let tipIdx = Math.random() * TIPS.length | 0;
+function showTip() { $('tip').textContent = '💡 コツ：' + TIPS[tipIdx++ % TIPS.length]; }
+setInterval(() => { if (state === 'title') showTip(); }, 4500);
+function renderDanceDex() {
+  const dd = store.get('ddex', {}), got = DANCES.filter(d => dd[d.id]).length;
+  $('dexCount').textContent = `${got}/${DANCES.length}`;
+  $('dexSum').textContent = `見つけた踊り ${got}/${DANCES.length}`;
+  let tot = 0; for (const k in RARITY) tot += RARITY[k].w;
+  $('dexRates').textContent = '出る確率：' + Object.keys(RARITY).map(k => `${k} ${(RARITY[k].w / tot * 100).toFixed(k === 'UR' ? 1 : 0)}%`).join(' / ');
+  const g = $('dexGrid'); g.innerHTML = '';
+  DANCES.forEach(d => {
+    const R = RARITY[d.r], n = dd[d.id] || 0, el = document.createElement('div'); el.className = 'dx' + (n ? '' : ' no');
+    el.style.borderColor = d.r === 'UR' ? '#ffc21a' : R.col;
+    const c = document.createElement('canvas'); c.width = c.height = 120; const x = c.getContext('2d');
+    x.fillStyle = n ? (d.r === 'N' ? '#0b4c8c' : d.r === 'R' ? '#1d5bc9' : d.r === 'SR' ? '#5a2a9a' : d.r === 'SSR' ? '#b07800' : '#c0306a') : '#1d2340'; x.fillRect(0, 0, 120, 120);
+    const pose = d.keys[d.icon || 0];
+    drawPict2D(x, 60, 62, 78, pose, n ? '#fff' : '#ffffff22');
+    if (!n) { x.fillStyle = '#ffffff99'; x.font = '900 40px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('？', 60, 60); }
+    el.appendChild(c);
+    el.insertAdjacentHTML('beforeend', `<div class="nm"><span class="rar" style="background:${R.col}">${R.name}</span>${n ? d.name : '？？？'}</div><div class="ct">${n ? `${n}回おどった` : 'まだ見つけていない'}</div>`);
+    g.appendChild(el);
+  });
+  const td = store.get('tdex', {}), tgot = TITLES.filter(t => td[t.id]).length;
+  $('dexTiLab').textContent = `🏅 称号 ${tgot}/${TITLES.length}`;
+  $('dexTitles').innerHTML = TITLES.map(t => td[t.id] ? `<div class="ti"><i>🏅</i><div><b>${t.name}</b><small>${t.hint}・${td[t.id]}回</small></div></div>` : `<div class="ti no"><i>🔒</i><div><b>？？？</b><small>ヒント：${t.hint}</small></div></div>`).join('');
+  const sd = store.get('sdex', {}), sg = $('dexSpecial'); sg.innerHTML = '';
+  const sgot = Object.keys(SPECIALS).filter(k => sd[k]).length;
+  $('dexSum').textContent = `踊り ${got}/${DANCES.length}・ソロ ${sgot}/${Object.keys(SPECIALS).length}・称号 ${tgot}/${TITLES.length}`;
+  $('dexCount').textContent = `${got + sgot + tgot}/${DANCES.length + Object.keys(SPECIALS).length + TITLES.length}`;
+  $('dexSpLab').textContent = `🎤 標識のソロ ${Object.keys(SPECIALS).filter(k => sd[k]).length}/${Object.keys(SPECIALS).length}`;
+  Object.keys(SPECIALS).forEach(id => {
+    const sp = SPECIALS[id], n = sd[id] || 0, sgn = SIGN[id], el = document.createElement('div'); el.className = 'dx' + (n ? '' : ' no'); el.style.borderColor = '#ff6b3d';
+    const c = document.createElement('canvas'); c.width = c.height = 120; const x = c.getContext('2d');
+    const bg = { main: '#1d3fae', oyako: '#1d3fae', hokosha: '#1d48c0', gakko: '#d9a600', koji: '#d9a600', shingo: '#1b1d22', exit: '#13a24a' }[id];
+    x.fillStyle = n ? bg : '#1d2340'; x.fillRect(0, 0, 120, 120);
+    drawPict2D(x, 60, 62, 78, sp.icon, n ? (id === 'gakko' || id === 'koji' ? '#1b1d24' : id === 'shingo' ? '#6ffcf2' : '#fff') : '#ffffff22');
+    if (!n) { x.fillStyle = '#ffffff99'; x.font = '900 40px sans-serif'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('？', 60, 60); }
+    el.appendChild(c);
+    el.insertAdjacentHTML('beforeend', `<div class="nm">${n ? sp.name : '？？？'}</div><div class="ct">${sgn.def.name}${n ? `・${n}回` : ''}</div>`);
+    sg.appendChild(el);
+  });
+}
+function openDex(e) { e && e.stopPropagation(); renderDanceDex(); $('dexOv').classList.remove('hide'); }
+function renderDex() {
+  renderDanceDex();
+  const dex = store.get('dex2', ['main']);
+  $('dex').innerHTML = SIGN_DEFS.map(d => dex.includes(d.id) ? `<span title="${d.name}">${d.short}</span>` : '<span class="no">？</span>').join('');
+  $('dexLab').textContent = `集まった標識 ${dex.length}/${SIGN_DEFS.length}`;
+  const best = store.get('best3', 0); $('best').textContent = best ? `ベスト盛り上がり度 ${best.toLocaleString()}` : '';
+}
+renderDex(); showTip();
+
+// ============================================================
+//  デモ・撮影モード（#demo / ?rec=1）：記録には残さない
+// ============================================================
+let recorder = null, recChunks = [];
+function stopRec() { if (recorder && recorder.state === 'recording') recorder.stop(); }
+if (DEMO) {
+  autoplay = true;
+  const ui = document.createElement('div'); ui.id = 'recUI';
+  ui.innerHTML = REC ? '<b>撮影モード</b><br><small>自動プレイを録画します（記録には残りません）</small><br><br><button class="btn" style="background:#1d5fd1;color:#fff">● 録画スタート</button>' : '<b>デモ</b><br><br><button class="btn" style="background:#1d5fd1;color:#fff">▶ 自動プレイ</button>';
+  document.body.appendChild(ui);
+  ui.querySelector('button').addEventListener('click', e => {
+    e.stopPropagation(); ui.remove(); initAudio();
+    if (REC && cv.captureStream && window.MediaRecorder) {
+      const stream = cv.captureStream(60); if (recDest) recDest.stream.getAudioTracks().forEach(tr => stream.addTrack(tr));
+      const mime = ['video/mp4;codecs=avc1,mp4a.40.2', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm'].find(t => MediaRecorder.isTypeSupported(t)) || '';
+      recorder = new MediaRecorder(stream, mime ? { mimeType: mime, videoBitsPerSecond: 8e6 } : {}); recChunks = [];
+      recorder.ondataavailable = ev => ev.data.size && recChunks.push(ev.data);
+      recorder.onstop = () => { const b = new Blob(recChunks, { type: recorder.mimeType }); const a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = 'pict-dance.' + (recorder.mimeType.includes('mp4') ? 'mp4' : 'webm'); document.body.appendChild(a); a.click(); a.remove(); };
+      recorder.start();
+    }
+    startGame();
+  });
+}
+if (DEBUG) {
+  const d = document.createElement('div'); d.id = 'dbg';
+  const rows = [['tapEnergy', .05, .5, .01, '連打1回のエネルギー'], ['decay', .5, 5, .1, '止まる速さ'], ['tapsPerDance', 3, 20, 1, '踊り1つの連打数'], ['susRate', .5, 6, .1, '怪しまれる速さ'], ['spawnMul', .3, 3, .05, '通行人の間隔'], ['shake', 0, 3, .1, '揺れ'], ['hitstop', 0, .15, .005, 'ヒットストップ秒']];
+  d.innerHTML = rows.map(([k, a, b, s, lab]) => `<label>${lab}: <span id="v_${k}">${CFG[k]}</span><input type="range" min="${a}" max="${b}" step="${s}" value="${CFG[k]}" data-k="${k}"></label>`).join('') + '<button id="dbgHype" style="background:#333;color:#fff;padding:4px 8px;border-radius:6px">盛り上がり+30</button>';
+  document.body.appendChild(d);
+  d.addEventListener('input', e => { const k = e.target.dataset.k; if (!k) return; CFG[k] = +e.target.value; $('v_' + k).textContent = CFG[k]; });
+  ['click', 'pointerdown', 'keydown'].forEach(ev => d.addEventListener(ev, e => e.stopPropagation()));
+  $('dbgHype').addEventListener('click', () => { hype += 3000; });
+}
+window.__pd = { get runDances() { return runDances; }, get cur() { return curDance; }, get state() { return state; }, get hype() { return hype; }, get peds() { return peds; }, get signs() { return signs; }, get resultData() { return resultData; }, set demoCatchAt(v) { demoCatchAt = v; }, addHype(v) { hype += v; }, makeShareImage, tap };
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
