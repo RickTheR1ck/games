@@ -11,10 +11,10 @@
 <meta property="og:url" content="https://rickther1ck.com/yakisoba/">
 <link rel="canonical" href="https://rickther1ck.com/yakisoba/">
 <script src="../play-count.js" defer></script>
-<meta property="og:image" content="https://rickther1ck.com/yakisoba/og.png">
+<meta property="og:image" content="https://rickther1ck.com/yakisoba/og.png?v=2">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="ジュワッと！屋台焼きそば">
-<meta name="twitter:image" content="https://rickther1ck.com/yakisoba/og.png">
+<meta name="twitter:image" content="https://rickther1ck.com/yakisoba/og.png?v=2">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@700;900&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -575,7 +575,7 @@ function camSpec(m){
   const pc=PACK.cx-W/2,pz=PACK.cy-H/2;
   if(m==='play')return {cx:0,cz:0,hw:W/2,hd:H/2,tilt:1.13,h:20};
   if(m==='title')return {cx:0,cz:-40,hw:W/2-40,hd:H/2-60,tilt:0.62,h:60,orbit:0.22};
-  if(m==='og'){const R=G&&G.packR||{rx:170,ry:100};const Rf=R.rx+120;return {cx:pc-0.44*2*Rf,cz:pz+10,hw:2*Rf,hd:R.ry+135,tilt:0.85,h:90};}
+  if(m==='og'){const R=G&&G.packR||{rx:170,ry:100};const Rf=R.rx+120;return {cx:pc-0.36*2*Rf,cz:pz+10,hw:2.1*Rf,hd:R.ry+150,tilt:0.85,h:90};}
   if(m==='pack')return {cx:pc,cz:pz,hw:PACK.w/2+10,hd:PACK.h/2+10,tilt:1.08,h:60};
   return {cx:pc,cz:pz,hw:PACK.w/2-20,hd:PACK.h/2-30,tilt:0.66,h:110,orbit:0.35};
 }
@@ -1397,7 +1397,7 @@ function addKatsuo(x,y){for(let i=0;i<6;i++)G.kat.push({x:x+rnd(-35,35),y:y+rnd(
 function toolDown(){const x=pointer.wx,y=pointer.wy;if(!inPack(x,y))return;
   if(G.tool==='aonori'){for(let i=0;i<24;i++){const a=rnd(0,6.28),r=Math.pow(Math.random(),.7)*55;G.aon.push([x+Math.cos(a)*r,y+Math.sin(a)*r,Math.random()<.5?0:1]);}tone('triangle',2400,1800,.05,.05);noiseShot(.12,.15,'highpass',5000);}
   if(G.tool==='beni'){addBeni(x,y);pop(520);}
-  if(G.tool==='katsuo'){addKatsuo(x,y);noiseShot(.15,.12,'bandpass',3000,1);}
+  if(G.tool==='katsuo'){G.katTaps=(G.katTaps||0)+1;addKatsuo(x,y);noiseShot(.15,.12,'bandpass',3000,1);}
   if(G.tool==='mayo'){G.curMayo=[[x,y]];G.mayo.push(G.curMayo);tone('sine',300,200,.1,.08);}
 }
 function toolMove(){if(G.tool==='mayo'&&G.curMayo){const l=G.curMayo[G.curMayo.length-1];const x=clamp(pointer.wx,PACK.cx-PACK.w/2+30,PACK.cx+PACK.w/2-30),y=clamp(pointer.wy,PACK.cy-PACK.h/2+30,PACK.cy+PACK.h/2-30);
