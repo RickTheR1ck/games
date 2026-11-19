@@ -577,7 +577,8 @@ function camSpec(m){
   if(m==='title')return {cx:0,cz:-40,hw:W/2-40,hd:H/2-60,tilt:0.62,h:60,orbit:0.22};
   if(m==='og'){const R=G&&G.packR||{rx:170,ry:100};const Rf=R.rx+120;return {cx:pc-0.36*2*Rf,cz:pz+10,hw:2.1*Rf,hd:R.ry+150,tilt:0.85,h:90};}
   if(m==='pack')return {cx:pc,cz:pz,hw:PACK.w/2+10,hd:PACK.h/2+10,tilt:1.08,h:60};
-  return {cx:pc,cz:pz,hw:PACK.w/2-20,hd:PACK.h/2-30,tilt:0.66,h:110,orbit:0.35};
+  const por=VH>VW*1.1;
+  return {cx:pc,cz:pz,hw:PACK.w/2-20,hd:PACK.h/2-30,tilt:por?0.5:0.66,h:110,orbit:por?0.1:0.35};
 }
 function computeCam(sp){
   const [top,bot]=uiReserve();const yT=1-2*top/VH,yB=-1+2*bot/VH;
@@ -1517,7 +1518,7 @@ function showResult(){
   $('zukanCount').textContent=`${r.found.length}/${zukanTotal()}`+(r.newOnes.length?`（NEW ${r.newOnes.length}）`:'');
   $('zukanBtn').classList.toggle('hasnew',r.newOnes.length>0);
   $('legendLine').innerHTML=r.legend?`<span class="lp"><small>伝説の称号</small>✨ ${r.legend} ✨${r.legendNew?' NEW!':''}</span>`:'';
-  if(r.legend&&r.legendNew){clearTimeout(window.__lgT);window.__lgT=setTimeout(()=>showLegend(r),1500);}
+  if(r.legend&&r.legendNew&&!location.hash.startsWith('#preview')){clearTimeout(window.__lgT);window.__lgT=setTimeout(()=>showLegend(r),1500);}
   // count up
   const t0=performance.now();const S=$('score'),N=$('scoreNum');S.classList.remove('don');$('bestNote').textContent='';N.textContent='0';
   (function cu(){const k=c01((performance.now()-t0)/1000);const e=1-Math.pow(1-k,3);N.textContent=Math.round(r.total*e);
@@ -1573,8 +1574,8 @@ function makeShareImage(){const r=resultData;const S=1080;const c=document.creat
   g.textAlign='center';g.textBaseline='alphabetic';g.font=`800 32px ${F}`;g.fillStyle=r.legend?'#ffe27a':'#fff';
   g.fillText(`${r.legend?'✨伝説「'+r.legend+'」✨':'タイプ：'+r.style}　rickther1ck.com/yakisoba`,S/2,S-20);
   return c;}
-const OTHER=[{slug:'warabimochi',title:'わらび餅職人',e:'🍡'},{slug:'enpitsu-kezuri',title:'鉛筆どこまで削れる？',e:'✏️'},{slug:'ichiman-lighter',title:'1万分の1ライター',e:'🔥'}];
-$('otherList').innerHTML=OTHER.map(o=>`<a href="https://rickther1ck.com/${o.slug}/"><div class="th" style="background-image:url('../${o.slug}/og.png')">${''}</div><div class="t">${o.e} ${o.title}</div></a>`).join('');
+const OTHER=[{slug:'warabimochi',title:'わらび餅職人',e:'🍡',img:'og.jpg'},{slug:'ichiman-lighter',title:'1万分の1ライター',e:'🔥',img:'og.png'},{slug:'pict-dance',title:'ピクトさん、踊りだす',e:'🚶',img:'og.png'}];
+$('otherList').innerHTML=OTHER.map(o=>`<a href="https://rickther1ck.com/${o.slug}/"><div class="th" style="background-image:url('https://rickther1ck.com/${o.slug}/${o.img}')">${''}</div><div class="t">${o.e} ${o.title}</div></a>`).join('');
 document.querySelectorAll('#otherList a,#allgames').forEach(a=>a.addEventListener('click',e=>e.stopPropagation()));
 
 function bucketColor(s,tone){const base=mix(RAW,COOKED,G.cooked);let c=s<=0.8?mix(base,SAUCE,s*1.25):mix(SAUCE,SAUCE2,Math.min(1,(s-0.8)/0.9));return tone?dark(c,0.94):c;}
