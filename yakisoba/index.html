@@ -37,6 +37,9 @@ canvas#ov{position:fixed;inset:0;width:100%;height:100%;pointer-events:none}
 .meter .bar{position:relative;height:10px;background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.3);border-radius:6px;overflow:hidden;margin-top:2px}
 .meter .zone{position:absolute;top:0;bottom:0;background:rgba(120,255,140,.3);border-left:1px solid #8f9;border-right:1px solid #8f9}
 .meter .fill{position:absolute;left:0;top:0;bottom:0;width:0;background:linear-gradient(90deg,#ffe28a,#ff9d2e)}
+body.inapp #bottom{padding-bottom:calc(env(safe-area-inset-bottom) + 92px)}
+body.inapp #pick .pkBot{padding-bottom:calc(env(safe-area-inset-bottom) + 92px)}
+body.inapp #result{padding-bottom:90px}
 #bottom{position:fixed;left:0;right:0;bottom:0;padding:8px 10px calc(env(safe-area-inset-bottom) + 12px);display:flex;justify-content:center;gap:10px;pointer-events:none}
 .btn{pointer-events:auto;border:none;border-radius:14px;padding:12px 18px;font-weight:900;font-size:16px;color:#3a1a00;cursor:pointer;
   background:linear-gradient(#ffe08a,#ffb030);box-shadow:0 4px 0 #a5620a,0 6px 14px rgba(0,0,0,.45);touch-action:manipulation;font-family:inherit}
@@ -444,13 +447,15 @@ let steamTex,smokeTex,bubbleTex,oilTex;
 let camMode='title',camGoal=null,camPos=null,camTgt=null;
 const V3=(x,y,z)=>new THREE.Vector3(x,y,z);
 function lin(c){return [Math.pow(c[0]/255,2.2),Math.pow(c[1]/255,2.2),Math.pow(c[2]/255,2.2)];}
+const INAPP=/Twitter|TwitterAndroid|Line\/|Instagram|FBAN|FBAV|TikTok|musical_ly/i.test(navigator.userAgent)||/[?&]inapp/.test(location.search);
+if(INAPP)document.body.classList.add('inapp');
 function uiReserve(){
   if(OGMODE)return [10,10];
   if(state==='title')return [VH*0.34,VH*0.2];
   if(state==='result')return [16,VH*0.5];
   if(state==='pick')return [($('pick').querySelector('.pkHead').offsetHeight||70)+20,($('pick').querySelector('.pkBot').offsetHeight||220)+8];
   if(state==='reveal')return [30,30];
-  return [Math.max(128,($('hud')&&$('hud').offsetHeight||0)+14),86];
+  return [Math.max(128,($('hud')&&$('hud').offsetHeight||0)+14),86+(INAPP?92:0)];
 }
 function sprite(c,soft){const s=document.createElement('canvas');s.width=s.height=64;const g=s.getContext('2d');
   const rg=g.createRadialGradient(32,32,0,32,32,32);rg.addColorStop(0,`rgba(${c},${soft?.55:1})`);rg.addColorStop(soft?.5:.6,`rgba(${c},${soft?.22:.9})`);rg.addColorStop(1,`rgba(${c},0)`);g.fillStyle=rg;g.fillRect(0,0,64,64);return s;}
@@ -561,7 +566,7 @@ function resize(){
   if(!renderer)return;
   if(state==='title'||state==='og'||!G){
     const nh=OGMODE?900:clamp(Math.round(1000*(VH-214)/(VW-10)*0.92),760,1400);
-    if(nh!==H||!griddleGroup){H=nh;PACK.cy=H/2;if(H>1100){PACK.w=540;PACK.h=Math.min(H-320,680);}else{PACK.w=640;PACK.h=clamp(Math.min(H-220,480),440,480);}buildGriddle3D();if(G&&state==='title')buildShowcase(false);}
+    if(nh!==H||!griddleGroup){H=nh;PACK.cy=H/2;if(H>1100){PACK.w=660;PACK.h=480;}else{PACK.w=640;PACK.h=clamp(Math.min(H-220,480),440,480);}buildGriddle3D();if(G&&state==='title')buildShowcase(false);}
   }
   renderer.setPixelRatio(DPR);renderer.setSize(VW,VH,false);
   ov.width=Math.round(VW*DPR);ov.height=Math.round(VH*DPR);
@@ -578,7 +583,7 @@ function camSpec(m){
   if(m==='og'){const R=G&&G.packR||{rx:170,ry:100};const Rf=R.rx+120;return {cx:pc-0.36*2*Rf,cz:pz+10,hw:2.1*Rf,hd:R.ry+150,tilt:0.85,h:90};}
   if(m==='pack')return {cx:pc,cz:pz,hw:PACK.w/2+10,hd:PACK.h/2+10,tilt:1.08,h:60};
   const por=VH>VW*1.1;
-  return {cx:pc,cz:pz,hw:PACK.w/2-20,hd:PACK.h/2-30,tilt:por?0.5:0.66,h:110,orbit:por?0.1:0.35};
+  return {cx:pc,cz:pz,hw:PACK.w/2-(por?-15:20),hd:PACK.h/2-30,tilt:por?0.55:0.66,h:110,orbit:por?0.05:0.35};
 }
 function computeCam(sp){
   const [top,bot]=uiReserve();const yT=1-2*top/VH,yB=-1+2*bot/VH;
