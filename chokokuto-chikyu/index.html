@@ -859,12 +859,29 @@ function showResult(){if(state==='result')return;state='result';endSnd.done=fals
 const fmtKm=k=>Math.round(k).toLocaleString('ja-JP');
 function fmtVol(v){if(v>=1e12)return (v/1e12).toFixed(2)+'兆';if(v>=1e8)return (v/1e8).toFixed(v>=1e10?0:1)+'億';if(v>=1e4)return (v/1e4).toFixed(v>=1e6?0:1)+'万';return Math.round(v).toLocaleString('ja-JP');}
 function cmpVol(v){const moon=v/2.19e10;if(moon>=0.01)return `月 ${moon<1?moon.toFixed(2):moon.toFixed(1)}個分`;const fuji=v/400;if(fuji<1)return 'まだ富士山1個分もない';return `富士山 ${fmtVol(fuji)}個分`;}
+function doodleName(L){
+ const rc=new Float64Array(14);let tot=0;for(let i=0;i<N;i++){const d=ORIG[i]-RAD[i];if(d>0.004){const r=REGION[i];if(r<14){rc[r]++;tot++;}}}
+ if(tot<3)return '地球をながめただけの人';
+ let ri=0;for(let k=1;k<14;k++)if(rc[k]>rc[ri])ri=k;
+ let used=0;for(let k=0;k<14;k++)if(rc[k]>tot*0.12)used++;
+ const cov=tot/N,tv=G.toolVol,tt=tv[0]+tv[1]+tv[2],mx=Math.max(...tv),tool=tt>0&&mx/tt>=0.55?tv.indexOf(mx):-1;
+ const wide=used>=3||rc[ri]<tot*0.45;
+ if(L>=4)return wide?'地球の中心までらくがきした人':`${REG[ri]}から地球の中心まで描いた人`;
+ if(cov>0.18)return '地球まるごとキャンバスにした人';
+ const P=wide?'地球のあちこち':REG[ri];
+ if(cov<0.004&&G.strokes<=6)return `${P}にこっそり描いた人`;
+ if(L>=2)return `${P}に深〜く刻んだ人`;
+ if(G.strokes>=60)return `${P}にせっせと彫りまくった人`;
+ if(tool===0)return `${P}に繊細な線を刻んだ人`;
+ if(tool===1)return `${P}をぐりぐり彫った人`;
+ if(tool===2)return `${P}を大胆に削った人`;
+ return `${P}に彫刻刀フルコースで描いた人`;}
 function judge(){
  const L=layerOf(G.minR);let ri=0;for(let k=1;k<14;k++)if(G.regVol[k]>G.regVol[ri])ri=k;
  let jc=0,cov=0;for(let i=0;i<N;i++){const d=ORIG[i]-RAD[i];if(d>0.006)cov++;if(REGION[i]===13&&d>0.008)jc++;}const jt=JAPAN_N;
  cov/=N;const jf=jt?jc/jt:0;const frac=G.vol/1.083e12;
  let name,key;
- if(G.mode==='doodle'){name='地球に、らくがきしました。';key='doodle';}
+ if(G.mode==='doodle'){name=doodleName(L);key='doodle';}
  else if(G.vol<=0){name='地球にやさしい人';key='gentle';}
  else if(L>=4){const ct=G.centerTime||99;name=ct<=7?'彫刻家の神':ct<=10?'マッハ彫刻家':ct<=15?'地球貫通のプロ':ct<=20?'中心まで来た人':'ギリギリ地球の中心';key='center';}
  else if(jf>0.5){name='日本列島、彫り消した人';key='japan';}
@@ -902,7 +919,7 @@ function openDex(){const dex=LS.get('dex',[]);let h='';
  $('dexBody').innerHTML=h;$('dexCnt').textContent=`${dex.filter(k=>k!=='doodle').length} / 61 種類`;$('dexModal').classList.remove('hide');}
 // ===== share =====
 let shareImg=null;
-function shareText(){const r=result;if(r.mode==='doodle')return `彫刻刀で地球にらくがきした\n#彫刻刀で地球`;
+function shareText(){const r=result;if(r.mode==='doodle')return `彫刻刀で地球にらくがきした\n鑑定：「${r.name}」\n#彫刻刀で地球`;
  const main=r.centerTime>0?`彫刻刀で、地球の中心まで ${r.centerTime.toFixed(1)}秒で到達した`:`彫刻刀で地球を ${fmtKm(r.km)}km 掘った（中心まであと${fmtKm(Math.max(0,6371-r.km))}km）`;
  return `${main}\n鑑定：「${r.name}」\n#彫刻刀で地球`;}
 function makeImage(){if(shareImg)return shareImg;
