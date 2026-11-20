@@ -50,6 +50,8 @@ button{font-family:inherit;cursor:pointer}
 #title .slow{pointer-events:auto;border:1px solid rgba(255,255,255,.35);background:rgba(10,14,30,.6);color:#fff;font-size:15px;font-weight:700;padding:9px 20px;border-radius:999px;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
 #dbar{pointer-events:auto;display:flex;gap:8px;align-items:center;background:rgba(10,14,30,.6);border:1px solid rgba(255,255,255,.18);border-radius:999px;padding:5px 6px 5px 14px;font-size:13px;color:#cfe3ff}
 #dbar button{border:none;border-radius:999px;padding:7px 14px;font-weight:800;font-size:14px}
+#dbar{margin:0 62px 0 10px;max-width:calc(100% - 72px);box-sizing:border-box}
+@media(max-width:560px){#dbar span{display:none}#dbar{padding:5px 6px}#dbar button{padding:7px 12px}}
 #dUndo{background:rgba(255,255,255,.14);color:#fff}#dUndo:disabled{opacity:.35}
 #dDone{background:linear-gradient(#ffb547,#ff7a1a);color:#2a1200}#dReset{background:rgba(255,255,255,.14);color:#fff}
 #title .best{font-size:13px;color:#ffe3b5;text-shadow:0 1px 4px #000;min-height:1em;text-align:center}
