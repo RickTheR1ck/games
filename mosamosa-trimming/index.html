@@ -239,6 +239,9 @@ body.carePhase #tip,body.carePhase #accWrap{display:none}
   .pop{font-size:clamp(16px,6vw,26px)!important}
 }
 </style>
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 </head>
 <body>
 <canvas id="c"></canvas>
@@ -2231,9 +2234,11 @@ async function runSimtest_() {
 
 // ===================== 撮影用デモ（URLの最後に #demo ／ #demo-dry） =====================
 // 画面収録をはじめてからタップすると、Xの動画用に「おいしい場面」を自動で演じる
+// ?demo でも #demo でもOK（?demo=dry でドライヤー版）
+const DEMO_KEY = location.hash.startsWith('#demo') ? location.hash : qs.has('demo') ? '#demo' + (qs.get('demo') ? '-' + qs.get('demo') : '') : '';
 function runDemo() {
-  const dry = location.hash.startsWith('#demo-dry');
-  const m = location.hash.match(/^#demo-(?!dry|auto)([a-z]+)-(?!auto)([a-z]+)/);
+  const dry = DEMO_KEY.startsWith('#demo-dry');
+  const m = DEMO_KEY.match(/^#demo-(?!dry|auto)([a-z]+)-(?!auto)([a-z]+)/);
   FORCE_BREED = m ? m[1] : 'golden'; FORCE_ORDER = m ? m[2] : 'lion';
   const ov = document.createElement('div');
   ov.style.cssText = 'position:fixed;inset:0;z-index:98;display:grid;place-items:center;background:rgba(253,228,234,.92);font:900 20px sans-serif;color:#3d2a2e;text-align:center;line-height:1.7;padding:20px';
@@ -2241,7 +2246,7 @@ function runDemo() {
   document.body.appendChild(ov);
   const go = () => { if (!ov.isConnected) return; ov.remove(); initAudio(); (dry ? demoDry() : demoCut()).catch(e => console.error(e)); };
   ov.addEventListener('pointerdown', go, { once: true });
-  if (location.hash.includes('auto')) setTimeout(go, 800); // 確認用：タップなしで始める
+  if (DEMO_KEY.includes('auto')) setTimeout(go, 800); // 確認用：タップなしで始める
 }
 const dSleep = ms => new Promise(r => setTimeout(r, ms));
 const dTouch = (type, x, y) => canvas.dispatchEvent(new PointerEvent('pointer' + type, { clientX: x, clientY: y, pointerId: 9, pointerType: 'touch', isPrimary: true, bubbles: true, button: 0, buttons: type === 'up' ? 0 : 1 }));
@@ -2338,7 +2343,9 @@ function frame(now) {
 requestAnimationFrame(frame);
 if (location.hash.startsWith('#autotest')) setTimeout(runAutotest, 500);
 if (location.hash.startsWith('#simtest')) setTimeout(runSimtest, 800);
-if (location.hash.startsWith('#demo')) setTimeout(runDemo, 600);
+if (DEMO_KEY) setTimeout(runDemo, 600);
+// ページを開いたままURLに #demo を足しても始まらないので、そのときは読みこみ直す
+addEventListener('hashchange', () => { if (location.hash.startsWith('#demo')) location.reload(); });
 window.__game = { P, get state() { return state; }, startRound, endRound, computeAcc: () => computeAcc(), setAtt, cam, get dog() { return dog; } };
 </script>
 </body>

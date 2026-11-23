@@ -100,6 +100,9 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
 #dexClose{margin-top:10px;padding:10px;border:none;border-radius:10px;background:linear-gradient(#f3dca3,#d6a85a);color:#3a2410;font-weight:700;font-size:15px;cursor:pointer}
 #nogl{position:fixed;inset:0;display:none;align-items:center;justify-content:center;text-align:center;padding:30px;font-size:16px}
 </style>
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 </head>
 <body>
 <canvas id="c"></canvas>
@@ -395,7 +398,7 @@ function dustW(x,y,z,n,sp=.6,col){for(let i=0;i<n;i++)addP({x:x+rand(-.05,.05),y
 
 // ================= ゲーム状態 =================
 let scene=null;const G={};
-function newGame(){Object.assign(G,{demo:false,sc:[0,0,0,0,0],note:['','','','',''],cook:0,nerin:0,burn:0,cells:null,N:1,even:1,lost:0,cov:0,syrup:0,pieces:null,pieces5:null,mochi:0,milk:1,warm:0,q2:0});}
+function newGame(){Object.assign(G,{demo:typeof REC!=='undefined'&&REC,sc:[0,0,0,0,0],note:['','','','',''],cook:0,nerin:0,burn:0,cells:null,N:1,even:1,lost:0,cov:0,syrup:0,pieces:null,pieces5:null,mochi:0,milk:1,warm:0,q2:0});}
 function totalNow(){return Math.round(G.sc.reduce((a,b)=>a+b,0))}
 function setScene(s){scene=s;if(s.init)s.init();}
 const STEPS=[];let stepIdx=0;
@@ -740,7 +743,7 @@ function showResult(){if(scene!==FINAL||FINAL.done)return;FINAL.done=true;FINAL.
  $('rscore').innerHTML=`${tot}<small>点</small>`;$('rrank').textContent=`「${rank}」`;$('rpers').textContent=`${FLV.name}｜${pers}`+(FINAL.legend?'｜伝説のわらび餅':FINAL.framed?'｜入選':'');
  const nm=['混ぜる','練る','切る','まぶす','かける'];$('rbars').innerHTML=G.sc.map((s,i)=>`<div class="bar"><b>${i+1}.${nm[i]}</b><i><u style="width:${s/20*100}%"></u></i><em>${Math.round(s)}</em><span>${G.note[i]}</span></div>`).join('');
  $('rtips').innerHTML=tips().map(t=>`<div>・${t}</div>`).join('');
- $('rbestT').textContent=G.demo?'テスト表示（記録されません）':`自己ベスト ${best[FLV.id]||0}点`+(newS?' ★更新':'');
+ $('rbestT').textContent=G.demo?(REC?'':'テスト表示（記録されません）'):`自己ベスト ${best[FLV.id]||0}点`+(newS?' ★更新':'');
  const nw=G.demo?[]:dexUnlock(['r:'+rank,'p:'+personaId(),...(FINAL.legend?['l:'+FLV.id]:[])]);$('rnew').innerHTML=nw.map(id=>`<span>NEW 称号ゲット「${DEX.find(d=>d.id===id).name}」</span>`).join('');if(nw.length)setTimeout(()=>SFX.ding(),300);
  const text=`${FLV.name}わらび餅を作ったら${tot}点「${rank}」でした（${pers}）`+(FINAL.legend?'\n伝説のわらび餅、爆誕。':'')+`\n\n#わらび餅職人`;lastShare={text,tot,rank,pers};
  $('bShare').onclick=e=>{e.stopPropagation();window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(URL_GAME)}`,'_blank');};
@@ -773,9 +776,15 @@ function demoFinal(score){initAudio();newGame();G.demo=true;const sc=score>=95?[
  Object.assign(G,{cook:1.4,q2:.95,nerin:3,milk:.05,warm:0,burn:0,N:12,even:.9,cov:.96,covT:.96,covB:.95,syrup:2.4,lost:0,left:0,spill:0,pq:.95,over:0});
  const ps=[];for(let i=0;i<12;i++){const b=new MochiBlob(0,0,rrectOffs(rand(40,46),rand(36,42),28));Object.assign(b,{srcA:260*192/12,milk:.05,covT:.96,covB:.94,syrup:.6,cov:.95});ps.push(b);}G.pieces5=ps;
  ['title','flavor','result','dex'].forEach(id=>$(id).style.display='none');$('card').style.display='none';parts=[];setScene(FINAL);}
+// ===== 撮影モード（?rec=1）：リンクとミュートを隠し、指の位置を丸で表示。記録は保存しない =====
+const REC=/[?&]rec=1/.test(location.search),REC_LEG=REC&&/[?&]legend=1/.test(location.search);
+if(REC){const st=document.createElement('style');st.textContent='#site,#mute{display:none!important}';document.head.appendChild(st);
+ const f=document.createElement('div');f.style.cssText='position:fixed;width:44px;height:44px;margin:-22px 0 0 -22px;border-radius:50%;background:rgba(255,255,255,.3);border:3px solid rgba(255,255,255,.85);box-shadow:0 0 10px rgba(0,0,0,.35);pointer-events:none;z-index:60;display:none;transition:transform .08s';document.body.appendChild(f);
+ const mv=e=>{f.style.left=e.clientX+'px';f.style.top=e.clientY+'px';};addEventListener('pointerdown',e=>{mv(e);f.style.display='block';f.style.transform='scale(.85)';},true);addEventListener('pointermove',mv,true);addEventListener('pointerup',()=>{f.style.display='none';f.style.transform='';},true);addEventListener('pointercancel',()=>{f.style.display='none';},true);
+ const fq=(location.search.match(/[?&]flv=(\w+)/)||[])[1];const ff=FLAVORS.find(v=>v.id===fq);if(ff)FLV=ff;}
 const TITLE={plane:.1,table:'cloth',
  init(){setCam({elev:44,w:3.0,d:3.0,t:[0,.12,.35]},true);this.bl=[];const P=[[-38,-20],[34,-24],[-30,36],[38,30],[2,4]];for(let i=0;i<5;i++){const f=FLAVORS[i%4];const b=new MochiBlob(P[i][0],P[i][1],rrectOffs(rand(56,62),rand(52,58),26));Object.assign(b,{flv:f,milk:.04,covT:i===4?0:.95,covB:i===4?0:.9,syrup:i===4?.6:0,rot:true,k:.1,hgt:.42});if(i===4){b.flv=FLAVORS[0];}this.bl.push(b);}this.tt=0;},
- onDown(){showFlavor();},
+ onDown(){if(REC_LEG){demoFinal(97);return;}showFlavor();},
  update(dt){this.tt+=dt;CAM.yaw=Math.sin(this.tt*.25)*.35;if(Math.random()<dt*.9){const b=this.bl[(Math.random()*this.bl.length)|0];b.jiggle(1.4);b.hv-=.03;}for(const b of this.bl)b.step();updParts(dt);},
  draw3(){addShadow(.12,.18,4.2,4.2,0,.75);add('op',GEO.sqplate,M4.RY(.06),mat({col:[.8,.8,.84],tex:TX.plate,texMode:0,spec:1.1,shin:90,env:.18}));
   add('op',GEO.kuro,M4.m(M4.T(.95,.2,-.95),M4.RY(.55),M4.RZ(.06)),mat({col:[.92,.82,.64],spec:.4,shin:30}));add('op',GEO.kuroBark,M4.m(M4.T(.95,.2,-.95),M4.RY(.55),M4.RZ(.06)),mat({col:[.72,.62,.42],spec:.3,shin:20}));
