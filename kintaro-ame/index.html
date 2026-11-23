@@ -314,7 +314,7 @@ if(TEST)addEventListener('error',e=>tlog('ERR '+e.message+' @'+e.lineno));
 if(/Twitter|TwitterAndroid|Line\/|Instagram|FBAN|FBAV|TikTok|musical_ly/i.test(navigator.userAgent)||Q.has('inapp'))document.body.classList.add('inapp');
 
 // ===== tunables (?debug=1) =====
-const P={PULL_IDEAL:10,PULL_TIME:20,ROLL_K:0.6,ROLL_CLEAN:2.2,ROLL_TIME:28,TARGET_D:2.0,SNAP_D:1.15,FEED:0.56,FEED_UP:1.09,THICK:0.42,SHAKE:1,HITSTOP:0.05};
+const P={PULL_IDEAL:10,PULL_TIME:20,ROLL_K:0.6,ROLL_CLEAN:2.2,ROLL_TIME:28,TARGET_D:2.0,SNAP_D:1.15,FEED:0.56,FEED_UP:1.11,THICK:0.42,SHAKE:1,HITSTOP:0.05};
 
 const $=id=>document.getElementById(id);
 const clamp=(v,a,b)=>v<a?a:v>b?b:v,lerp=(a,b,t)=>a+(b-a)*t,rand=(a,b)=>a+Math.random()*(b-a);
