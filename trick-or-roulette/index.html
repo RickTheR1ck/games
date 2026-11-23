@@ -212,6 +212,9 @@ body.reach .cabinet{position:relative;z-index:6}
 @keyframes reachIn{0%{transform:scale(2.4);opacity:0}18%{transform:scale(1);opacity:1}75%{opacity:1}100%{transform:scale(.95);opacity:0}}
 @media (prefers-reduced-motion:reduce){.chochin,.board,.fog,.bat,.box,.reel.reach{animation:none!important}.bat{display:none}}
 @media (max-width:420px){.cabinet{grid-template-columns:1fr 28px}.moon{width:52px;height:52px}}
+
+.sitelink{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 18px;padding:4px 0 28px}
+.sitelink a{color:var(--brass);font-size:13px;letter-spacing:.06em;text-underline-offset:4px}
 </style>
 
 <link rel="icon" href="/favicon.ico" sizes="48x48">
@@ -295,6 +298,8 @@ body.reach .cabinet{position:relative;z-index:6}
     <h2>おどし帳 <span id="best"></span></h2>
     <ol id="hist"><li class="empty">まだ誰もおどされていない。</li></ol>
   </section>
+
+  <nav class="sitelink"><a href="https://rickther1ck.com/">ほかのゲームも遊ぶ ▶</a><a href="https://rickther1ck.com/">rickther1ck.com</a></nav>
 </div>
 <div class="rareBanner" id="rare" hidden><span>本家降臨</span></div>
 <div class="reachBan" id="reachBan" hidden><span>リーチ</span></div>
