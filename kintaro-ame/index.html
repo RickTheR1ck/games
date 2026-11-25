@@ -237,6 +237,9 @@ html,body{font-family:var(--gothic);color:var(--ink)}
 .how{display:flex;flex-direction:column;max-height:88vh;overflow:hidden!important}
 .how ol{overflow-y:auto;flex:1 1 auto;min-height:0;padding-right:2px!important}
 .how .howFoot{flex:none}
+.how li.links{display:flex;flex-wrap:wrap;gap:4px 18px;background:none;border:none;padding:4px 2px}
+.how li.links a{color:var(--ink2);font-size:12.5px;text-underline-offset:3px}
+.how .howIntro{flex:none;margin:0 2px 10px;font-size:12px;line-height:1.7;color:var(--ink2)}
 .how .btn.main{flex:none}
 @media (max-height:720px){
   #result .sheet{max-height:68vh;padding-top:18px}
@@ -293,12 +296,17 @@ html,body{font-family:var(--gothic);color:var(--ink)}
   </div>
 </div>
 <div class="modal" id="howM"><div class="box how"><div class="hk">遊び方</div><h3>金太郎あめを、5つの工程で作ろう</h3>
+<p class="howIntro">金太郎あめを、本物と同じ5つの工程で作るゲームです。顔はお手本の金太郎でも、オリジナルの顔でもOK。使った色で「みかん太郎」「抹茶太郎」などの名前が変わります。</p>
 <ol id="howList">
 <li data-s="0"><b>① 飴を引く</b>飴を下まで引っぱって、はなす。引くたびに白くなっていくので、<em>つやつやの白（10回くらい）</em>で「このくらいでOK」。引きすぎるとザラザラになる。</li>
 <li data-s="1"><b>② 顔を組む</b>色飴の「ひも」で<em>なぞって描く</em>（「丸い棒」はタップで置ける）。オリジナルの顔でOK。<em>左右対称</em>ほど高得点。使った色で「〇〇太郎」が決まる。</li>
 <li data-s="2"><b>③ 包む</b>外側の色を選んで、<em>点線の輪をなぞるように</em>指でぐるっと一周。</li>
 <li data-s="3"><b>④ 転がして伸ばす</b>左右にスワイプしてコロコロ転がす。<em>直径2cm</em>になったら「できた！」。雑に速く転がすとデコボコになって顔がゆがむ。</li>
 <li data-s="4"><b>⑤ 切る</b>包丁を<em>指で下にスワイプ</em>（タップでもOK）。飴の先が<em>点線の目印</em>まで来たら切る。同じ厚さで10個。</li>
+<li class="x"><b>うまくなるコツ</b>飴は引きすぎるとザラザラになるので、<em>「つやつやの白！」</em>が出たら止めどき。顔は<em>左右対称</em>ほど高得点。転がすときは、速く雑にやるとデコボコになって断面の顔がゆがむので、一定のリズムで。切るときは、点線の目印に合わせて<em>同じ厚さ</em>をそろえよう。</li>
+<li class="x"><b>点数と称号</b>95点以上「金太郎あめ本舗の三代目」、85点以上「一人前の飴職人」、70点以上「飴職人の弟子」、50点以上「駄菓子屋の見習い」、30点以上「縁日の屋台レベル」、それ未満は「これは…何太郎？」。</li>
+<li class="x"><b>新しい色飴</b>たくさん作ったり高得点を出したりすると、新しい色飴が使えるようになる。結果画面からは、できた金太郎あめを画像でシェアできる。</li>
+<li class="x links"><a href="https://rickther1ck.com/">ゲーム一覧</a><a href="https://rickther1ck.com/about/">このサイトについて</a></li>
 </ol>
 <div class="howFoot">工程ごとに100点満点、最後は平均点。たくさん作ったり高得点を出すと、新しい色飴が使えるようになる。</div>
 <button class="btn main" id="howClose">わかった</button></div></div>

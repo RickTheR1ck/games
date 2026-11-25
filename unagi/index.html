@@ -17,6 +17,31 @@
 <meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}
 .sitelink{font-size:13px;color:#d9c9a6;letter-spacing:.06em;text-decoration:underline;text-underline-offset:4px;padding:6px 10px}
 .sitelink:hover{color:var(--kinari)}
+
+/* ===== 遊び方・コツ（rhow） ===== */
+.rhow-hide{display:none!important}
+#rhow{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;padding:calc(env(safe-area-inset-top,0px) + 12px) 12px calc(env(safe-area-inset-bottom,0px) + 12px);background:var(--rh-back);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+#rhow,#rhow *{touch-action:pan-y;box-sizing:border-box}
+.rhow-panel{width:min(560px,100%);max-height:100%;display:flex;flex-direction:column;background:var(--rh-bg);color:var(--rh-fg);border:var(--rh-border);border-radius:var(--rh-radius);box-shadow:var(--rh-shadow);overflow:hidden;font-family:var(--rh-font);user-select:text;-webkit-user-select:text;text-align:left}
+.rhow-body{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:22px 22px 8px;font-size:14.5px;line-height:1.8;letter-spacing:normal}
+.rhow-kick{margin:0;font-size:12px;font-weight:800;letter-spacing:.2em;color:var(--rh-acc)}
+.rhow-body h2{margin:2px 0 12px;font-family:var(--rh-hfont);font-size:21px;line-height:1.4;color:var(--rh-head);font-weight:900}
+.rhow-body h3{margin:20px 0 6px;font-family:var(--rh-hfont);font-size:15.5px;color:var(--rh-acc);font-weight:900}
+.rhow-body p{margin:0 0 10px}
+.rhow-body ul,.rhow-body ol{margin:0 0 10px;padding-left:1.4em}
+.rhow-body li{margin:3px 0}
+.rhow-body b{color:var(--rh-head)}
+.rhow-tbl{margin:0 0 10px;border:1px solid var(--rh-line);border-radius:10px;overflow:hidden}
+.rhow-tbl div{display:flex;border-top:1px solid var(--rh-line)}
+.rhow-tbl div:first-child{border-top:none}
+.rhow-tbl dt{flex:none;width:8.5em;padding:7px 10px;font-weight:800;color:var(--rh-acc);background:var(--rh-dt)}
+.rhow-tbl dd{margin:0;padding:7px 10px}
+.rhow-links{display:flex;flex-wrap:wrap;gap:6px 18px;margin:18px 0 6px}
+.rhow-links a{color:var(--rh-sub);font-size:13px}
+.rhow-close{margin:10px 18px 18px;padding:12px;border-radius:999px;border:var(--rh-btnborder);background:var(--rh-btn);color:var(--rh-btnfg);font:inherit;font-size:16px;font-weight:800;cursor:pointer}
+@media (max-width:420px){.rhow-body{padding:18px 16px 6px;font-size:14px}.rhow-tbl dt{width:7.4em}}
+#rhow{--rh-back:rgba(10,7,5,.6);--rh-bg:#f2e5c7;--rh-fg:#1d1611;--rh-head:#1d1611;--rh-acc:#a8231b;--rh-sub:#6e4423;--rh-line:rgba(29,22,17,.16);--rh-dt:rgba(168,35,27,.07);--rh-border:3px solid #6e4423;--rh-radius:6px;--rh-shadow:0 10px 30px rgba(0,0,0,.6);--rh-btn:linear-gradient(#c9362a,#a8231b);--rh-btnfg:#f2e5c7;--rh-btnborder:1px solid #c9a24a;--rh-font:var(--mincho);--rh-hfont:var(--brush)}
+.rhow-open.rh-unagi{font-family:var(--mincho);font-size:13px;color:#d9c9a6;background:rgba(22,16,12,.6);border:1px solid rgba(201,162,74,.55);border-radius:999px;padding:7px 18px;letter-spacing:.06em;cursor:pointer}
 </style>
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
@@ -215,6 +240,7 @@ h1 .b{display:block;font-size:clamp(46px,14vw,70px)}
     </div>
     <button class="go" id="startBtn">いざ、掴む</button>
     <p class="tbest">本日の最高記録 <b id="titleBest">まだなし</b></p>
+    <button type="button" class="rhow-open rh-unagi" data-rhow>❓ 遊び方・コツ</button>
     <a class="sitelink" href="https://rickther1ck.com/">rickther1ck.com ▶ ほかのゲーム</a>
   </div>
 </div>
@@ -234,6 +260,7 @@ h1 .b{display:block;font-size:clamp(46px,14vw,70px)}
       </div>
     </div>
     <button class="go" id="againBtn">おかわり</button>
+    <button type="button" class="rhow-open rh-unagi" data-rhow>❓ 遊び方・コツ</button>
     <p class="thanks">またのお越しを</p>
     <a class="sitelink" href="https://rickther1ck.com/">ほかのゲームも遊ぶ ▶</a>
   </div>
@@ -738,4 +765,33 @@ frame();
 })();
 </script>
 
+<div id="rhow" class="rhow-hide" role="dialog" aria-modal="true" aria-labelledby="rhowT"><div class="rhow-panel"><div class="rhow-body">
+<p class="rhow-kick">遊び方・コツ</p><h2 id="rhowT">ぬめぬめうなぎ掴み</h2>
+<p>にゅるにゅる逃げようとするうなぎを、何秒つかんでいられるかを競う耐久ゲームです。ぬるっと手からすべり抜けたら終わり。耐えた秒数で称号がもらえます。</p>
+<h3>操作</h3>
+<ul><li><b>押す</b>：うなぎを強くにぎる。うなぎは上へ動く</li>
+<li><b>離す</b>：手をゆるめる。うなぎは下へ動く</li>
+<li>画面のどこを押してもOK。パソコンは Space キーでもにぎれます</li></ul>
+<h3>うまくなるコツ</h3>
+<ul><li>うなぎが赤く光ったら、暴れる合図です。逃げる向きの逆へ動かしましょう。</li>
+<li>「上へ逃げる！」と出たら指を離し、「下へ逃げる！」と出たらにぎります。</li>
+<li>にぎりっぱなし・離しっぱなしにせず、こまめに切りかえるのが長く耐えるコツです。</li></ul>
+<h3>耐えた秒数と称号</h3>
+<dl class="rhow-tbl"><div><dt>60秒以上</dt><dd>浜名湖のぬし</dd></div><div><dt>35秒以上</dt><dd>掴みの達人</dd></div><div><dt>20秒以上</dt><dd>鰻屋の看板</dd></div><div><dt>10秒以上</dt><dd>見習い職人</dd></div><div><dt>5秒以上</dt><dd>ぬめりの洗礼</dd></div><div><dt>それ未満</dt><dd>うなぎに完敗</dd></div></dl>
+<p class="rhow-links"><a href="https://rickther1ck.com/">ゲーム一覧</a><a href="https://rickther1ck.com/about/">このサイトについて</a></p>
+</div><button type="button" class="rhow-close" id="rhowClose">閉じる</button></div></div>
+<script>
+/* 遊び方・コツ：開いている間はゲームの操作を止める */
+(()=>{const m=document.getElementById('rhow');if(!m)return;const c=document.getElementById('rhowClose'),b=m.querySelector('.rhow-body');
+const stop=e=>e.stopPropagation();
+const EV=['pointerdown','pointerup','pointermove','pointercancel','mousedown','mouseup','touchstart','touchend','touchmove','click','dblclick','wheel','contextmenu'];
+const open=e=>{if(e){e.stopPropagation();e.preventDefault();}m.classList.remove('rhow-hide');b.scrollTop=0;try{c.focus({preventScroll:true});}catch(_){}};
+const close=e=>{if(e)e.stopPropagation();m.classList.add('rhow-hide');};
+document.querySelectorAll('[data-rhow]').forEach(btn=>{EV.forEach(t=>btn.addEventListener(t,stop,{passive:true}));btn.addEventListener('click',open);});
+EV.forEach(t=>m.addEventListener(t,stop,{passive:true}));
+m.addEventListener('click',e=>{if(e.target===m)close(e);});
+c.addEventListener('click',close);
+['keydown','keyup','keypress'].forEach(t=>addEventListener(t,e=>{if(m.classList.contains('rhow-hide'))return;e.stopImmediatePropagation();if(t==='keydown'&&e.key==='Escape'){e.preventDefault();close();}},true));
+})();
+</script>
 </body></html>

@@ -99,6 +99,34 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
 .ditem b{display:block;font-size:13px}.ditem small{font-size:11px;opacity:.7}
 #dexClose{margin-top:10px;padding:10px;border:none;border-radius:10px;background:linear-gradient(#f3dca3,#d6a85a);color:#3a2410;font-weight:700;font-size:15px;cursor:pointer}
 #nogl{position:fixed;inset:0;display:none;align-items:center;justify-content:center;text-align:center;padding:30px;font-size:16px}
+
+/* ===== 遊び方・コツ（rhow） ===== */
+.rhow-hide{display:none!important}
+#rhow{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;padding:calc(env(safe-area-inset-top,0px) + 12px) 12px calc(env(safe-area-inset-bottom,0px) + 12px);background:var(--rh-back);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+#rhow,#rhow *{touch-action:pan-y;box-sizing:border-box}
+.rhow-panel{width:min(560px,100%);max-height:100%;display:flex;flex-direction:column;background:var(--rh-bg);color:var(--rh-fg);border:var(--rh-border);border-radius:var(--rh-radius);box-shadow:var(--rh-shadow);overflow:hidden;font-family:var(--rh-font);user-select:text;-webkit-user-select:text;text-align:left}
+.rhow-body{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:22px 22px 8px;font-size:14.5px;line-height:1.8;letter-spacing:normal}
+.rhow-kick{margin:0;font-size:12px;font-weight:800;letter-spacing:.2em;color:var(--rh-acc)}
+.rhow-body h2{margin:2px 0 12px;font-family:var(--rh-hfont);font-size:21px;line-height:1.4;color:var(--rh-head);font-weight:900}
+.rhow-body h3{margin:20px 0 6px;font-family:var(--rh-hfont);font-size:15.5px;color:var(--rh-acc);font-weight:900}
+.rhow-body p{margin:0 0 10px}
+.rhow-body ul,.rhow-body ol{margin:0 0 10px;padding-left:1.4em}
+.rhow-body li{margin:3px 0}
+.rhow-body b{color:var(--rh-head)}
+.rhow-tbl{margin:0 0 10px;border:1px solid var(--rh-line);border-radius:10px;overflow:hidden}
+.rhow-tbl div{display:flex;border-top:1px solid var(--rh-line)}
+.rhow-tbl div:first-child{border-top:none}
+.rhow-tbl dt{flex:none;width:8.5em;padding:7px 10px;font-weight:800;color:var(--rh-acc);background:var(--rh-dt)}
+.rhow-tbl dd{margin:0;padding:7px 10px}
+.rhow-links{display:flex;flex-wrap:wrap;gap:6px 18px;margin:18px 0 6px}
+.rhow-links a{color:var(--rh-sub);font-size:13px}
+.rhow-close{margin:10px 18px 18px;padding:12px;border-radius:999px;border:var(--rh-btnborder);background:var(--rh-btn);color:var(--rh-btnfg);font:inherit;font-size:16px;font-weight:800;cursor:pointer}
+@media (max-width:420px){.rhow-body{padding:18px 16px 6px;font-size:14px}.rhow-tbl dt{width:7.4em}}
+#rhow{--rh-back:rgba(0,0,0,.55);--rh-bg:#1d140ef5;--rh-fg:#f3e9d8;--rh-head:#fff6e3;--rh-acc:#e9c77d;--rh-sub:#e9c77d;--rh-line:#e9c77d33;--rh-dt:#e9c77d14;--rh-border:1px solid #e9c77d66;--rh-radius:18px;--rh-shadow:0 10px 30px #000a;--rh-btn:#e9c77d;--rh-btnfg:#2a1a0c;--rh-btnborder:none;--rh-font:inherit;--rh-hfont:"Hiragino Mincho ProN","Yu Mincho",serif}
+.rhow-open.rh-wara{pointer-events:auto;margin-top:8px;padding:6px 16px;border-radius:999px;border:1px solid #e9c77d88;background:#1d140ecc;color:#f3e9d8;font:inherit;font-size:13px;cursor:pointer}
+#title .rhow-open.rh-wara{position:absolute;bottom:calc(3.5vh + env(safe-area-inset-bottom));left:50%;margin:0 0 0 5px;padding:7px 16px;border-radius:20px;border:1px solid #ffffff55;background:#0006;color:#fff;font-size:14px}
+#title #tDex{right:50%;margin-right:5px}
+#title #tDex,#title .rhow-open.rh-wara{min-width:122px;text-align:center}
 </style>
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
@@ -107,7 +135,7 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
 <body>
 <canvas id="c"></canvas>
 <canvas id="ov"></canvas>
-<div id="title"><h1 class="serif">わらび餅職人</h1><div class="sub">5つの工程で、ぷるもちを極めろ。</div><div class="tap">タップして味をえらぶ</div><div class="best" id="tBest"></div><button id="tDex">称号図鑑</button></div>
+<div id="title"><h1 class="serif">わらび餅職人</h1><div class="sub">5つの工程で、ぷるもちを極めろ。</div><div class="tap">タップして味をえらぶ</div><div class="best" id="tBest"></div><button id="tDex">称号図鑑</button><button type="button" class="rhow-open rh-wara" data-rhow>遊び方・コツ</button></div>
 <div id="hud"><div id="acard"><div id="hudRow"><div id="stepName"></div><div id="scoreNow"></div></div><div id="adv"></div><div id="tbar"><div id="tfill"></div></div></div><div id="hint"></div></div>
 <button id="mute" aria-label="ミュート">🔊</button>
 <button id="btnMain"></button>
@@ -117,7 +145,7 @@ canvas{position:fixed;inset:0;width:100%;height:100%;display:block}
  <div id="rtop"><div id="rscore"></div><div id="rrank" class="serif"></div></div>
  <div id="rpers"></div><div id="rnew"></div>
  <button id="bMore">採点とコツを見る ▼</button><div id="rdetail"><div id="rbars"></div><div id="rtips"></div></div>
- <div id="rbest"><span id="rbestT"></span><button id="bFlv">味をかえる</button><button id="bDex">称号図鑑</button></div>
+ <div id="rbest"><span id="rbestT"></span><button id="bFlv">味をかえる</button><button id="bDex">称号図鑑</button><button type="button" class="rhow-open rh-wara" data-rhow>❓ 遊び方</button></div>
  <div id="rbtns"><button id="bRetry">もう一回 (R)</button><button id="bShare">𝕏 でシェア</button><button id="bImg">画像</button></div>
  <div id="rnote"></div>
 </div></div>
@@ -812,6 +840,41 @@ if(gl){resize();initTex();initGeo();newGame();
  let best0={};try{best0=JSON.parse(localStorage.getItem('warabi_best2')||'{}')}catch(e){}
  {const ks=Object.keys(best0);if(ks.length)$('tBest').textContent='自己ベスト '+FLAVORS.filter(f=>best0[f.id]).map(f=>`${f.name} ${best0[f.id]}点`).join(' / ');}
  setScene(TITLE);try{camUpdate(0);}catch(e){}requestAnimationFrame(frame);}
+</script>
+<div id="rhow" class="rhow-hide" role="dialog" aria-modal="true" aria-labelledby="rhowT"><div class="rhow-panel"><div class="rhow-body">
+<p class="rhow-kick">遊び方・コツ</p><h2 id="rhowT">わらび餅職人</h2>
+<p>わらび餅を、混ぜる・練る・切る・まぶす・かけるの5つの工程で作る3Dゲームです。工程ごとに採点されて、100点満点で結果が出ます。はじめに味を4種類から選べます。</p>
+<h3>5つの工程</h3>
+<ol><li><b>混ぜる</b>：泡立て器を大きく回して、粉のダマをなくす。</li>
+<li><b>練る</b>：火にかけて混ぜ続け、透明にする。手を止めると焦げる。透明になったら「火を止める」。</li>
+<li><b>切る</b>：スワイプで包丁を入れる。斜めにも切れる。</li>
+<li><b>まぶす</b>：揺すると下と横に、タップで上からきな粉がつく（上からは8回まで）。</li>
+<li><b>かける</b>：長押しで黒蜜。ねらった餅の上に落ちる。</li></ol>
+<h3>うまくなるコツ</h3>
+<ul><li>混ぜるのが速すぎると、ボウルからこぼれます。ゆったり大きく、ダマに泡立て器を当てるように。</li>
+<li>練りは、透明になってから少し続けるとコシが出ます。練りすぎるとカチカチに。</li>
+<li>同じ大きさで9〜16切れにするのがベストです。</li>
+<li>強く揺すりすぎると、わらび餅が飛んでいきます。</li>
+<li>黒蜜は押しっぱなしより、1つずつ短く押すほうがきれいにかかります。</li>
+<li>結果画面の「採点とコツを見る」で、どの工程で点を落としたかがわかります。</li></ul>
+<h3>点数と称号</h3>
+<dl class="rhow-tbl"><div><dt>95点以上</dt><dd>わらび餅の神</dd></div><div><dt>90〜94点</dt><dd>老舗の三代目</dd></div><div><dt>80〜89点</dt><dd>名店の看板職人</dd></div><div><dt>70〜79点</dt><dd>縁日のわらび餅屋</dd></div><div><dt>50〜69点</dt><dd>家庭科の星</dd></div><div><dt>30〜49点</dt><dd>ぷるぷる見習い</dd></div><div><dt>29点以下</dt><dd>なにか別のもの職人</dd></div></dl>
+<p>作り方のクセで「練りの達人」「蜜ドバドバ派」などのタイプもつきます。集めた称号は「称号図鑑」で見られます。パソコンでは R・Space キーでもう一回、1〜4キーで味を選べます。</p>
+<p class="rhow-links"><a href="https://rickther1ck.com/">ゲーム一覧</a><a href="https://rickther1ck.com/about/">このサイトについて</a></p>
+</div><button type="button" class="rhow-close" id="rhowClose">閉じる</button></div></div>
+<script>
+/* 遊び方・コツ：開いている間はゲームの操作を止める */
+(()=>{const m=document.getElementById('rhow');if(!m)return;const c=document.getElementById('rhowClose'),b=m.querySelector('.rhow-body');
+const stop=e=>e.stopPropagation();
+const EV=['pointerdown','pointerup','pointermove','pointercancel','mousedown','mouseup','touchstart','touchend','touchmove','click','dblclick','wheel','contextmenu'];
+const open=e=>{if(e){e.stopPropagation();e.preventDefault();}m.classList.remove('rhow-hide');b.scrollTop=0;try{c.focus({preventScroll:true});}catch(_){}};
+const close=e=>{if(e)e.stopPropagation();m.classList.add('rhow-hide');};
+document.querySelectorAll('[data-rhow]').forEach(btn=>{EV.forEach(t=>btn.addEventListener(t,stop,{passive:true}));btn.addEventListener('click',open);});
+EV.forEach(t=>m.addEventListener(t,stop,{passive:true}));
+m.addEventListener('click',e=>{if(e.target===m)close(e);});
+c.addEventListener('click',close);
+['keydown','keyup','keypress'].forEach(t=>addEventListener(t,e=>{if(m.classList.contains('rhow-hide'))return;e.stopImmediatePropagation();if(t==='keydown'&&e.key==='Escape'){e.preventDefault();close();}},true));
+})();
 </script>
 </body>
 </html>

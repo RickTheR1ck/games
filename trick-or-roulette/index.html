@@ -215,6 +215,31 @@ body.reach .cabinet{position:relative;z-index:6}
 
 .sitelink{display:flex;justify-content:center;flex-wrap:wrap;gap:6px 18px;padding:4px 0 28px}
 .sitelink a{color:var(--brass);font-size:13px;letter-spacing:.06em;text-underline-offset:4px}
+
+/* ===== 遊び方・コツ（rhow） ===== */
+.rhow-hide{display:none!important}
+#rhow{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;padding:calc(env(safe-area-inset-top,0px) + 12px) 12px calc(env(safe-area-inset-bottom,0px) + 12px);background:var(--rh-back);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+#rhow,#rhow *{touch-action:pan-y;box-sizing:border-box}
+.rhow-panel{width:min(560px,100%);max-height:100%;display:flex;flex-direction:column;background:var(--rh-bg);color:var(--rh-fg);border:var(--rh-border);border-radius:var(--rh-radius);box-shadow:var(--rh-shadow);overflow:hidden;font-family:var(--rh-font);user-select:text;-webkit-user-select:text;text-align:left}
+.rhow-body{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:22px 22px 8px;font-size:14.5px;line-height:1.8;letter-spacing:normal}
+.rhow-kick{margin:0;font-size:12px;font-weight:800;letter-spacing:.2em;color:var(--rh-acc)}
+.rhow-body h2{margin:2px 0 12px;font-family:var(--rh-hfont);font-size:21px;line-height:1.4;color:var(--rh-head);font-weight:900}
+.rhow-body h3{margin:20px 0 6px;font-family:var(--rh-hfont);font-size:15.5px;color:var(--rh-acc);font-weight:900}
+.rhow-body p{margin:0 0 10px}
+.rhow-body ul,.rhow-body ol{margin:0 0 10px;padding-left:1.4em}
+.rhow-body li{margin:3px 0}
+.rhow-body b{color:var(--rh-head)}
+.rhow-tbl{margin:0 0 10px;border:1px solid var(--rh-line);border-radius:10px;overflow:hidden}
+.rhow-tbl div{display:flex;border-top:1px solid var(--rh-line)}
+.rhow-tbl div:first-child{border-top:none}
+.rhow-tbl dt{flex:none;width:8.5em;padding:7px 10px;font-weight:800;color:var(--rh-acc);background:var(--rh-dt)}
+.rhow-tbl dd{margin:0;padding:7px 10px}
+.rhow-links{display:flex;flex-wrap:wrap;gap:6px 18px;margin:18px 0 6px}
+.rhow-links a{color:var(--rh-sub);font-size:13px}
+.rhow-close{margin:10px 18px 18px;padding:12px;border-radius:999px;border:var(--rh-btnborder);background:var(--rh-btn);color:var(--rh-btnfg);font:inherit;font-size:16px;font-weight:800;cursor:pointer}
+@media (max-width:420px){.rhow-body{padding:18px 16px 6px;font-size:14px}.rhow-tbl dt{width:7.4em}}
+#rhow{--rh-back:rgba(0,0,0,.6);--rh-bg:#efe2c6;--rh-fg:#2a1a12;--rh-head:#2a1a12;--rh-acc:#b8281c;--rh-sub:#5a3822;--rh-line:rgba(42,26,18,.18);--rh-dt:rgba(184,40,28,.07);--rh-border:3px solid #3b2417;--rh-radius:8px;--rh-shadow:0 10px 40px rgba(0,0,0,.7),0 0 30px rgba(255,154,60,.18);--rh-btn:#3b2417;--rh-btnfg:#efe2c6;--rh-btnborder:1px solid #caa24e;--rh-font:inherit;--rh-hfont:var(--brush)}
+.rhow-open.rh-trick{display:block;margin:-4px auto 0;padding:8px 20px;border-radius:999px;border:1px solid rgba(202,162,78,.6);background:rgba(13,20,22,.5);color:var(--brass);font:inherit;font-size:13px;letter-spacing:.08em;cursor:pointer}
 </style>
 
 <link rel="icon" href="/favicon.ico" sizes="48x48">
@@ -293,6 +318,7 @@ body.reach .cabinet{position:relative;z-index:6}
   </div>
 
   <p class="hint">目押しできる。押した直後に線へ来た語で止まる（スペースキーでも可）<br>「お菓子・くれ・いたずら」をそろえると…</p>
+  <button type="button" class="rhow-open rh-trick" data-rhow>❓ 遊び方・コツ</button>
 
   <section class="cho">
     <h2>おどし帳 <span id="best"></span></h2>
@@ -554,5 +580,33 @@ function rareFx(){
 }
 </script>
 
+<div id="rhow" class="rhow-hide" role="dialog" aria-modal="true" aria-labelledby="rhowT"><div class="rhow-panel"><div class="rhow-body">
+<p class="rhow-kick">遊び方・コツ</p><h2 id="rhowT">トリックオアルーレット</h2>
+<p>ハロウィン向けの、おどし文句を作るスロットゲームです。「〇〇を〇〇なきゃ〇〇するぞ！」の3つの〇〇をスロットで決めて、ちょうちんお化けにおどされます。「推しのアクスタを国宝にしなきゃ既読無視するぞ！」のような、よく分からないおどし文句ができあがります。</p>
+<h3>操作</h3>
+<ul><li><b>回す</b>：レバーを引くか、「回す」ボタンを押す</li>
+<li><b>止める</b>：押した直後に線へ来た言葉で止まるので、目押しもできる（Space キーでもOK）</li>
+<li><b>おどす</b>：できた文はコピーしたり、そのままXに投稿して友だちをおどしたりできる</li></ul>
+<h3>判定と称号</h3>
+<p>できた文は「怖さ」と「理不尽」の2つで判定されます（合計10が最高）。</p>
+<dl class="rhow-tbl"><div><dt>合計10</dt><dd>伝説の大妖怪</dd></div><div><dt>8〜9</dt><dd>町内最恐の怨霊</dd></div><div><dt>6〜7</dt><dd>中堅ポルターガイスト</dd></div><div><dt>4〜5</dt><dd>見習いお化け</dd></div><div><dt>3以下</dt><dd>ただの近所の子</dd></div></dl>
+<h3>ひみつ</h3>
+<p>「お菓子・くれ・いたずら」をそろえると、本家の「お菓子をくれなきゃいたずらするぞ！」になって、特別な称号と演出が出ます。これまでに作った文は、下の「おどし帳」にたまっていきます。</p>
+<p class="rhow-links"><a href="https://rickther1ck.com/">ゲーム一覧</a><a href="https://rickther1ck.com/about/">このサイトについて</a></p>
+</div><button type="button" class="rhow-close" id="rhowClose">閉じる</button></div></div>
+<script>
+/* 遊び方・コツ：開いている間はゲームの操作を止める */
+(()=>{const m=document.getElementById('rhow');if(!m)return;const c=document.getElementById('rhowClose'),b=m.querySelector('.rhow-body');
+const stop=e=>e.stopPropagation();
+const EV=['pointerdown','pointerup','pointermove','pointercancel','mousedown','mouseup','touchstart','touchend','touchmove','click','dblclick','wheel','contextmenu'];
+const open=e=>{if(e){e.stopPropagation();e.preventDefault();}m.classList.remove('rhow-hide');b.scrollTop=0;try{c.focus({preventScroll:true});}catch(_){}};
+const close=e=>{if(e)e.stopPropagation();m.classList.add('rhow-hide');};
+document.querySelectorAll('[data-rhow]').forEach(btn=>{EV.forEach(t=>btn.addEventListener(t,stop,{passive:true}));btn.addEventListener('click',open);});
+EV.forEach(t=>m.addEventListener(t,stop,{passive:true}));
+m.addEventListener('click',e=>{if(e.target===m)close(e);});
+c.addEventListener('click',close);
+['keydown','keyup','keypress'].forEach(t=>addEventListener(t,e=>{if(m.classList.contains('rhow-hide'))return;e.stopImmediatePropagation();if(t==='keydown'&&e.key==='Escape'){e.preventDefault();close();}},true));
+})();
+</script>
 </body>
 </html>

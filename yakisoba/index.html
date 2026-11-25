@@ -266,6 +266,8 @@ body.inapp #result{padding-bottom:90px}
 #legendFx .st{position:absolute;color:#ffe27a;font-size:22px;animation:tw 1.6s ease-in-out infinite;text-shadow:0 0 10px #ffd23f;pointer-events:none}
 @keyframes tw{0%,100%{opacity:0;transform:scale(.4) rotate(0)}50%{opacity:1;transform:scale(1.2) rotate(45deg)}}
 @media (min-width:900px){.hcard{transform:rotate(-1.2deg) scale(1.25);transform-origin:top left}}
+
+.hrank{list-style:none;margin:4px 0 8px;padding:0}.hrank li{display:flex;gap:10px;padding:3px 0;border-bottom:1px dashed rgba(127,127,127,.3)}.hrank li b{flex:none;width:6.5em}
 </style>
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
@@ -363,7 +365,10 @@ body.inapp #result{padding-bottom:90px}
   <li><b>盛り付け</b>：青のり・紅しょうが・かつおぶしはタップ、マヨはなぞって「完成！」。</li></ol>
   <h3>操作</h3><div>スマホ：画面をなぞるとヘラが動きます。PC：マウスでドラッグ。結果画面では R / Space ですぐもう一回。</div>
   <h3>コツ</h3><div>ヘラをすばやく振ると麺が宙を舞いますが、やりすぎると鉄板の外へ吹っ飛びます。具材の組み合わせや焼き方で、タイプや称号が変わります。伝説の称号もあるので、図鑑で探してみてください。</div>
-  <a class="hl" href="https://rickther1ck.com/">ほかのゲームも遊ぶ ›</a>
+  <h3>焼き方のコツ</h3><div>焦がしすぎも生焼けも減点です。焼き色を見ながら、こまめにヘラを動かしましょう。水は入れすぎるとべちゃべちゃに、少なすぎると麺がカチカチになります。ソースはまんべんなく、かけすぎないように。炒め合わせで少し置くと、香ばしい「おこげ」ができます。</div>
+  <h3>点数と称号</h3><ul class="hrank"><li><b>95点以上</b>焼きそばの神</li><li><b>88点以上</b>伝説のテキ屋</li><li><b>75点以上</b>縁日の人気屋台</li><li><b>60点以上</b>学園祭の模擬店</li><li><b>40点以上</b>家の昼ごはん</li><li><b>20点以上</b>謎の茶色い麺</li><li><b>それ未満</b>焼きそば…だったもの</li></ul>
+  <div>「麺ぶちまけ派」「マヨラー」など、作り方のクセで決まるタイプもあります。集めた称号は「📖 称号図鑑」で見られます。</div>
+  <a class="hl" href="https://rickther1ck.com/">ゲーム一覧 ›</a><a class="hl" href="https://rickther1ck.com/about/" style="margin-left:18px">このサイトについて ›</a>
 </div><button class="btn" id="howClose">とじる</button></div></div>
 <div id="zkModal" class="hide"><div class="zbox"><div class="zh">称号図鑑 <span id="zkCount"></span></div><div id="zkBody"></div><button class="btn" id="zkClose">とじる</button></div></div>
 <button id="mute" aria-label="ミュート">🔊</button>

@@ -133,6 +133,32 @@ button{font:inherit;color:inherit;cursor:pointer;border:none;background:none}
 #dbg label{display:block;margin:3px 0}#dbg input{width:100%}
 #recUI{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:30;background:#000d;color:#fff;padding:20px;border-radius:12px;text-align:center}
 #nogl{position:fixed;inset:0;display:grid;place-items:center;padding:30px;text-align:center;font-weight:800;z-index:50;background:#bfe3ff}
+
+/* ===== 遊び方・コツ（rhow） ===== */
+.rhow-hide{display:none!important}
+#rhow{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;padding:calc(env(safe-area-inset-top,0px) + 12px) 12px calc(env(safe-area-inset-bottom,0px) + 12px);background:var(--rh-back);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+#rhow,#rhow *{touch-action:pan-y;box-sizing:border-box}
+.rhow-panel{width:min(560px,100%);max-height:100%;display:flex;flex-direction:column;background:var(--rh-bg);color:var(--rh-fg);border:var(--rh-border);border-radius:var(--rh-radius);box-shadow:var(--rh-shadow);overflow:hidden;font-family:var(--rh-font);user-select:text;-webkit-user-select:text;text-align:left}
+.rhow-body{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:22px 22px 8px;font-size:14.5px;line-height:1.8;letter-spacing:normal}
+.rhow-kick{margin:0;font-size:12px;font-weight:800;letter-spacing:.2em;color:var(--rh-acc)}
+.rhow-body h2{margin:2px 0 12px;font-family:var(--rh-hfont);font-size:21px;line-height:1.4;color:var(--rh-head);font-weight:900}
+.rhow-body h3{margin:20px 0 6px;font-family:var(--rh-hfont);font-size:15.5px;color:var(--rh-acc);font-weight:900}
+.rhow-body p{margin:0 0 10px}
+.rhow-body ul,.rhow-body ol{margin:0 0 10px;padding-left:1.4em}
+.rhow-body li{margin:3px 0}
+.rhow-body b{color:var(--rh-head)}
+.rhow-tbl{margin:0 0 10px;border:1px solid var(--rh-line);border-radius:10px;overflow:hidden}
+.rhow-tbl div{display:flex;border-top:1px solid var(--rh-line)}
+.rhow-tbl div:first-child{border-top:none}
+.rhow-tbl dt{flex:none;width:8.5em;padding:7px 10px;font-weight:800;color:var(--rh-acc);background:var(--rh-dt)}
+.rhow-tbl dd{margin:0;padding:7px 10px}
+.rhow-links{display:flex;flex-wrap:wrap;gap:6px 18px;margin:18px 0 6px}
+.rhow-links a{color:var(--rh-sub);font-size:13px}
+.rhow-close{margin:10px 18px 18px;padding:12px;border-radius:999px;border:var(--rh-btnborder);background:var(--rh-btn);color:var(--rh-btnfg);font:inherit;font-size:16px;font-weight:800;cursor:pointer}
+@media (max-width:420px){.rhow-body{padding:18px 16px 6px;font-size:14px}.rhow-tbl dt{width:7.4em}}
+#rhow{--rh-back:rgba(29,35,64,.45);--rh-bg:#ffffff;--rh-fg:#1d2340;--rh-head:#1d2340;--rh-acc:#1d5fd1;--rh-sub:#1d5fd1;--rh-line:#1d234022;--rh-dt:#eaf3ff;--rh-border:3px solid #1d2340;--rh-radius:22px;--rh-shadow:0 6px 0 #1d234088;--rh-btn:#1d5fd1;--rh-btnfg:#fff;--rh-btnborder:none;--rh-font:inherit;--rh-hfont:inherit}
+.rhow-open.rh-pict{padding:8px 16px;border-radius:999px;background:#ffffffdd;color:#1d2340;font:inherit;font-weight:900;font-size:14px;border:none;box-shadow:0 3px 0 #1d234088;cursor:pointer}
+#result .rhow-open.rh-pict{padding:12px 18px;font-size:15px;font-weight:800}
 </style>
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
@@ -164,6 +190,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:none;background:none}
   <div id="tbot">
     <button id="go">▶ 連打してみる</button>
     <button id="dexBtn" class="dexBtn">📖 図鑑 <span id="dexCount"></span></button>
+    <button type="button" class="rhow-open rh-pict" data-rhow>❓ 遊び方・コツ</button>
     <div id="dexLab"></div>
     <div id="dex"></div>
     <div id="best"></div>
@@ -197,6 +224,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:none;background:none}
     <div class="btns"><button id="retry" class="btn">もう一回おどる（R / Space）</button></div>
     <div class="btns"><button id="shareX" class="btn">𝕏 でシェア</button><button id="shareImg" class="btn">🖼 写真ごと共有</button></div>
     <div class="btns"><button id="dexBtn2" class="btn dexBtn">📖 図鑑（踊り・ソロ・称号）</button></div>
+    <div class="btns"><button type="button" class="rhow-open rh-pict" data-rhow>❓ 遊び方・コツ</button></div>
     <div id="tapHint">画面のどこかをタップでもリトライ</div>
     <div id="more"><div class="lab">ほかのゲームも遊ぶ</div><div id="moreList"></div>
       <a id="allGames" href="https://rickther1ck.com/">ゲーム一覧へ ▶</a></div>
@@ -1733,6 +1761,43 @@ if (DEBUG) {
 }
 window.__pd = { get runDances() { return runDances; }, get cur() { return curDance; }, get state() { return state; }, get hype() { return hype; }, get peds() { return peds; }, get signs() { return signs; }, get resultData() { return resultData; }, set demoCatchAt(v) { demoCatchAt = v; }, addHype(v) { hype += v; }, makeShareImage, tap };
 requestAnimationFrame(frame);
+</script>
+<div id="rhow" class="rhow-hide" role="dialog" aria-modal="true" aria-labelledby="rhowT"><div class="rhow-panel"><div class="rhow-body">
+<p class="rhow-kick">遊び方・コツ</p><h2 id="rhowT">ピクトさん、踊りだす</h2>
+<p>横断歩道や非常口のマークの人たちが、人が見ていない間だけこっそり踊っている……というゲームです。連打で踊らせて「盛り上がり度」を上げ、人が来たらピタッと止まります。見つかると写真を撮られておしまい。盛り上がるほど、街じゅうの標識が棒ごと集まってきます。</p>
+<h3>操作</h3>
+<ul><li><b>踊らせる</b>：画面を連打（パソコンはクリックやキーボードのキーでもOK）</li>
+<li><b>止まる</b>：「👀 見てる！止まれ！」が出たら、すぐに連打をやめる</li>
+<li><b>もう一回</b>：結果画面で R・Space・Enter キー、または画面をタップ</li></ul>
+<h3>人が見る合図</h3>
+<ul><li>人が見る直前に、顔がだんだんこっちを向きます。それが止める合図です。</li>
+<li>スマホの人は「ん？」と言ってから顔を上げます。「ん？」が出たらすぐ止まりましょう。</li>
+<li>通り過ぎた人が「…」で立ち止まったら、振り返る合図です。</li>
+<li>ジョギングの人は速いので、足音が速くなったら早めに止まりましょう。</li>
+<li>子どもは真ん中で立ち止まって、じーっと見てきます。</li></ul>
+<h3>高得点のコツ</h3>
+<ul><li>標識が多いほど、1回の踊りで入る点が増えます。</li>
+<li>レアな踊りほど点が高くなります。いちばんレアな「UR」は10倍です。</li>
+<li>踊りが決まると、標識がたまに「ソロ」を始めます。連打で決めきりましょう。</li>
+<li>夜が明けたら、最後の10秒は人が来ません。点数2倍のラストスパートです。</li></ul>
+<h3>盛り上がり度と称号</h3>
+<dl class="rhow-tbl"><div><dt>40,000以上</dt><dd>都市伝説</dd></div><div><dt>25,000以上</dt><dd>街の伝説</dd></div><div><dt>14,000以上</dt><dd>深夜の標識パーティー</dd></div><div><dt>6,000以上</dt><dd>交差点のダンサー</dd></div><div><dt>2,000以上</dt><dd>ちょっと揺れた標識</dd></div><div><dt>それ未満</dt><dd>ただの標識</dd></div></dl>
+<p>だれに撮られたかや撮られ方でもらえる称号もあります。集めた踊り・ソロ・称号は「📖 図鑑」で見られます。</p>
+<p class="rhow-links"><a href="https://rickther1ck.com/">ゲーム一覧</a><a href="https://rickther1ck.com/about/">このサイトについて</a></p>
+</div><button type="button" class="rhow-close" id="rhowClose">閉じる</button></div></div>
+<script>
+/* 遊び方・コツ：開いている間はゲームの操作を止める */
+(()=>{const m=document.getElementById('rhow');if(!m)return;const c=document.getElementById('rhowClose'),b=m.querySelector('.rhow-body');
+const stop=e=>e.stopPropagation();
+const EV=['pointerdown','pointerup','pointermove','pointercancel','mousedown','mouseup','touchstart','touchend','touchmove','click','dblclick','wheel','contextmenu'];
+const open=e=>{if(e){e.stopPropagation();e.preventDefault();}m.classList.remove('rhow-hide');b.scrollTop=0;try{c.focus({preventScroll:true});}catch(_){}};
+const close=e=>{if(e)e.stopPropagation();m.classList.add('rhow-hide');};
+document.querySelectorAll('[data-rhow]').forEach(btn=>{EV.forEach(t=>btn.addEventListener(t,stop,{passive:true}));btn.addEventListener('click',open);});
+EV.forEach(t=>m.addEventListener(t,stop,{passive:true}));
+m.addEventListener('click',e=>{if(e.target===m)close(e);});
+c.addEventListener('click',close);
+['keydown','keyup','keypress'].forEach(t=>addEventListener(t,e=>{if(m.classList.contains('rhow-hide'))return;e.stopImmediatePropagation();if(t==='keydown'&&e.key==='Escape'){e.preventDefault();close();}},true));
+})();
 </script>
 </body>
 </html>

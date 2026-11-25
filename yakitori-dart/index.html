@@ -318,6 +318,32 @@ h1 em{font-style:normal;color:#8e1f10}
 
 .sitelink{font-size:13px;font-weight:700;color:var(--dim);text-align:center;text-decoration:underline;text-underline-offset:4px;padding:6px 10px}
 .sitelink:hover{color:var(--ink)}
+
+/* ===== 遊び方・コツ（rhow） ===== */
+.rhow-hide{display:none!important}
+#rhow{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;padding:calc(env(safe-area-inset-top,0px) + 12px) 12px calc(env(safe-area-inset-bottom,0px) + 12px);background:var(--rh-back);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+#rhow,#rhow *{touch-action:pan-y;box-sizing:border-box}
+.rhow-panel{width:min(560px,100%);max-height:100%;display:flex;flex-direction:column;background:var(--rh-bg);color:var(--rh-fg);border:var(--rh-border);border-radius:var(--rh-radius);box-shadow:var(--rh-shadow);overflow:hidden;font-family:var(--rh-font);user-select:text;-webkit-user-select:text;text-align:left}
+.rhow-body{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:22px 22px 8px;font-size:14.5px;line-height:1.8;letter-spacing:normal}
+.rhow-kick{margin:0;font-size:12px;font-weight:800;letter-spacing:.2em;color:var(--rh-acc)}
+.rhow-body h2{margin:2px 0 12px;font-family:var(--rh-hfont);font-size:21px;line-height:1.4;color:var(--rh-head);font-weight:900}
+.rhow-body h3{margin:20px 0 6px;font-family:var(--rh-hfont);font-size:15.5px;color:var(--rh-acc);font-weight:900}
+.rhow-body p{margin:0 0 10px}
+.rhow-body ul,.rhow-body ol{margin:0 0 10px;padding-left:1.4em}
+.rhow-body li{margin:3px 0}
+.rhow-body b{color:var(--rh-head)}
+.rhow-tbl{margin:0 0 10px;border:1px solid var(--rh-line);border-radius:10px;overflow:hidden}
+.rhow-tbl div{display:flex;border-top:1px solid var(--rh-line)}
+.rhow-tbl div:first-child{border-top:none}
+.rhow-tbl dt{flex:none;width:8.5em;padding:7px 10px;font-weight:800;color:var(--rh-acc);background:var(--rh-dt)}
+.rhow-tbl dd{margin:0;padding:7px 10px}
+.rhow-links{display:flex;flex-wrap:wrap;gap:6px 18px;margin:18px 0 6px}
+.rhow-links a{color:var(--rh-sub);font-size:13px}
+.rhow-close{margin:10px 18px 18px;padding:12px;border-radius:999px;border:var(--rh-btnborder);background:var(--rh-btn);color:var(--rh-btnfg);font:inherit;font-size:16px;font-weight:800;cursor:pointer}
+@media (max-width:420px){.rhow-body{padding:18px 16px 6px;font-size:14px}.rhow-tbl dt{width:7.4em}}
+#rhow{--rh-back:rgba(8,5,16,.6);--rh-bg:#f3e8cf;--rh-fg:#1d130d;--rh-head:#1d130d;--rh-acc:#c8361f;--rh-sub:#8a5a32;--rh-line:rgba(29,19,13,.15);--rh-dt:rgba(200,54,31,.07);--rh-border:2px solid #4a140a;--rh-radius:6px;--rh-shadow:0 10px 30px rgba(0,0,0,.5);--rh-btn:linear-gradient(#dc4b2e,#a52d19);--rh-btnfg:#fff6e6;--rh-btnborder:2px solid #4a140a;--rh-font:var(--font-body);--rh-hfont:var(--font-brush)}
+.rhow-open.rh-yaki{font-family:var(--font-body);font-size:13px;font-weight:700;color:var(--ink);background:rgba(29,19,13,.55);border:1px solid rgba(243,232,207,.35);border-radius:999px;padding:7px 16px;cursor:pointer}
+.result-card .rhow-open.rh-yaki{padding:11px;font-size:15px;border-radius:12px;font-weight:900}
 </style>
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
@@ -373,6 +399,7 @@ h1 em{font-style:normal;color:#8e1f10}
       </div>
       <button class="btn" id="startBtn" type="button">串を構える</button>
       <div class="best" id="bestTitle">自己ベスト 0個</div>
+      <button type="button" class="rhow-open rh-yaki" data-rhow>❓ 遊び方・コツ</button>
       <a class="sitelink" href="https://rickther1ck.com/">rickther1ck.com ▶ ほかのゲーム</a>
     </div>
   </div>
@@ -382,6 +409,7 @@ h1 em{font-style:normal;color:#8e1f10}
       <div class="rc-score"><span id="rScore">0</span><small>個刺した</small></div>
       <button class="rc-btn primary" id="retryBtn" type="button">もう一回</button>
       <button class="rc-btn" id="copyBtn" type="button">共有</button>
+      <button type="button" class="rhow-open rh-yaki" data-rhow>❓ 遊び方・コツ</button>
       <div class="copied" id="copied"></div>
       <a class="sitelink" href="https://rickther1ck.com/">ほかのゲームも遊ぶ ▶</a>
       <div hidden><span id="rRank"></span><span id="rNew"></span><span id="rRecord"></span><span id="rPlanets"></span><span id="slipNo"></span><span id="rTally"></span><span id="rZone"></span><span id="rDist"></span><span id="rSpeed"></span><span id="rPower"></span><span id="rBest"></span><button id="hidePanel" type="button"></button></div>
@@ -2192,11 +2220,40 @@ fillField(-170);
 updateSkewerShape();
 requestAnimationFrame(loop);
 setTimeout(buildPlanetTextures, 300);
-start();   // no title screen: open straight onto the grill with the gauge running
+if (DEMO) start(); else { state = 'title'; $('titleScreen').hidden = false; }   // タイトル画面から始める（#demo のときだけ、すぐ始める）
 
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => {
   const nt = lanternTexture(); lanternTex.image = nt.image; lanternTex.needsUpdate = true;
 });
+})();
+</script>
+<div id="rhow" class="rhow-hide" role="dialog" aria-modal="true" aria-labelledby="rhowT"><div class="rhow-panel"><div class="rhow-body">
+<p class="rhow-kick">遊び方・コツ</p><h2 id="rhowT">爆速焼き鳥ダーツ</h2>
+<p>串は1本、チャンスは1回。炭火のゲージに合わせて串をぶっ飛ばし、空を舞う焼き鳥を刺しまくる3Dゲームです。勢いがよければ、雲を突き抜け、成層圏を越えて宇宙まで飛んでいき、最後は惑星まで串に刺さります。</p>
+<h3>操作</h3>
+<ol><li><b>発射</b>：火力ゲージが「爆速」の瞬間に、タップ・クリック・Space キー。串は1本だけ</li>
+<li><b>動かす</b>：飛んでいる間、マウス（スマホは指でなぞる）で串を動かす</li>
+<li><b>刺す</b>：焼き鳥に当てると、どんどん串に刺さっていく。串が止まったら終わり</li></ol>
+<h3>うまくなるコツ</h3>
+<ul><li>最初のタイミングがすべてです。ゲージをよく見て「爆速」をねらいましょう。ぴったり合うと「神タイミング」になります。</li>
+<li>焼き鳥がたくさん並んでいる所に串を通すと、まとめて刺さります。</li>
+<li>高く飛ぶほど景色が変わります。地上、雲の上、成層圏、そして宇宙へ。</li></ul>
+<h3>刺した数と称号</h3>
+<dl class="rhow-tbl"><div><dt>160個以上</dt><dd>串の神</dd></div><div><dt>100個以上</dt><dd>伝説の大将</dd></div><div><dt>60個以上</dt><dd>炭火の鬼</dd></div><div><dt>30個以上</dt><dd>串打ち職人</dd></div><div><dt>10個以上</dt><dd>焼き場担当</dd></div><div><dt>それ未満</dt><dd>見習い</dd></div></dl>
+<p class="rhow-links"><a href="https://rickther1ck.com/">ゲーム一覧</a><a href="https://rickther1ck.com/about/">このサイトについて</a></p>
+</div><button type="button" class="rhow-close" id="rhowClose">閉じる</button></div></div>
+<script>
+/* 遊び方・コツ：開いている間はゲームの操作を止める */
+(()=>{const m=document.getElementById('rhow');if(!m)return;const c=document.getElementById('rhowClose'),b=m.querySelector('.rhow-body');
+const stop=e=>e.stopPropagation();
+const EV=['pointerdown','pointerup','pointermove','pointercancel','mousedown','mouseup','touchstart','touchend','touchmove','click','dblclick','wheel','contextmenu'];
+const open=e=>{if(e){e.stopPropagation();e.preventDefault();}m.classList.remove('rhow-hide');b.scrollTop=0;try{c.focus({preventScroll:true});}catch(_){}};
+const close=e=>{if(e)e.stopPropagation();m.classList.add('rhow-hide');};
+document.querySelectorAll('[data-rhow]').forEach(btn=>{EV.forEach(t=>btn.addEventListener(t,stop,{passive:true}));btn.addEventListener('click',open);});
+EV.forEach(t=>m.addEventListener(t,stop,{passive:true}));
+m.addEventListener('click',e=>{if(e.target===m)close(e);});
+c.addEventListener('click',close);
+['keydown','keyup','keypress'].forEach(t=>addEventListener(t,e=>{if(m.classList.contains('rhow-hide'))return;e.stopImmediatePropagation();if(t==='keydown'&&e.key==='Escape'){e.preventDefault();close();}},true));
 })();
 </script>
 </body>

@@ -238,6 +238,31 @@ body.carePhase #tip,body.carePhase #accWrap{display:none}
   #mute{left:10px;padding:8px 10px;bottom:calc(66px + env(safe-area-inset-bottom))}
   .pop{font-size:clamp(16px,6vw,26px)!important}
 }
+
+/* ===== 遊び方・コツ（rhow） ===== */
+.rhow-hide{display:none!important}
+#rhow{position:fixed;inset:0;z-index:10000;display:flex;align-items:center;justify-content:center;padding:calc(env(safe-area-inset-top,0px) + 12px) 12px calc(env(safe-area-inset-bottom,0px) + 12px);background:var(--rh-back);-webkit-backdrop-filter:blur(3px);backdrop-filter:blur(3px)}
+#rhow,#rhow *{touch-action:pan-y;box-sizing:border-box}
+.rhow-panel{width:min(560px,100%);max-height:100%;display:flex;flex-direction:column;background:var(--rh-bg);color:var(--rh-fg);border:var(--rh-border);border-radius:var(--rh-radius);box-shadow:var(--rh-shadow);overflow:hidden;font-family:var(--rh-font);user-select:text;-webkit-user-select:text;text-align:left}
+.rhow-body{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:22px 22px 8px;font-size:14.5px;line-height:1.8;letter-spacing:normal}
+.rhow-kick{margin:0;font-size:12px;font-weight:800;letter-spacing:.2em;color:var(--rh-acc)}
+.rhow-body h2{margin:2px 0 12px;font-family:var(--rh-hfont);font-size:21px;line-height:1.4;color:var(--rh-head);font-weight:900}
+.rhow-body h3{margin:20px 0 6px;font-family:var(--rh-hfont);font-size:15.5px;color:var(--rh-acc);font-weight:900}
+.rhow-body p{margin:0 0 10px}
+.rhow-body ul,.rhow-body ol{margin:0 0 10px;padding-left:1.4em}
+.rhow-body li{margin:3px 0}
+.rhow-body b{color:var(--rh-head)}
+.rhow-tbl{margin:0 0 10px;border:1px solid var(--rh-line);border-radius:10px;overflow:hidden}
+.rhow-tbl div{display:flex;border-top:1px solid var(--rh-line)}
+.rhow-tbl div:first-child{border-top:none}
+.rhow-tbl dt{flex:none;width:8.5em;padding:7px 10px;font-weight:800;color:var(--rh-acc);background:var(--rh-dt)}
+.rhow-tbl dd{margin:0;padding:7px 10px}
+.rhow-links{display:flex;flex-wrap:wrap;gap:6px 18px;margin:18px 0 6px}
+.rhow-links a{color:var(--rh-sub);font-size:13px}
+.rhow-close{margin:10px 18px 18px;padding:12px;border-radius:999px;border:var(--rh-btnborder);background:var(--rh-btn);color:var(--rh-btnfg);font:inherit;font-size:16px;font-weight:800;cursor:pointer}
+@media (max-width:420px){.rhow-body{padding:18px 16px 6px;font-size:14px}.rhow-tbl dt{width:7.4em}}
+#rhow{--rh-back:rgba(61,42,46,.35);--rh-bg:#fff7ec;--rh-fg:#3d2a2e;--rh-head:#3d2a2e;--rh-acc:#f0507c;--rh-sub:#f0507c;--rh-line:rgba(61,42,46,.14);--rh-dt:#ffe7ee;--rh-border:3px solid #fff;--rh-radius:22px;--rh-shadow:0 8px 0 rgba(61,42,46,.25),0 10px 40px rgba(61,42,46,.18);--rh-btn:#ff6f91;--rh-btnfg:#fff;--rh-btnborder:none;--rh-font:inherit;--rh-hfont:inherit}
+
 </style>
 <link rel="icon" href="/favicon.ico" sizes="48x48">
 <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
@@ -280,7 +305,7 @@ body.carePhase #tip,body.carePhase #accWrap{display:none}
   <div class="top">
     <h1><span>ご注文どおりに刈りそろえろ！</span>モサモサわんこ<br>トリミング</h1>
   </div>
-  <div class="btns"><button class="go" id="start">✂ はじめる</button><button class="btn" id="openZ">📖 図鑑・コツ</button></div>
+  <div class="btns"><button class="go" id="start">✂ はじめる</button><button class="btn" id="openZ">📖 図鑑・コツ</button><button type="button" class="btn rhow-open" data-rhow>❓ 遊び方</button></div>
   <div class="tipline" id="titleTip"></div>
   <div class="how">わんこの上をドラッグ＝バリカン ／ 背景ドラッグ・⟲⟳＝回転 ／ 2本指＝ズーム<br>1・2・3 でアタッチメント（毛の長さ）切りかえ</div>
 </div>
@@ -300,7 +325,7 @@ body.carePhase #tip,body.carePhase #accWrap{display:none}
       <button class="btn" id="retryCut" title="シャンプー〜ドライヤーをとばす (C)">✂ カットから</button>
       <a class="btn" id="share" href="https://twitter.com/intent/tweet" target="_blank" rel="noopener" style="text-decoration:none;display:flex;align-items:center;justify-content:center">𝕏 でシェア</a>
     </div>
-    <div class="row" style="margin-top:8px"><button class="btn" id="rView">👀 じっくり見る</button><button class="btn" id="rZukan">📖 図鑑</button></div>
+    <div class="row" style="margin-top:8px"><button class="btn" id="rView">👀 じっくり見る</button><button class="btn" id="rZukan">📖 図鑑</button><button type="button" class="btn rhow-open" data-rhow>❓ 遊び方</button></div>
     <div class="hint"><a href="https://rickther1ck.com/" target="_blank" rel="noopener" style="color:inherit">rickther1ck.com ほかのゲーム ▶</a><br>R でもう1回 ／ C でカットから ／ わんこはドラッグで回せる</div>
   </div>
   <div id="viewfinder" class="hide"><span>📷 図鑑に写る範囲</span></div>
@@ -2347,6 +2372,43 @@ if (DEMO_KEY) setTimeout(runDemo, 600);
 // ページを開いたままURLに #demo を足しても始まらないので、そのときは読みこみ直す
 addEventListener('hashchange', () => { if (location.hash.startsWith('#demo')) location.reload(); });
 window.__game = { P, get state() { return state; }, startRound, endRound, computeAcc: () => computeAcc(), setAtt, cam, get dog() { return dog; } };
+</script>
+<div id="rhow" class="rhow-hide" role="dialog" aria-modal="true" aria-labelledby="rhowT"><div class="rhow-panel"><div class="rhow-body">
+<p class="rhow-kick">遊び方・コツ</p><h2 id="rhowT">モサモサわんこトリミング</h2>
+<p>モッサモサに毛がのびた犬を、シャンプー・ドライヤー・バリカンで、ご注文どおりのカットに仕上げる3Dゲームです。トイプードルやポメラニアン、シーズーなどが来店し、テディベアカットやライオンカットなどの注文が入ります。ごくまれに、全身モップのような幻の犬種「コモンドール」もやってきます。</p>
+<h3>流れ</h3>
+<ol><li><b>シャンプー</b>：長押しで泡立てて、ゲージが緑のところで離す（Space キーでもOK）</li>
+<li><b>すすぎ</b>：お湯が緑（ぬるま湯）に来たらタップ。3回</li>
+<li><b>ドライヤー</b>：4.5秒の間に連打。毛が多い犬種ほどたくさん必要</li>
+<li><b>カット</b>：わんこの上をドラッグするとバリカンで刈れる。時間切れはなし</li></ol>
+<h3>カットの操作</h3>
+<ul><li><b>回す</b>：背景をドラッグ、または ⟲⟳ ボタン</li>
+<li><b>ズーム</b>：2本指（パソコンはマウスホイール）</li>
+<li><b>毛の長さ</b>：アタッチメントを切りかえる（パソコンは 1・2・3 キー）</li>
+<li><b>パソコン</b>：R でもう1回、C でカットからやり直し</li></ul>
+<h3>うまくなるコツ</h3>
+<ul><li>注文の「切らない場所」（耳・しっぽ・足先など）を読んでから刈りはじめましょう。</li>
+<li>長さが違う場所は、アタッチメントを切りかえて刈り分けます。</li>
+<li>わんこを回していろんな角度から見ると、刈り残しが見つかります。</li>
+<li>刈りすぎてハゲが多いと、特別な（うれしくない）称号がつきます。</li></ul>
+<h3>一致度と称号</h3>
+<dl class="rhow-tbl"><div><dt>92%以上</dt><dd>神の手（ゴッドハンド）</dd></div><div><dt>80%以上</dt><dd>カリスマトリマー</dd></div><div><dt>65%以上</dt><dd>街の人気トリマー</dd></div><div><dt>45%以上</dt><dd>見習いトリマー</dd></div><div><dt>25%以上</dt><dd>前衛芸術家</dd></div><div><dt>それ未満</dt><dd>事件現場</dd></div></dl>
+<p>仕上げたわんこは「📖 図鑑」に写真で残せます。犬種ごとの特徴や、上手に刈るコツも図鑑で読めます。</p>
+<p class="rhow-links"><a href="https://rickther1ck.com/">ゲーム一覧</a><a href="https://rickther1ck.com/about/">このサイトについて</a></p>
+</div><button type="button" class="rhow-close" id="rhowClose">閉じる</button></div></div>
+<script>
+/* 遊び方・コツ：開いている間はゲームの操作を止める */
+(()=>{const m=document.getElementById('rhow');if(!m)return;const c=document.getElementById('rhowClose'),b=m.querySelector('.rhow-body');
+const stop=e=>e.stopPropagation();
+const EV=['pointerdown','pointerup','pointermove','pointercancel','mousedown','mouseup','touchstart','touchend','touchmove','click','dblclick','wheel','contextmenu'];
+const open=e=>{if(e){e.stopPropagation();e.preventDefault();}m.classList.remove('rhow-hide');b.scrollTop=0;try{c.focus({preventScroll:true});}catch(_){}};
+const close=e=>{if(e)e.stopPropagation();m.classList.add('rhow-hide');};
+document.querySelectorAll('[data-rhow]').forEach(btn=>{EV.forEach(t=>btn.addEventListener(t,stop,{passive:true}));btn.addEventListener('click',open);});
+EV.forEach(t=>m.addEventListener(t,stop,{passive:true}));
+m.addEventListener('click',e=>{if(e.target===m)close(e);});
+c.addEventListener('click',close);
+['keydown','keyup','keypress'].forEach(t=>addEventListener(t,e=>{if(m.classList.contains('rhow-hide'))return;e.stopImmediatePropagation();if(t==='keydown'&&e.key==='Escape'){e.preventDefault();close();}},true));
+})();
 </script>
 </body>
 </html>
