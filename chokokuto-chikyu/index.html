@@ -54,6 +54,26 @@ button{font-family:inherit;cursor:pointer}
 @media(max-width:560px){#dbar span{display:none}#dbar{padding:5px 6px}#dbar button{padding:7px 12px}}
 #dUndo{background:rgba(255,255,255,.14);color:#fff}#dUndo:disabled{opacity:.35}
 #dDone{background:linear-gradient(#ffb547,#ff7a1a);color:#2a1200}#dReset{background:rgba(255,255,255,.14);color:#fff}
+#title .howto{pointer-events:auto;font:inherit;font-size:13px;color:#dfe5ff;background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:4px;text-shadow:0 1px 4px #000;padding:4px 10px}
+button.all{width:100%;background:none;border:none;font:inherit;font-size:12px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+#howto{position:fixed;inset:0;z-index:30;display:flex;align-items:center;justify-content:center;padding:calc(env(safe-area-inset-top) + 12px) 12px calc(env(safe-area-inset-bottom) + 12px);background:rgba(0,0,8,.6);backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+.howpanel{width:min(560px,100%);max-height:100%;display:flex;flex-direction:column;background:rgba(10,14,32,.96);border:1px solid rgba(255,255,255,.16);border-radius:20px;box-shadow:0 10px 40px rgba(0,0,0,.6);overflow:hidden;user-select:text;-webkit-user-select:text}
+.howbody{overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;padding:22px 22px 8px;font-size:14.5px;line-height:1.8;color:#e6eaff}
+.howkick{margin:0;font-size:12px;font-weight:800;letter-spacing:.2em;color:#ffb547}
+.howbody h2{margin:2px 0 12px;font-size:20px;line-height:1.4;color:#fff}
+.howbody h3{margin:20px 0 6px;font-size:15px;color:#ffcf6a}
+.howbody p{margin:0 0 10px}
+.howbody ul{margin:0 0 10px;padding-left:1.3em}
+.howbody li{margin:2px 0}
+.howbody b{color:#fff}
+.howtbl{margin:0 0 10px;border:1px solid rgba(255,255,255,.14);border-radius:10px;overflow:hidden}
+.howtbl div{display:flex;border-top:1px solid rgba(255,255,255,.1)}
+.howtbl div:first-child{border-top:none}
+.howtbl dt{flex:none;width:6.2em;padding:7px 10px;font-weight:800;color:#ffcf6a;background:rgba(255,181,71,.08)}
+.howtbl dd{margin:0;padding:7px 10px}
+.howlinks{display:flex;gap:18px;margin:18px 0 6px}
+.howlinks a{color:#9aa6d6;font-size:13px}
+.howclose{margin:10px 18px 18px;padding:12px;border-radius:999px;border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.06);color:#fff;font:inherit;font-size:16px;font-weight:800;cursor:pointer}
 #title .best{font-size:13px;color:#ffe3b5;text-shadow:0 1px 4px #000;min-height:1em;text-align:center}
 #title a.site{pointer-events:auto;position:fixed;left:12px;top:calc(env(safe-area-inset-top) + 14px);font-size:12px;color:#9aa6d6;text-decoration:none;background:rgba(10,14,30,.5);padding:4px 10px;border-radius:999px}
 #popup{position:fixed;left:0;right:0;top:30%;text-align:center;pointer-events:none;z-index:8}
@@ -138,7 +158,7 @@ button{font-family:inherit;cursor:pointer}
 <div id="hint" class="hide">地球をなぞって彫る<br><small>地球の外をドラッグで回転・2本指/ホイールで拡大</small></div>
 <div id="title" class="hide">
  <div><p class="kick">彫刻刀で</p><h1><span>地球の中心まで、</span><span>何秒で彫れる？</span></h1><p class="sub">45秒以内に、地球のど真ん中へ。</p></div>
- <div class="bottom"><div class="best" id="bestT"></div><div class="start">タップでスタート</div><div class="row2"><button id="slowBtn" class="slow">✏️ ゆっくり落書きモード</button></div></div>
+ <div class="bottom"><div class="best" id="bestT"></div><div class="start">タップでスタート</div><div class="row2"><button id="slowBtn" class="slow">✏️ ゆっくり落書きモード</button></div><button class="howto" id="howBtn" type="button">📖 遊び方・コツ</button></div>
  <a class="site" href="https://rickther1ck.com/">rickther1ck.com</a>
 </div>
 <div id="popup"></div>
@@ -153,8 +173,63 @@ button{font-family:inherit;cursor:pointer}
  <button id="modeSw" class="modesw"></button>
  <div id="rPop"></div>
  
- <div class="more"><div class="mt">ほかのゲームも遊ぶ</div><div id="recs"></div><a href="https://rickther1ck.com/" class="all">ゲーム一覧へ →</a></div>
+ <div class="more"><div class="mt">ほかのゲームも遊ぶ</div><div id="recs"></div><button class="all" id="howBtn2" type="button">📖 遊び方・コツ</button><a href="https://rickther1ck.com/" class="all">ゲーム一覧へ →</a></div>
  <div class="tip">地球はドラッグで回せます・地球をタップでもう一回</div>
+</div></div>
+<div id="howto" class="hide" role="dialog" aria-modal="true" aria-labelledby="howTitle"><div class="howpanel">
+ <div class="howbody">
+  <p class="howkick">遊び方・コツ</p>
+  <h2 id="howTitle">彫刻刀で地球の中心まで、何秒で彫れる？</h2>
+  <p>宇宙に浮かぶ地球を、彫刻刀でひたすら掘っていくタイムアタックです。制限時間は45秒。地殻からマントル、外核、内核へと掘り進めて、深さ6,371kmの地球の中心を目指します。中心に届いたタイムや、どこをどう掘ったかで、最後に「鑑定結果」として称号がつきます。</p>
+
+  <h3>操作</h3>
+  <ul>
+   <li><b>彫る</b>：地球の上を指（パソコンはマウス）でなぞる</li>
+   <li><b>地球を回す</b>：地球の外側をドラッグ</li>
+   <li><b>拡大・縮小</b>：2本指（パソコンはマウスホイール）</li>
+   <li><b>彫刻刀を持ちかえる</b>：画面の下のボタン（パソコンは 1・2・3 キー）</li>
+  </ul>
+
+  <h3>3本の彫刻刀</h3>
+  <dl class="howtbl">
+   <div><dt>三角刀</dt><dd>細い線が彫れる。落書きで絵や文字を描くのに向いている。</dd></div>
+   <div><dt>丸刀</dt><dd>ぐりぐりとえぐるように彫れる。</dd></div>
+   <div><dt>平刀</dt><dd>広い範囲を大胆に削れる。</dd></div>
+  </dl>
+
+  <h3>中心までの道のり</h3>
+  <p>地球の層に届くたびに画面に表示が出ます。ペース配分の目安にしてください。</p>
+  <dl class="howtbl">
+   <div><dt>マントル</dt><dd>深さ35km〜。ここからドロドロ。</dd></div>
+   <div><dt>外核</dt><dd>深さ2,890km〜。液体の鉄の海。</dd></div>
+   <div><dt>内核</dt><dd>深さ5,150km〜。固い鉄のかたまり。</dd></div>
+   <div><dt>中心</dt><dd>深さ6,371km。ここがゴール。</dd></div>
+  </dl>
+
+  <h3>速く掘るコツ</h3>
+  <ul>
+   <li>あちこち彫るより、<b>同じ場所を集中して</b>深く掘るほうが早く中心に近づきます。</li>
+   <li>掘る場所を決めたら、地球はなるべく回さずに、そこだけを彫り続けましょう。</li>
+   <li>彫刻刀によって削れ方がちがいます。持ちかえて、自分がいちばん速く掘れる1本を見つけてください。</li>
+  </ul>
+
+  <h3>鑑定結果の称号</h3>
+  <p>中心に届いた人は、タイムで称号が変わります。</p>
+  <dl class="howtbl">
+   <div><dt>7秒以内</dt><dd>彫刻家の神</dd></div>
+   <div><dt>10秒以内</dt><dd>マッハ彫刻家</dd></div>
+   <div><dt>15秒以内</dt><dd>地球貫通のプロ</dd></div>
+   <div><dt>20秒以内</dt><dd>中心まで来た人</dd></div>
+   <div><dt>それ以上</dt><dd>ギリギリ地球の中心</dd></div>
+  </dl>
+  <p>中心まで届かなくても、掘った場所や掘り方で「日本列島、彫り消した人」「地球の皮、むいた人」などの称号がつきます。よく使った彫刻刀で「三角刀の線彫り派」のような彫り方のタイプも出ます。</p>
+
+  <h3>ゆっくり落書きモード</h3>
+  <p>タイトル画面の「ゆっくり落書きモード」から遊べます。時間制限はなく、「↩ 戻す」で彫ったところを元に戻せます。描き終わったら「できた！」を押すと、彫った場所と彫り方から作品に名前がつきます。結果は画像で保存したり、Xにシェアしたりできます。</p>
+
+  <p class="howlinks"><a href="https://rickther1ck.com/">ゲーム一覧</a><a href="https://rickther1ck.com/about/">このサイトについて</a></p>
+ </div>
+ <button id="howClose" class="howclose" type="button">閉じる</button>
 </div></div>
 <div id="imgModal" class="hide"><div><img id="mImg" alt="結果画像"><p>画像を長押し（PCは右クリック）で保存できます</p><a id="dl" download="chokokuto-chikyu.png" href="#">ダウンロード</a><button id="mClose">閉じる</button></div></div>
 
@@ -1046,6 +1121,17 @@ requestAnimationFrame(()=>setTimeout(()=>{
  $('loading').classList.add('hide');setTool(0);showTitle();requestAnimationFrame(loop);
  if(Q.has('test'))window.__game={startGame,endGame,G,carveTo,pick,state:()=>state,setTool,T,earth,skipEnding};
 },30));
+})();
+</script>
+<script>
+/* 遊び方・コツ（開いている間はゲームの操作を止める） */
+(()=>{const m=document.getElementById('howto'),c=document.getElementById('howClose');if(!m)return;
+const open=e=>{if(e)e.stopPropagation();m.classList.remove('hide');m.querySelector('.howbody').scrollTop=0;c.focus({preventScroll:true});};
+const close=e=>{if(e)e.stopPropagation();m.classList.add('hide');};
+['howBtn','howBtn2'].forEach(id=>{const b=document.getElementById(id);if(b){b.addEventListener('pointerdown',e=>e.stopPropagation());b.addEventListener('click',open);}});
+c.addEventListener('click',close);
+m.addEventListener('pointerdown',e=>{e.stopPropagation();if(e.target===m)close();});
+addEventListener('keydown',e=>{if(m.classList.contains('hide'))return;e.stopPropagation();if(e.key==='Escape')close();},true);
 })();
 </script>
 </body>
