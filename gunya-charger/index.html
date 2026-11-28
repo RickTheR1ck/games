@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<title>ぐにゃぐにゃ充電器、何秒で刺さる？</title>
+<meta name="description" content="ぐにゃぐにゃすぎる充電器を、バッテリー1%のスマホに刺すまでの秒数を競う3Dブラウザゲーム。持ち手は動かせるのに、先っぽがうどんのように垂れて言うことを聞かない。">
+<meta property="og:title" content="ぐにゃぐにゃ充電器、何秒で刺さる？">
+<meta property="og:description" content="ぐにゃぐにゃすぎる充電器を、バッテリー1%のスマホに刺せ。刺さるまでの秒数で称号がつきます。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://rickther1ck.com/gunya-charger/">
+<link rel="canonical" href="https://rickther1ck.com/gunya-charger/">
+<script src="../play-count.js" defer></script>
+<meta property="og:image" content="https://rickther1ck.com/gunya-charger/og.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ぐにゃぐにゃ充電器、何秒で刺さる？">
+<meta name="twitter:image" content="https://rickther1ck.com/gunya-charger/og.png">
+<style>
+:root{--ib:0px;--acc:#5df2a0;--red:#ff4d5e;--ink:#eef1ff;--panel:rgba(18,20,40,.94)}
+body.inapp{--ib:92px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;background:#0b0d1c;color:var(--ink);font-family:"Hiragino Maru Gothic ProN","Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif;touch-action:none;user-select:none;-webkit-user-select:none}
+#c{position:fixed;inset:0;width:100%;height:100%;display:block}
+.hide{display:none!important}
+button{font-family:inherit;cursor:pointer}
+#flash{position:fixed;inset:0;background:#fff;opacity:0;pointer-events:none;z-index:6}
+/* title */
+#title{position:fixed;inset:0;z-index:5;pointer-events:none;display:flex;flex-direction:column;justify-content:space-between;align-items:center;padding:calc(env(safe-area-inset-top) + 18px) 14px calc(env(safe-area-inset-bottom) + 16px + var(--ib))}
+#title::before{content:'';position:absolute;left:0;right:0;top:0;height:40%;background:linear-gradient(rgba(28,20,14,.72),rgba(28,20,14,.35) 60%,rgba(28,20,14,0));z-index:-1;pointer-events:none}
+#title h1{margin:0;text-align:center;font-weight:900;line-height:1.2;font-size:clamp(28px,8.4vw,54px);letter-spacing:.02em;text-shadow:0 3px 0 #2a1d5c,0 0 22px rgba(120,140,255,.55)}
+#title h1 .g{display:inline-block;color:#ffe27a;animation:wob 1.6s ease-in-out infinite}
+@keyframes wob{0%,100%{transform:skewX(0) rotate(0)}25%{transform:skewX(-12deg) rotate(-3deg)}75%{transform:skewX(10deg) rotate(3deg)}}
+#title .sub{margin-top:8px;text-align:center;font-size:14px;opacity:.85}
+#title .bottom{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;max-width:420px}
+.best{font-size:14px;font-weight:700;background:rgba(10,12,30,.6);border-radius:999px;padding:6px 16px}
+.sel{pointer-events:auto;display:flex;align-items:center;gap:8px;background:rgba(10,12,30,.72);border:2px solid rgba(255,255,255,.18);border-radius:18px;padding:8px 10px;width:100%}
+.sel button{width:42px;height:42px;border-radius:12px;border:none;background:rgba(255,255,255,.12);color:#fff;font-size:22px;font-weight:900}
+.sel button:disabled{opacity:.25}
+.sel .nm{flex:1;text-align:center}
+.sel .nm b{display:block;font-size:18px}
+.sel .nm small{display:block;font-size:12px;opacity:.75;margin-top:2px}
+.start{font-size:22px;font-weight:900;padding:12px 34px;border-radius:999px;background:#ffe27a;color:#2a1d5c;box-shadow:0 5px 0 #b08a1c;animation:pulse 1.2s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.06)}}
+.small-row{display:flex;gap:10px;align-items:center}
+.howto-btn{pointer-events:auto;border:1px solid rgba(255,255,255,.3);background:rgba(10,12,30,.6);color:#fff;border-radius:999px;padding:7px 14px;font-size:13px}
+.site{pointer-events:auto;color:#b9c3ff;font-size:12px;text-decoration:none;opacity:.85}
+/* hud */
+#mute{position:fixed;z-index:7;top:calc(env(safe-area-inset-top) + 10px);right:10px;width:42px;height:42px;border-radius:50%;border:none;background:rgba(0,0,0,.4);color:#fff;font-size:19px}
+#hint{position:fixed;z-index:4;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 22px + var(--ib));background:rgba(10,12,30,.75);border:1px solid rgba(255,255,255,.2);padding:8px 14px;border-radius:14px;font-size:14px;white-space:nowrap;pointer-events:none;transition:opacity .4s}
+#guide{position:fixed;z-index:4;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom) + 70px + var(--ib));font-size:15px;font-weight:700;pointer-events:none;text-shadow:0 2px 6px #000;opacity:.9;white-space:nowrap}
+.pop{position:fixed;z-index:4;pointer-events:none;font-weight:900;font-size:20px;color:#ffe27a;text-shadow:0 2px 0 #000;animation:popup .7s ease-out forwards}
+@keyframes popup{0%{transform:translate(-50%,0) scale(.6);opacity:1}30%{transform:translate(-50%,-14px) scale(1.15)}100%{transform:translate(-50%,-48px) scale(1);opacity:0}}
+#replayOv{position:fixed;inset:0;z-index:4;pointer-events:none;opacity:0;transition:opacity .25s}
+#replayOv.on{opacity:1}
+#replayOv::before,#replayOv::after{content:'';position:absolute;left:0;right:0;height:9vh;background:#000}
+#replayOv::before{top:0}#replayOv::after{bottom:0}
+#replayOv .vig{position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(0,0,0,0) 55%,rgba(0,0,0,.45) 100%)}
+#replayOv .badge{position:absolute;left:14px;top:calc(9vh + 12px);font-weight:900;font-size:16px;letter-spacing:.08em;color:#fff;text-shadow:0 2px 4px #000}
+#replayOv .badge i{display:inline-block;width:11px;height:11px;border-radius:50%;background:#ff3b4f;margin-right:7px;vertical-align:1px;animation:rb 1s steps(2) infinite}
+@keyframes rb{50%{opacity:0}}
+#replayOv .spd{position:absolute;right:14px;top:calc(9vh + 12px);font-weight:900;font-size:16px;color:#ffe27a;text-shadow:0 2px 4px #000}
+#replayOv .skip{position:absolute;left:0;right:0;bottom:calc(9vh + 12px);text-align:center;font-size:12px;color:rgba(255,255,255,.75)}
+#bigtxt{position:fixed;z-index:5;left:0;right:0;top:20%;text-align:center;font-weight:900;font-size:clamp(44px,15vw,96px);color:#fff;text-shadow:0 0 24px var(--acc),0 4px 0 #1a6b43;pointer-events:none;opacity:0}
+/* result */
+#result{position:fixed;inset:0;z-index:5;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;padding:0 10px calc(env(safe-area-inset-bottom) + 10px + var(--ib))}
+.card{width:100%;max-width:440px;max-height:60vh;overflow-y:auto;touch-action:pan-y;background:var(--panel);border:2px solid rgba(255,255,255,.14);border-radius:22px;padding:14px 14px 12px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.5);animation:up .35s ease-out}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+.card .chn{font-size:13px;opacity:.8}
+.card .time{font-size:clamp(40px,12vw,58px);font-weight:900;line-height:1.05;color:var(--acc);text-shadow:0 0 18px rgba(93,242,160,.45)}
+.card .time small{font-size:.45em;margin-left:2px}
+.card .nr{display:inline-block;background:#ff4d8d;color:#fff;font-size:12px;font-weight:900;padding:2px 8px;border-radius:999px;margin-left:6px;vertical-align:middle}
+.card .kan{font-size:12px;color:#ffe27a;letter-spacing:.3em;margin-top:6px}
+.card .ttl{font-size:clamp(22px,6.6vw,30px);font-weight:900;margin:2px 0}
+.card .sty{font-size:15px;font-weight:700;opacity:.95}
+.card .cmp{font-size:13px;opacity:.75;margin-top:2px}
+.card .unlock{margin:8px 0 2px;font-size:14px;font-weight:700;color:#ffe27a}
+.btns{display:flex;gap:8px;margin-top:10px}
+.btns button,.btns a{flex:1;border:none;border-radius:14px;padding:11px 6px;font-size:15px;font-weight:800;color:#fff;background:rgba(255,255,255,.12);text-decoration:none;text-align:center}
+.btns .main{background:#ffe27a;color:#2a1d5c;font-size:18px;box-shadow:0 4px 0 #b08a1c}
+.btns .nxt{background:#5d6bff}
+.btns .x{background:#000;border:1px solid #444}
+.more{margin-top:14px;padding-top:10px;border-top:1px solid rgba(255,255,255,.12)}
+.more .mt{font-size:12px;opacity:.75;margin-bottom:6px}
+#recs{display:flex;gap:8px}
+.rec{flex:1;min-width:0;color:#fff;text-decoration:none;font-size:11px;background:rgba(255,255,255,.06);border-radius:10px;overflow:hidden}
+.rec img{width:100%;aspect-ratio:1200/630;object-fit:cover;display:block;background:#222}
+.rec div{padding:4px 4px 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.links{display:flex;gap:8px;justify-content:center;margin-top:8px}
+.links a,.links button{font-size:12px;color:#b9c3ff;background:none;border:1px solid rgba(185,195,255,.35);border-radius:999px;padding:6px 12px;text-decoration:none}
+.tip{font-size:11px;opacity:.55;margin-top:8px}
+/* image modal */
+#imgModal{position:fixed;inset:0;z-index:20;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;padding:16px}
+#imgModal>div{max-width:420px;width:100%;text-align:center}
+#imgModal img{width:100%;border-radius:12px}
+#imgModal p{font-size:13px;margin:8px 0}
+#imgModal a,#imgModal button{display:inline-block;margin:4px;padding:9px 18px;border-radius:999px;border:none;background:#ffe27a;color:#2a1d5c;font-weight:800;text-decoration:none;font-size:14px}
+/* howto */
+#howto{position:fixed;inset:0;z-index:30;background:rgba(5,6,16,.72);display:flex;align-items:center;justify-content:center;padding:calc(env(safe-area-inset-top) + 14px) 12px calc(env(safe-area-inset-bottom) + 14px + var(--ib));touch-action:pan-y}
+.howpanel{width:100%;max-width:520px;max-height:100%;display:flex;flex-direction:column;background:#151832;border:2px solid #3a3f78;border-radius:20px;overflow:hidden}
+.howbody{overflow-y:auto;touch-action:pan-y;padding:18px 18px 8px;font-size:14px;line-height:1.75;user-select:text;-webkit-user-select:text}
+.howkick{margin:0;font-size:12px;letter-spacing:.2em;color:#ffe27a}
+.howbody h2{margin:2px 0 10px;font-size:20px;line-height:1.35}
+.howbody h3{margin:16px 0 4px;font-size:15px;color:var(--acc)}
+.howbody ul{margin:0;padding-left:1.3em}
+.howtbl{margin:0}
+.howtbl div{display:flex;gap:10px;padding:5px 0;border-bottom:1px dashed rgba(255,255,255,.12)}
+.howtbl dt{flex:0 0 7.5em;font-weight:800}
+.howtbl dd{margin:0;flex:1}
+.howbody a{color:#b9c3ff}
+.howfoot{padding:10px 18px 14px;border-top:1px solid rgba(255,255,255,.1)}
+#howClose{width:100%;padding:11px;border:none;border-radius:12px;background:#ffe27a;color:#2a1d5c;font-weight:900;font-size:16px}
+/* debug */
+#restart{position:fixed;z-index:7;top:calc(env(safe-area-inset-top) + 10px);left:10px;height:42px;padding:0 14px 0 12px;border-radius:999px;border:none;background:rgba(0,0,0,.45);color:#fff;font-size:15px;font-weight:800}
+#restart:active{transform:scale(.94)}
+#dbgBtn{position:fixed;z-index:41;top:calc(env(safe-area-inset-top) + 58px);right:10px;width:42px;height:42px;border-radius:50%;border:none;background:rgba(0,0,0,.45);color:#fff;font-size:20px}
+#dbg{position:fixed;z-index:40;right:8px;top:calc(env(safe-area-inset-top) + 106px);width:min(300px,calc(100vw - 16px));max-height:calc(100vh - 124px);overflow-y:auto;touch-action:pan-y;background:rgba(14,16,32,.94);border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:10px 12px;font-size:12px;color:#eef1ff;box-shadow:0 8px 30px rgba(0,0,0,.4)}
+#dbg h4{margin:0 0 6px;font-size:14px}
+#dbg .row{margin:7px 0}
+#dbg .row .lb{display:flex;justify-content:space-between;gap:6px}
+#dbg .row .lb b{color:#ffe27a;font-variant-numeric:tabular-nums}
+#dbg .row small{display:block;opacity:.6;font-size:10.5px}
+#dbg input[type=range]{width:100%;margin:2px 0 0}
+#dbg .sec{margin-top:10px;padding-top:6px;border-top:1px solid rgba(255,255,255,.12);font-weight:800;color:#5df2a0}
+#dbg .bt{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+#dbg .bt button{flex:1;min-width:80px;border:none;border-radius:10px;padding:8px 6px;font-size:12px;font-weight:800;background:rgba(255,255,255,.14);color:#fff}
+#dbg .bt .cp{background:#ffe27a;color:#2a1d5c}
+#dbg #dbgInfo{margin-top:8px;opacity:.75;font-variant-numeric:tabular-nums}
+#dbg textarea{width:100%;height:90px;margin-top:6px;font-size:11px;background:#000;color:#9f9;border:1px solid #333;border-radius:6px}
+</style>
+<link rel="icon" href="/favicon.ico" sizes="48x48">
+<link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+</head>
+<body>
+<canvas id="c"></canvas>
+<div id="flash"></div>
+<div id="bigtxt">カチッ！</div>
+<div id="replayOv"><div class="vig"></div><div class="badge"><i></i>スローリプレイ</div><div class="spd" id="replaySpd">×0.3</div><div class="skip">タップでスキップ</div></div>
+
+<div id="title">
+ <div>
+  <h1>ぐにゃ<span class="g">ぐにゃ</span>充電器、<br>何秒で刺さる？</h1>
+  <div class="sub">バッテリー1%。早く刺したいのに、充電器が言うことを聞かない。</div>
+ </div>
+ <div class="bottom">
+  <div class="best" id="selBest">ベスト：まだ刺してない</div>
+  <div class="start">タップでスタート</div>
+  <div class="small-row"><button class="howto-btn" id="howBtn" type="button">❓ 遊び方・コツ</button><a class="site" href="https://rickther1ck.com/">rickther1ck.com ほかのゲーム →</a></div>
+ </div>
+</div>
+
+<div id="guide" class="hide">ドラッグで充電器を動かす</div>
+<div id="hint" class="hide"></div>
+<button id="mute" type="button" aria-label="音のオンオフ">🔊</button>
+<button id="restart" class="hide" type="button" aria-label="やり直す">↺ やり直す</button>
+
+<div id="result" class="hide">
+ <div class="card" id="card">
+  <div class="chn">刺さるまで<span id="rNew" class="nr hide">自己ベスト！</span></div>
+  <div class="time" id="rTime">0.00<small>秒</small></div>
+  <div class="kan">鑑 定 結 果</div>
+  <div class="ttl" id="rTitle">「ふつうの人類」</div>
+  <div class="sty" id="rStyle"></div>
+  <div class="cmp" id="rCmp"></div>
+  <div class="btns"><button class="main" id="again" type="button">もう一回</button></div>
+  <div class="btns"><button id="shareImg" type="button">📷 画像でシェア</button><button class="x" id="shareX" type="button">𝕏 でシェア</button></div>
+  <div class="more"><div class="mt">ほかのゲームも遊ぶ</div><div id="recs"></div>
+   <div class="links"><button id="howBtn2" type="button">❓ 遊び方・コツ</button><button id="saveImg" type="button">画像を保存</button><a href="https://rickther1ck.com/">ゲーム一覧へ →</a></div></div>
+  <div class="tip">上の画面タップ / Space / R でもう一回</div>
+ </div>
+</div>
+
+<div id="imgModal" class="hide"><div><img id="mImg" alt="結果画像"><p>画像を長押し（PCは右クリック）で保存できます</p><a id="dl" download="gunya-charger.png" href="#">ダウンロード</a><button id="mClose" type="button">閉じる</button></div></div>
+
+<div id="howto" class="hide" role="dialog" aria-modal="true" aria-labelledby="howTitle"><div class="howpanel">
+ <div class="howbody">
+  <p class="howkick">遊び方・コツ</p>
+  <h2 id="howTitle">ぐにゃぐにゃ充電器、何秒で刺さる？</h2>
+  <p>夜中、スマホのバッテリーは残り1%。なのに手元の充電器は、うどんのようにぐにゃぐにゃです。持ち手は好きなように動かせますが、先っぽは重さでだらんと垂れて、ちっとも上を向いてくれません。スマホの下にある充電口に先っぽを差し込むまでの秒数を競います。刺さると、かかった秒数と刺し方から「鑑定結果」の称号がつきます。</p>
+
+  <h3>操作</h3>
+  <ul>
+   <li><b>スマホ</b>：画面のどこでもいいので、指でドラッグすると充電器の持ち手が同じ向きに動きます（指で充電器が隠れないように、離れた場所をなぞってOK）。</li>
+   <li><b>パソコン</b>：マウスでドラッグ。または矢印キー / WASD で動かせます（Shiftを押すと速く動きます）。</li>
+   <li><b>刺す</b>：先っぽ（銀色の端子）が<b>まっすぐ横（スマホのほう）を向いた状態</b>で充電口に入ると「カチッ」と刺さります。</li>
+   <li><b>やり直す</b>：プレイ中に左上の「↺ やり直す」、または R キーで、いつでも最初からやり直せます。</li>
+   <li><b>もう一回</b>：結果画面で「もう一回」、画面の上のほうをタップ、または Space / R キー。</li>
+  </ul>
+
+  <h3>うまく刺すコツ</h3>
+  <ul>
+   <li><b>手前から勢いよくスマホのほうへ動かして、ピタッと止める</b>。止めた瞬間、先っぽが勢いでピンと前に伸びます。</li>
+   <li>充電口の前に持ち手を持っていっても、先っぽは机に垂れるだけ。<b>先っぽがまっすぐ横を向いた一瞬</b>を狙いましょう。</li>
+   <li>左右に大きく振ると、ぐにゃぐにゃが暴れてスマホをペチペチ叩きます。小さく、短く動かすほうが安定します。</li>
+   <li>充電口の高さで、先っぽがほぼ真横を向いていないと入りません。ほんの少しだけ吸い込まれるので、あと少しのときはもうひと押し。</li>
+   <li>充電口の周りでコツンとぶつけた回数も、鑑定結果に出ます。</li>
+  </ul>
+
+  <h3>称号（刺さるまでの秒数）</h3>
+  <dl class="howtbl">
+   <div><dt>3秒未満</dt><dd>神の一刺し</dd></div>
+   <div><dt>8秒未満</dt><dd>充電のプロ</dd></div>
+   <div><dt>15秒未満</dt><dd>ふつうの人類</dd></div>
+   <div><dt>30秒未満</dt><dd>真っ暗な寝室の人</dd></div>
+   <div><dt>60秒未満</dt><dd>充電1%の焦り</dd></div>
+   <div><dt>60秒以上</dt><dd>明日の朝、0%</dd></div>
+  </dl>
+  <p>称号の下には、刺し方のタイプ（一発ノールック派、ポートの周りをノックしまくる派、勢いでねじ込む派など）も出ます。</p>
+
+  <p><a href="https://rickther1ck.com/">ゲーム一覧</a> ・ <a href="https://rickther1ck.com/about/">このサイトについて</a></p>
+ </div>
+ <div class="howfoot"><button id="howClose" type="button">閉じる</button></div>
+</div></div>
+
+<button id="dbgBtn" class="hide" type="button" aria-label="調整パネル">⚙</button>
+<div id="dbg" class="hide"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const Q=new URLSearchParams(location.search);
+const SLUG='gunya-charger',URL_GAME='https://rickther1ck.com/gunya-charger/';
+let INAPP=/Twitter|TwitterAndroid|XApp|Line\/|Instagram|FBAN|FBAV|FB_IAB|TikTok|musical_ly|BytedanceWebview|Threads|Discord|KAKAOTALK|; wv\)/i.test(navigator.userAgent)||Q.has('inapp')||location.hash==='#inapp';
+if(INAPP)document.body.classList.add('inapp');
+const LS={get(k,d){try{const v=localStorage.getItem(SLUG+'_'+k);return v==null?d:JSON.parse(v);}catch(e){return d;}},set(k,v){try{localStorage.setItem(SLUG+'_'+k,JSON.stringify(v));}catch(e){}}};
+
+/* ===== 物理（ぐにゃぐにゃケーブル） ===== */
+// 机(y=0)の上に本、その上にスマホが寝ている。充電口は左（-x）向き
+const BOOK={x0:0.12,x1:3.3,y0:0,y1:0.6};
+const PHONE={x0:0,x1:3.0,y0:0.6,y1:0.92};PHONE.cy=(PHONE.y0+PHONE.y1)/2;
+const PORT={x:0,y:PHONE.cy};
+const BOXES=[BOOK,PHONE];
+const P={k:0.12,kHead:0.55,g:12,damp:0.994,iters:16,seg:0.12,headLen:0.24,snapAng:0.5,snapX:0.1,assistR:0.35,assistAng:0.8,assist:0.06,rad:0.05,shake:1,hitstop:0.09,gain:1.15,tremor:0,repDur:3.0};
+class GCable{
+ constructor(n,hx,hy){this.n=n;this.x=new Float32Array(n+1);this.y=new Float32Array(n+1);this.ox=new Float32Array(n+1);this.oy=new Float32Array(n+1);
+  for(let i=0;i<=n;i++){this.x[i]=this.ox[i]=hx+(i<=2?i*P.seg:2*P.seg+(i-2)*P.seg*0.5);this.y[i]=this.oy[i]=hy-(i>2?(i-2)*P.seg*0.6:0);}
+  this.tipHit=0;this.slap=0;this.plugged=false;this.ins=0;}
+ len(i){return i===this.n-1?P.headLen:P.seg;}
+ pinHead(){const n=this.n,tx=PORT.x+0.085+this.ins;this.x[n]=this.ox[n]=tx;this.y[n]=this.oy[n]=PORT.y;this.x[n-1]=this.ox[n-1]=tx-P.headLen;this.y[n-1]=this.oy[n-1]=PORT.y;}
+ step(dt,hx,hy){const n=this.n,x=this.x,y=this.y,ox=this.ox,oy=this.oy;
+  const gdt=P.g*dt*dt;this.tipHit=0;this.slap=0;
+  const dmp=this.plugged?0.96:P.damp;for(let i=2;i<=n;i++){if(this.plugged&&i>=n-1)continue;const vx=(x[i]-ox[i])*dmp,vy=(y[i]-oy[i])*dmp;ox[i]=x[i];oy[i]=y[i];x[i]+=vx;y[i]+=vy-gdt;}
+  ox[0]=x[0];oy[0]=y[0];ox[1]=x[1];oy[1]=y[1];x[0]=hx;y[0]=hy;x[1]=hx+P.seg;y[1]=hy;
+  if(this.plugged){this.pinHead();}
+  for(let it=0;it<P.iters;it++){
+   for(let i=0;i<n;i++){const L=this.len(i);const dx=x[i+1]-x[i],dy=y[i+1]-y[i];const d=Math.hypot(dx,dy)||1e-6;const diff=(d-L)/d;
+    const wa=(i<=1||(this.plugged&&i>=n-1))?0:1,wb=(this.plugged&&i+1>=n-1)?0:1;const s=wa+wb;if(!s)continue;
+    x[i]+=dx*diff*wa/s;y[i]+=dy*diff*wa/s;x[i+1]-=dx*diff*wb/s;y[i+1]-=dy*diff*wb/s;}
+   for(let i=1;i<n-1;i++){const k=i===1?Math.max(P.k*3,0.3):P.k;
+    const mx=(x[i-1]+x[i+1])/2-x[i],my=(y[i-1]+y[i+1])/2-y[i];const wb=(i>=2&&!(this.plugged&&i>=n-1))?1:0,wc=(this.plugged&&i+1>=n-1)?0:1,wa=(i>=2&&!(this.plugged&&i-1>=n-1))?1:0;
+    const s=wb+0.5*(wa+wc);if(!s)continue;const f=k/s;
+    x[i]+=mx*f*wb;y[i]+=my*f*wb;x[i-1]-=mx*f*0.5*wa;y[i-1]-=my*f*0.5*wa;x[i+1]-=mx*f*0.5*wc;y[i+1]-=my*f*0.5*wc;}
+   if(!this.plugged){const A=n-2,B=n-1,C=n;const f=P.seg/(P.seg+P.headLen);
+    const tx=x[A]+(x[C]-x[A])*f,ty=y[A]+(y[C]-y[A])*f;const dx=tx-x[B],dy=ty-y[B];const sc=P.kHead/(1+(1-f)*(1-f)+f*f);
+    x[B]+=dx*sc;y[B]+=dy*sc;x[A]-=dx*sc*(1-f);y[A]-=dy*sc*(1-f);x[C]-=dx*sc*f;y[C]-=dy*sc*f;}
+   if(!this.plugged){const tdx=x[n]-PORT.x,tdy=y[n]-PORT.y;const ang=Math.atan2(y[n]-y[n-1],x[n]-x[n-1]);
+    if(tdx<0.05&&Math.hypot(tdx,tdy)<P.assistR&&Math.abs(ang)<P.assistAng){y[n]-=tdy*P.assist;y[n-1]-=(y[n-1]-PORT.y)*P.assist*0.8;}}
+   for(let i=2;i<=n;i++){if(this.plugged&&i>=n-1)continue;const r=P.rad;
+    if(y[i]<r){y[i]=r;ox[i]+=(x[i]-ox[i])*0.2;}
+    for(const B of BOXES){if(x[i]>B.x0-r&&x[i]<B.x1+r&&y[i]>B.y0-r&&y[i]<B.y1+r){
+     const pl=x[i]-(B.x0-r),pr=(B.x1+r)-x[i],pb=y[i]-(B.y0-r),pt=(B.y1+r)-y[i];const m=Math.min(pl,pr,pb,pt);
+     const sp=Math.hypot(x[i]-ox[i],y[i]-oy[i])/dt;
+     if(m===pl)x[i]-=pl;else if(m===pr)x[i]+=pr;else if(m===pb)y[i]-=pb;else y[i]+=pt;
+     if(i===n&&B===PHONE)this.tipHit=Math.max(this.tipHit,sp);else this.slap=Math.max(this.slap,sp*(B===PHONE?1:0.6));}}}
+  }
+  if(this.plugged)this.pinHead();
+ }
+ tipAngle(){const n=this.n;return Math.atan2(this.x[n]-this.x[n-1],this.y[n]-this.y[n-1]);}
+ insAngle(){const n=this.n;return Math.atan2(this.y[n]-this.y[n-1],this.x[n]-this.x[n-1]);}
+ canPlug(){const n=this.n;const tx=this.x[n],ty=this.y[n];return Math.abs(ty-PORT.y)<P.snapX&&tx>PORT.x-0.2&&tx<PORT.x+0.06&&Math.abs(this.insAngle())<P.snapAng;}
+ tipSpeed(dt){const n=this.n;return Math.hypot(this.x[n]-this.ox[n],this.y[n]-this.oy[n])/dt;}
+}
+
+/* ===== 充電器の種類・称号 ===== */
+const CH=[
+ {id:'main',name:'ぐにゃぐにゃ充電器',col:0xf4f4f4,rad:0.06,op:1,p:{k:0.09,kHead:0.5,damp:0.994,g:12,snapAng:0.11,snapX:0.034,assist:0.004,assistR:0.24}}
+];
+const RANKS=[[3,'神の一刺し'],[8,'充電のプロ'],[15,'ふつうの人類'],[30,'真っ暗な寝室の人'],[60,'充電1%の焦り'],[Infinity,'明日の朝、0%']];
+function rankOf(t){for(const r of RANKS)if(t<r[0])return r[1];}
+function styleOf(m,s,spd){
+ if(spd>7)return '勢いでねじ込む派';if(m===0)return '一発ノールック派';if(m<=3)return 'ちょいノック派';if(m<=9)return 'ポートの周りをノックしまくる派';return `ポートの周りを${m}回ノックした人`;}
+function detailOf(m,s){const a=[`コツン${m}回`];if(s>0)a.push(`ビンタ${s}回`);return a.join('・');}
+function cmpOf(t){if(t<180){const p=Math.max(1,Math.round(t/180*100));return `カップ麺の${p}%の時間`;}return `カップ麺${(t/180).toFixed(1)}個ぶんの時間`;}
+
+let best=LS.get('best',{});const sel=0;
+let muted=LS.get('mute',false);
+
+/* ===== 音 ===== */
+/* ASMR寄りの音：近くで鳴る、柔らかくて粒のはっきりした音。うっすら部屋の響き（リバーブ）をかける */
+let AC=null,master=null,bus=null,wob=null,wobG=null,wobF=null;let NB=null;
+function makeNB(){NB=AC.createBuffer(1,AC.sampleRate*2,AC.sampleRate);const d=NB.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;}
+function audio(){if(AC)return;try{AC=new (window.AudioContext||window.webkitAudioContext)();master=AC.createGain();master.gain.value=muted?0:1;
+ const comp=AC.createDynamicsCompressor();comp.threshold.value=-20;comp.ratio.value=3;comp.attack.value=0.003;comp.release.value=0.15;master.connect(comp);comp.connect(AC.destination);
+ bus=AC.createGain();bus.gain.value=2.6;bus.connect(master);
+ // 小さな部屋の響き
+ const len=Math.floor(AC.sampleRate*0.55),ir=AC.createBuffer(2,len,AC.sampleRate);for(let c=0;c<2;c++){const d=ir.getChannelData(c);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,3.2);}
+ const conv=AC.createConvolver();conv.buffer=ir;const wet=AC.createGain();wet.gain.value=0.16;const lp=AC.createBiquadFilter();lp.type='lowpass';lp.frequency.value=5000;bus.connect(lp);lp.connect(conv);conv.connect(wet);wet.connect(master);
+ makeNB();
+ // ケーブルがこすれる「サラサラ」（速さで音量が変わる）
+ wob=AC.createBufferSource();wob.buffer=NB;wob.loop=true;wobF=AC.createBiquadFilter();wobF.type='bandpass';wobF.frequency.value=1400;wobF.Q.value=0.7;
+ const hp=AC.createBiquadFilter();hp.type='highpass';hp.frequency.value=500;wobG=AC.createGain();wobG.gain.value=0;wob.connect(hp);hp.connect(wobF);wobF.connect(wobG);wobG.connect(bus);wob.start();
+}catch(e){AC=null;}}
+// ふわっと立ち上がって消える音（プチッというノイズが出ないように）
+function env(g,t,peak,att,dec){g.gain.setValueAtTime(0.0001,t);g.gain.linearRampToValueAtTime(peak,t+att);g.gain.exponentialRampToValueAtTime(0.0001,t+att+dec);}
+function tone(f,dur,type='sine',g=0.1,f2=null,delay=0,att=0.004){if(!AC)return;const t=AC.currentTime+delay;const o=AC.createOscillator(),gn=AC.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t+att+dur);env(gn,t,g,att,dur);o.connect(gn);gn.connect(bus);o.start(t);o.stop(t+att+dur+0.05);}
+function nz(dur,g,ft,ff,Q=1,delay=0,att=0.001,ff2=null){if(!AC)return;const t=AC.currentTime+delay;const s=AC.createBufferSource();s.buffer=NB;const f=AC.createBiquadFilter();f.type=ft;f.frequency.setValueAtTime(ff,t);if(ff2)f.frequency.exponentialRampToValueAtTime(ff2,t+att+dur);f.Q.value=Q;const gn=AC.createGain();env(gn,t,g,att,dur);s.connect(f);f.connect(gn);gn.connect(bus);s.start(t,Math.random()*1.5);s.stop(t+att+dur+0.05);}
+function noise(dur,g=0.2,ff=2000,ft='lowpass',delay=0){nz(dur,g*0.6,ft,ff,0.7,delay,0.003);}
+const SE={
+ // 先っぽがスマホに当たる：プラスチックを指先で「コツ」
+ kotsu(){const v=0.85+Math.random()*0.3;nz(0.018,0.32,'bandpass',2600*v,2.2);tone(1150*v,0.03,'sine',0.05);nz(0.04,0.05,'lowpass',700,0.7,0.004);},
+ // ケーブルがスマホをたたく：ゴムっぽい「ぺちっ」
+ pechi(){nz(0.05,0.22,'bandpass',900,1.1,0,0.002);nz(0.03,0.1,'bandpass',2400,1.5,0.003);tone(190,0.05,'sine',0.06,140);},
+ // ちいさい「スッ」：端子が入り始める
+ slide(){nz(0.08,0.16,'bandpass',2200,1.2,0,0.02,4200);},
+ // カチッ：先に細い「チッ」、本体の「カチ」、奥で「コトッ」
+ kachi(big=true){const k=big?1:0.55;
+  nz(0.006,0.25*k,'highpass',5200,0.8);
+  nz(0.022,0.55*k,'bandpass',3000,2.6,0.012);tone(1850,0.028,'sine',0.07*k,1700,0.012,0.001);
+  nz(0.05,0.18*k,'lowpass',520,0.7,0.016);tone(150,0.09,'sine',0.16*k,95,0.016,0.002);
+  if(big){nz(0.012,0.16,'bandpass',3600,3,0.06);}},
+ // 充電：やわらかい空気の音が満ちていく＋ぽわぽわ鳴る
+ charge(){if(!AC)return;nz(1.45,0.05,'bandpass',700,0.8,0,0.9,2600);
+  const notes=[523,587,659,784,880,988,1047,1175,1319];notes.forEach((f,i)=>{const d=i*0.155;tone(f,0.32,'sine',0.035,null,d,0.01);tone(f*2,0.18,'sine',0.008,null,d,0.01);});},
+ // キラーン：やわらかいベル
+ kiran(){[1047,1319,1568,2093].forEach((f,i)=>{tone(f,1.3,'sine',0.06,null,i*0.07,0.006);tone(f*2.76,0.5,'sine',0.012,null,i*0.07,0.004);});nz(1.0,0.03,'highpass',7000,0.7,0.05,0.2);tone(130,0.6,'sine',0.07,100,0,0.01);},
+ start(){nz(0.012,0.2,'bandpass',1800,2);tone(620,0.06,'sine',0.05,820);},
+ bounce(){nz(0.015,0.2,'bandpass',1500,2);tone(420,0.05,'sine',0.04,520);},
+ // リプレイ開始：やわらかい逆回転っぽい「シュワーン」
+ whoosh(){nz(0.5,0.09,'bandpass',4000,0.9,0,0.05,500);}
+};
+function setMute(m){muted=m;LS.set('mute',m);$('mute').textContent=m?'🔇':'🔊';if(master)master.gain.value=m?0:0.9;}
+setMute(muted);
+
+/* ===== 3D ===== */
+const canvas=$('c');
+const renderer=new THREE.WebGLRenderer({canvas,antialias:true,preserveDrawingBuffer:true});
+renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.outputEncoding=THREE.sRGBEncoding;
+const scene=new THREE.Scene();scene.background=new THREE.Color(0xcdbfae);scene.fog=new THREE.Fog(0xcdbfae,12,26);
+const camera=new THREE.PerspectiveCamera(40,1,0.1,100);
+scene.add(new THREE.HemisphereLight(0xfff2e0,0x6b5444,0.85));
+const dl=new THREE.DirectionalLight(0xfff0dc,0.75);dl.position.set(-2,6,5);scene.add(dl);
+
+const screenLight=new THREE.PointLight(0xff4d5e,0.9,5);screenLight.position.set(1.5,1.8,0);scene.add(screenLight);
+
+function canvasTex(w,h,draw){const c=document.createElement('canvas');c.width=w;c.height=h;draw(c.getContext('2d'),w,h);const t=new THREE.CanvasTexture(c);t.encoding=THREE.sRGBEncoding;return t;}
+// 木の机・奥の壁・本・小物
+const woodTex=canvasTex(512,512,(g,w,h)=>{g.fillStyle='#b98a5e';g.fillRect(0,0,w,h);
+ for(let p=0;p<4;p++){const y0=p*h/4;g.fillStyle=['#b98a5e','#b2835a','#bd8f63','#b48660'][p];g.fillRect(0,y0,w,h/4);
+  for(let i=0;i<26;i++){g.strokeStyle=`rgba(${90+Math.random()*30|0},${55+Math.random()*20|0},${30},${0.10+Math.random()*0.14})`;g.lineWidth=1+Math.random()*2;g.beginPath();const yy=y0+Math.random()*h/4;g.moveTo(0,yy);for(let x=0;x<=w;x+=32)g.lineTo(x,yy+Math.sin(x*0.02+i)*3+Math.random()*1.5);g.stroke();}
+  g.fillStyle='rgba(70,40,20,.35)';g.fillRect(0,y0,w,2);}
+});
+woodTex.wrapS=woodTex.wrapT=THREE.RepeatWrapping;woodTex.repeat.set(3,3);woodTex.anisotropy=4;
+const desk=new THREE.Mesh(new THREE.BoxGeometry(20,0.5,14),new THREE.MeshStandardMaterial({map:woodTex,roughness:0.6}));desk.position.set(1,-0.25,-1);scene.add(desk);
+// 奥の壁（カメラのほうを向く）
+const wall=new THREE.Mesh(new THREE.PlaneGeometry(40,16),new THREE.MeshStandardMaterial({color:0xe6dccd,roughness:1}));wall.position.set(5.5,6,-6.2);wall.rotation.y=-0.5;scene.add(wall);
+const base=new THREE.Mesh(new THREE.BoxGeometry(40,0.4,0.1),new THREE.MeshStandardMaterial({color:0xf3efe8}));base.position.set(5.5,0.2,-6.15);base.rotation.y=-0.5;scene.add(base);
+// 本（表紙・背表紙・紙の小口）
+const pagesTex=canvasTex(256,64,(g,w,h)=>{g.fillStyle='#f3eee2';g.fillRect(0,0,w,h);for(let y=2;y<h;y+=2){g.fillStyle=`rgba(150,130,100,${0.12+Math.random()*0.1})`;g.fillRect(0,y,w,1);}});
+const pgM=new THREE.MeshStandardMaterial({map:pagesTex,roughness:0.9}),cvM=new THREE.MeshStandardMaterial({color:0x2f5d50,roughness:0.7}),spM=new THREE.MeshStandardMaterial({color:0x264c42,roughness:0.7});
+const book=new THREE.Group();scene.add(book);
+const bookIn=new THREE.Mesh(new THREE.BoxGeometry(BOOK.x1-BOOK.x0-0.06,BOOK.y1-BOOK.y0-0.08,2.14),[pgM,pgM,cvM,cvM,pgM,spM]);bookIn.position.y=(BOOK.y1-BOOK.y0)/2;book.add(bookIn);
+[[0.02],[BOOK.y1-BOOK.y0-0.02]].forEach(([y])=>{const c=new THREE.Mesh(new THREE.BoxGeometry(BOOK.x1-BOOK.x0+0.02,0.045,2.22),cvM);c.position.y=y;book.add(c);});
+const spine=new THREE.Mesh(new THREE.BoxGeometry(BOOK.x1-BOOK.x0+0.02,BOOK.y1-BOOK.y0,0.05),spM);spine.position.set(0,(BOOK.y1-BOOK.y0)/2,-1.1);book.add(spine);
+book.position.set((BOOK.x0+BOOK.x1)/2,BOOK.y0,0);
+// 小物：鉛筆（遊ぶ場所から離して奥に）
+{ const pen=new THREE.Group();const pb=new THREE.Mesh(new THREE.CylinderGeometry(0.045,0.045,1.5,6),new THREE.MeshStandardMaterial({color:0xf2c230,roughness:0.6}));pb.rotation.z=Math.PI/2;pen.add(pb);
+ const tip=new THREE.Mesh(new THREE.ConeGeometry(0.045,0.18,6),new THREE.MeshStandardMaterial({color:0xe6c39a}));tip.rotation.z=-Math.PI/2;tip.position.x=0.84;pen.add(tip);
+ const er=new THREE.Mesh(new THREE.CylinderGeometry(0.046,0.046,0.14,10),new THREE.MeshStandardMaterial({color:0xe88b8b}));er.rotation.z=Math.PI/2;er.position.x=-0.82;pen.add(er);
+ pen.position.set(1.6,0.045,-1.9);pen.rotation.y=0.35;scene.add(pen);}
+// 机の上の影（ふんわり）
+const shTex=canvasTex(128,128,(g)=>{const gr=g.createRadialGradient(64,64,0,64,64,64);gr.addColorStop(0,'rgba(0,0,0,.55)');gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.fillRect(0,0,128,128);});
+const bookSh=new THREE.Mesh(new THREE.PlaneGeometry(4.4,3.2),new THREE.MeshBasicMaterial({map:shTex,transparent:true,depthWrite:false}));bookSh.rotation.x=-Math.PI/2;bookSh.position.set(1.7,0.005,0);scene.add(bookSh);
+// 机（下のほう）
+
+
+// スマホ
+function roundedRectShape(w,h,r){const s=new THREE.Shape();const x=-w/2,y=-h/2;s.moveTo(x+r,y);s.lineTo(x+w-r,y);s.quadraticCurveTo(x+w,y,x+w,y+r);s.lineTo(x+w,y+h-r);s.quadraticCurveTo(x+w,y+h,x+w-r,y+h);s.lineTo(x+r,y+h);s.quadraticCurveTo(x,y+h,x,y+h-r);s.lineTo(x,y+r);s.quadraticCurveTo(x,y,x+r,y);return s;}
+const phone=new THREE.Group();scene.add(phone);
+const PW=1.5,PL=PHONE.x1-PHONE.x0,PT=PHONE.y1-PHONE.y0;
+const bodyGeo=new THREE.ExtrudeGeometry(roundedRectShape(PL-0.06,PW-0.06,0.2),{depth:PT-0.06,bevelEnabled:true,bevelThickness:0.03,bevelSize:0.03,bevelSegments:3,curveSegments:8});bodyGeo.translate(0,0,-(PT-0.06)/2);bodyGeo.rotateX(-Math.PI/2);
+phone.add(new THREE.Mesh(bodyGeo,new THREE.MeshStandardMaterial({color:0x22242c,metalness:0.6,roughness:0.35})));
+const scrC=document.createElement('canvas');scrC.width=256;scrC.height=512;const scrG=scrC.getContext('2d');const scrTex=new THREE.CanvasTexture(scrC);scrTex.encoding=THREE.sRGBEncoding;
+const scrGeo=new THREE.ShapeGeometry(roundedRectShape(PW-0.16,PL-0.16,0.15));
+{const uv=scrGeo.attributes.uv,pos=scrGeo.attributes.position;for(let i=0;i<uv.count;i++){uv.setXY(i,pos.getX(i)/(PW-0.16)+0.5,pos.getY(i)/(PL-0.16)+0.5);}}
+scrGeo.rotateX(-Math.PI/2);scrGeo.rotateY(-Math.PI/2);
+const scr=new THREE.Mesh(scrGeo,new THREE.MeshBasicMaterial({map:scrTex}));scr.position.y=PT/2+0.002;phone.add(scr);
+// 充電口（USB-C：横長の穴）
+const portMesh=new THREE.Mesh(new THREE.BoxGeometry(0.06,0.07,0.3),new THREE.MeshBasicMaterial({color:0x000000}));portMesh.position.set(-PL/2-0.005,0,0);phone.add(portMesh);
+const portRim=new THREE.Mesh(new THREE.BoxGeometry(0.04,0.1,0.34),new THREE.MeshStandardMaterial({color:0x6a6c74,metalness:0.8,roughness:0.3}));portRim.position.set(-PL/2+0.005,0,0);phone.add(portRim);
+const portIn=new THREE.Mesh(new THREE.BoxGeometry(0.07,0.025,0.2),new THREE.MeshStandardMaterial({color:0x3a3a40,metalness:0.6}));portIn.position.set(-PL/2-0.01,0,0);phone.add(portIn);
+for(let i=0;i<6;i++){const h=new THREE.Mesh(new THREE.CylinderGeometry(0.022,0.022,0.04,8),new THREE.MeshBasicMaterial({color:0x050505}));h.rotation.z=Math.PI/2;h.position.set(-PL/2-0.005,0,0.32+i*0.07);phone.add(h);}
+phone.position.set((PHONE.x0+PHONE.x1)/2,PHONE.cy,0);
+const armMat=null;
+// 充電口の目印（最初だけ光る）
+const ringTex=canvasTex(128,128,(g)=>{g.strokeStyle='rgba(255,230,120,1)';g.lineWidth=8;g.setLineDash([14,10]);g.beginPath();g.arc(64,64,50,0,Math.PI*2);g.stroke();});
+const ring=new THREE.Sprite(new THREE.SpriteMaterial({map:ringTex,transparent:true,depthWrite:false}));ring.scale.set(0.5,0.5,1);ring.position.set(PORT.x-0.03,PORT.y,0.05);scene.add(ring);
+// カチッの衝撃リング
+const waveTex=canvasTex(128,128,(g)=>{g.strokeStyle='#fff';g.lineWidth=10;g.beginPath();g.arc(64,64,52,0,Math.PI*2);g.stroke();});
+const wave=new THREE.Sprite(new THREE.SpriteMaterial({map:waveTex,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0}));wave.position.set(PORT.x-0.05,PORT.y,0.05);scene.add(wave);let waveT=9;
+// 後光
+const glowTex=canvasTex(256,256,(g)=>{const gr=g.createRadialGradient(128,128,0,128,128,128);gr.addColorStop(0,'rgba(140,255,190,1)');gr.addColorStop(0.35,'rgba(90,240,160,.5)');gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.fillRect(0,0,256,256);
+ g.globalCompositeOperation='lighter';g.translate(128,128);for(let i=0;i<16;i++){g.rotate(Math.PI/8);g.fillStyle='rgba(180,255,210,.18)';g.beginPath();g.moveTo(0,0);g.lineTo(-10,-128);g.lineTo(10,-128);g.fill();}});
+const glow=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,transparent:true,blending:THREE.AdditiveBlending,depthWrite:false,opacity:0}));glow.position.set(1.5,PHONE.y1-0.3,-0.6);glow.scale.set(1,1,1);scene.add(glow);
+
+function drawScreen(mode,pct,t){const g=scrG,w=256,h=512;
+ const gr=g.createLinearGradient(0,0,0,h);
+ if(mode==='charge'){gr.addColorStop(0,'#0f3b2c');gr.addColorStop(1,'#06140f');}else{gr.addColorStop(0,'#1a1840');gr.addColorStop(1,'#08081a');}
+ g.fillStyle=gr;g.fillRect(0,0,w,h);
+ const now=new Date();const hh=now.getHours(),mm=now.getMinutes();
+ g.fillStyle='rgba(255,255,255,.92)';g.textAlign='center';g.font='300 64px "Hiragino Sans",sans-serif';g.fillText(`${hh}:${String(mm).padStart(2,'0')}`,w/2,118);
+ g.font='500 16px "Hiragino Sans",sans-serif';g.fillStyle='rgba(255,255,255,.7)';g.fillText(`${now.getMonth()+1}月${now.getDate()}日`,w/2,54);
+ // battery icon top-right
+ const col=mode==='charge'?(pct>=100?'#5df2a0':'#9dffc8'):'#ff4d5e';
+ g.strokeStyle='rgba(255,255,255,.8)';g.lineWidth=2;g.strokeRect(196,16,38,17);g.fillStyle='rgba(255,255,255,.8)';g.fillRect(235,21,3,7);
+ g.fillStyle=col;g.fillRect(198,18,Math.max(2,34*pct/100),13);
+ if(mode==='charge'){
+  g.fillStyle=col;g.font='900 22px sans-serif';g.save();g.translate(w/2,300);const s=1+Math.sin(t*10)*0.04;g.scale(s,s);
+  g.beginPath();g.moveTo(8,-70);g.lineTo(-30,8);g.lineTo(-2,8);g.lineTo(-10,70);g.lineTo(30,-10);g.lineTo(2,-10);g.closePath();g.fill();g.restore();
+  g.font='900 58px "Hiragino Sans",sans-serif';g.fillText(Math.floor(pct)+'%',w/2,430);
+  g.font='600 18px "Hiragino Sans",sans-serif';g.fillStyle='rgba(255,255,255,.8)';g.fillText(pct>=100?'フル充電！':'充電中',w/2,466);
+ }else{
+  const blink=Math.sin(t*6)>0;
+  g.fillStyle=blink?'#ff4d5e':'#a3263a';g.font='900 72px "Hiragino Sans",sans-serif';g.fillText('1%',w/2,320);
+  g.font='600 17px "Hiragino Sans",sans-serif';g.fillStyle='rgba(255,255,255,.85)';g.fillText('バッテリー残量が',w/2,372);g.fillText('少なくなっています',w/2,396);
+  g.fillStyle='rgba(255,255,255,.5)';g.font='500 14px sans-serif';g.fillText('充電器を接続してください',w/2,440);
+ }
+ scrTex.needsUpdate=true;}
+
+// ケーブル
+let cable=null,cableMesh=null,cableMat=null;const head=new THREE.Group();scene.add(head);
+const bootMat=new THREE.MeshStandardMaterial({color:0xf4f4f4,roughness:0.5});
+const boot=new THREE.Mesh(new THREE.BoxGeometry(0.12,0.16,0.19),bootMat);boot.position.y=0.08;head.add(boot);
+const plug=new THREE.Mesh(new THREE.BoxGeometry(0.05,0.085,0.15),new THREE.MeshStandardMaterial({color:0xd8dce4,metalness:0.95,roughness:0.2}));plug.position.y=0.2;head.add(plug);
+const plugTip=new THREE.Mesh(new THREE.BoxGeometry(0.02,0.02,0.1),new THREE.MeshBasicMaterial({color:0x222}));plugTip.position.y=0.24;head.add(plugTip);
+// 手
+const hand=new THREE.Group();scene.add(hand);const handIn=new THREE.Group();hand.add(handIn);handIn.rotation.z=-Math.PI/2;handIn.scale.setScalar(1.25);
+// 手（ただの丸）
+const skin=new THREE.MeshStandardMaterial({color:0xffd0ae,roughness:0.6});
+{const ballH=new THREE.Mesh(new THREE.SphereGeometry(0.21,32,24),skin);ballH.position.set(0.06,-0.02,0.04);handIn.add(ballH);}
+const baseBoot=new THREE.Mesh(new THREE.CylinderGeometry(0.075,0.09,0.32,12),new THREE.MeshStandardMaterial({color:0xe9e9e9,roughness:0.5}));baseBoot.position.y=0.02;handIn.add(baseBoot);
+let tailMesh=null;const tailMat=new THREE.MeshStandardMaterial({color:0xe9e9e9,roughness:0.6});
+const TP=[];for(let i=0;i<8;i++)TP.push(new THREE.Vector3());
+const CPTS=[];for(let i=0;i<40;i++)CPTS.push(new THREE.Vector3());
+
+function buildCable(){const c=CH[sel];if(!window.DBG_SET){Object.assign(P,c.p);if(window.syncDbg)syncDbg();}
+ cable=new GCable(13,handX,handY);
+ if(cableMat)cableMat.dispose();cableMat=new THREE.MeshStandardMaterial({color:c.col,roughness:c.op<1?0.15:0.55,transparent:c.op<1,opacity:c.op,metalness:0});
+ bootMat.color.setHex(c.op<1?c.col:0xf4f4f4);bootMat.transparent=c.op<1;bootMat.opacity=c.op<1?Math.min(1,c.op+0.2):1;}
+function updateCableMesh(){const c=replaying?RV:cable,n=c.n,rad=CH[sel].rad;
+ const pts=[];for(let i=0;i<n;i++){const v=CPTS[i];v.set(c.x[i],c.y[i],0);pts.push(v);}
+ for(let pass=0;pass<2;pass++)for(let i=2;i<n-1;i++){const a=pts[i-1],b=pts[i],d=pts[i+1];b.x+=((a.x+d.x)/2-b.x)*0.45;b.y+=((a.y+d.y)/2-b.y)*0.45;}
+ const curve=new THREE.CatmullRomCurve3(pts);
+ const geo=new THREE.TubeGeometry(curve,56,rad,8,false);
+ if(cableMesh){cableMesh.geometry.dispose();cableMesh.geometry=geo;}else{cableMesh=new THREE.Mesh(geo,cableMat);scene.add(cableMesh);}
+ cableMesh.material=cableMat;
+ const ang=c.tipAngle();head.position.set(c.x[n-1],c.y[n-1],0);head.rotation.set(0,0,-ang);
+ // しっぽ（画面外へ続くコード）
+ const hx=c.x[0],hy=c.y[0];TP[0].set(hx,hy,0);TP[1].set(hx-0.4,hy,0);TP[2].set(hx-1.0,hy*0.55+0.05,0.1);TP[3].set(hx-1.6,0.06,0.3);TP[4].set(-9,0.06,1.2);
+ const tg=new THREE.TubeGeometry(new THREE.CatmullRomCurve3(TP.slice(0,5)),24,0.055,6,false);
+ if(tailMesh){tailMesh.geometry.dispose();tailMesh.geometry=tg;}else{tailMesh=new THREE.Mesh(tg,tailMat);scene.add(tailMesh);}
+ hand.position.set(hx,hy,0.0);}
+
+/* ===== パーティクル ===== */
+const parts=[];const pGeo=new THREE.BoxGeometry(1,1,1);
+function burst(x,y,n,cols,spd=3,size=0.05,life=0.6,grav=6,flat=false){for(let i=0;i<n;i++){const m=new THREE.Mesh(flat?new THREE.PlaneGeometry(1,0.6):pGeo,new THREE.MeshBasicMaterial({color:cols[i%cols.length],transparent:true,side:THREE.DoubleSide}));
+ m.scale.setScalar(size*(0.6+Math.random()*0.8));m.position.set(x,y,0.15);scene.add(m);const a=Math.random()*Math.PI*2,s=spd*(0.4+Math.random()*0.8);
+ parts.push({m,vx:Math.cos(a)*s,vy:Math.sin(a)*s+(flat?spd*0.6:0),vz:(Math.random()-.5)*s*0.5,life,max:life,grav,rx:Math.random()*10,ry:Math.random()*10});}}
+function updParts(dt){for(let i=parts.length-1;i>=0;i--){const p=parts[i];p.life-=dt;if(p.life<=0){scene.remove(p.m);p.m.material.dispose();if(p.m.geometry!==pGeo)p.m.geometry.dispose();parts.splice(i,1);continue;}
+ p.vy-=p.grav*dt;p.vx*=0.99;p.m.position.x+=p.vx*dt;p.m.position.y+=p.vy*dt;p.m.position.z+=p.vz*dt;p.m.rotation.x+=p.rx*dt;p.m.rotation.y+=p.ry*dt;p.m.material.opacity=Math.min(1,p.life/p.max*2);}}
+
+/* ===== カメラの構図 ===== */
+const FOV=40,TANH=Math.tan(FOV/2*Math.PI/180);
+// 斜め前・少し上から、充電口に寄った画角
+const VIEWS={
+ play:{t:[-0.95,0.72,0],o:[-2.6,1.6,2.7]},
+ title:{t:[-0.6,0.8,0],o:[-3.2,2.0,3.1]},
+ ending:{t:[0.1,0.78,0],o:[-1.35,0.75,1.5]},
+ replay:{t:[-0.45,0.75,0],o:[-1.75,0.85,2.15]},
+ result:{t:[0.7,0.75,0],o:[-2.6,3.3,2.7]}
+};
+let cam={t:[-0.95,0.75,0],o:[-1.5,1.75,3.6]},camT=cam;let shake=0;
+function setFrame(){const v=VIEWS[state==='title'?'title':state==='result'?'result':state==='ending'?(replaying?'replay':'ending'):'play'];const asp=innerWidth/innerHeight;
+ const m=asp<1?Math.min(1.5,Math.max(1,0.62/asp)):1;camT={t:v.t.slice(),o:v.o.map(x=>x*m)};
+ if(state==='title'&&asp<1){camT.t[1]-=0.2;camT.t[0]+=0.35;camT.o=camT.o.map(x=>x*1.35);}if(state==='result'&&asp<1){camT.t[1]-=1.6;camT.t[0]-=0.1;}}
+const ray=new THREE.Raycaster(),plane0=new THREE.Plane(new THREE.Vector3(0,0,1),0),v2=new THREE.Vector2(),hitP=new THREE.Vector3();
+function screenToPlane(cx,cy){v2.set(cx/innerWidth*2-1,-(cy/innerHeight)*2+1);ray.setFromCamera(v2,camera);return ray.ray.intersectPlane(plane0,hitP)?hitP.clone():null;}
+function resize(){renderer.setSize(innerWidth,innerHeight,false);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();setFrame();}
+addEventListener('resize',resize);
+
+/* ===== ゲーム状態 ===== */
+let state='title',handX=-1.5,handY=1.65,prevHX=handX,prevHY=handY,playT=0,misses=0,slaps=0,kotsuCD=0,slapCD=0,hitstop=0,endT=0,endPhase=0,result=null,plugSpeed=0,moved=false,hintStage=0,gt=0;
+let demoT=0;
+function resetCable(){handX=-1.5;handY=1.65;prevHX=handX;prevHY=handY;buildCable();for(let i=0;i<120;i++)cable.step(1/240,handX,handY);}
+function startGame(){audio();if(AC&&AC.state==='suspended')AC.resume();REC=[];replaying=false;bigDone=false;if(repOsc){try{repOsc.stop();}catch(e){}repOsc=null;}$('replayOv').classList.remove('on');
+ if(window.rickPlay)rickPlay(SLUG);
+ state='play';playT=0;misses=0;slaps=0;kotsuCD=0;slapCD=0;hitstop=0;moved=false;hintStage=0;plugSpeed=0;
+ $('title').classList.add('hide');$('result').classList.add('hide');$('hint').classList.add('hide');$('guide').classList.remove('hide');$('restart').classList.remove('hide');
+ glow.material.opacity=0;resetCable();ring.material.opacity=1;setFrame();SE.start();}
+function toTitle(){$('restart').classList.add('hide');state='title';$('title').classList.remove('hide');$('result').classList.add('hide');$('guide').classList.add('hide');$('hint').classList.add('hide');resetCable();setFrame();refreshSel();}
+
+function refreshSel(){const b=best[CH[0].id];$('selBest').textContent=b!=null?`ベスト：${b.toFixed(2)}秒`:'ベスト：まだ刺してない';
+ if(state==='title'){buildCable();for(let i=0;i<60;i++)cable.step(1/240,handX,handY);}}
+
+function popText(s,x,y){const d=document.createElement('div');d.className='pop';d.textContent=s;d.style.left=x+'px';d.style.top=y+'px';document.body.appendChild(d);setTimeout(()=>d.remove(),720);}
+function worldToScreen(x,y){const v=new THREE.Vector3(x,y,0).project(camera);return [(v.x+1)/2*innerWidth,(1-v.y)/2*innerHeight];}
+
+function plugIn(){$('restart').classList.add('hide');recFrame();replaying=false;bigDone=false;cable.plugged=true;cable.ins=-0.1;cable.pinHead();state='ending';endT=0;endPhase=0;clicked=false;result={t:playT,ch:sel,misses,slaps,spd:plugSpeed};
+ SE.slide();$('guide').classList.add('hide');$('hint').classList.add('hide');}
+let clicked=false,replaying=false,bigDone=false,repT=0,bigT=0,REC=[],repOsc=null;
+const RV={n:13,x:new Float32Array(14),y:new Float32Array(14),tipAngle(){const n=this.n;return Math.atan2(this.x[n]-this.x[n-1],this.y[n]-this.y[n-1]);}};
+function recFrame(){if(!cable)return;REC.push({t:playT,x:Float32Array.from(cable.x),y:Float32Array.from(cable.y)});while(REC.length>2&&REC[0].t<playT-1.5)REC.shift();}
+function startReplay(){if(REC.length<4){finishReplay();return;}replaying=true;repT=0;RV.n=cable.n;$('replayOv').classList.add('on');setFrame();
+ SE.whoosh();
+ if(AC){try{const t=AC.currentTime,D=P.repDur;repOsc=AC.createBufferSource();repOsc.buffer=NB;repOsc.loop=true;const f=AC.createBiquadFilter();f.type='lowpass';f.frequency.setValueAtTime(260,t);f.frequency.exponentialRampToValueAtTime(900,t+D);const g=AC.createGain();g.gain.setValueAtTime(0.0001,t);g.gain.linearRampToValueAtTime(0.06,t+0.4);g.gain.setValueAtTime(0.06,t+D-0.15);g.gain.linearRampToValueAtTime(0.0001,t+D+0.05);repOsc.connect(f);f.connect(g);g.connect(bus);repOsc.start();repOsc.stop(t+D+0.1);
+  for(let i=0;i<4;i++)tone(440,0.5,'sine',0.012+i*0.004,null,D*(0.15+i*0.22),0.08);}catch(e){}}}
+function sampleReplay(p){const t0=REC[0].t,t1=REC[REC.length-1].t;const st=t0+(t1-t0)*(1-Math.pow(1-p,2.2));let i=0;while(i<REC.length-2&&REC[i+1].t<st)i++;const a=REC[i],b=REC[i+1];const u=b.t>a.t?Math.min(1,Math.max(0,(st-a.t)/(b.t-a.t))):1;
+ for(let k=0;k<=RV.n;k++){RV.x[k]=a.x[k]+(b.x[k]-a.x[k])*u;RV.y[k]=a.y[k]+(b.y[k]-a.y[k])*u;}
+ const sp=(1-p)*2.2*(t1-t0)/P.repDur;$('replaySpd').textContent='×'+Math.max(0.05,sp).toFixed(2);}
+function finishReplay(){if(repOsc){try{repOsc.stop();}catch(e){}repOsc=null;}replaying=false;$('replayOv').classList.remove('on');bigClick();}
+function bigClick(){bigDone=true;bigT=0;cable.ins=-0.05;
+ hitstop=P.hitstop*1.3;shake=0.32*P.shake;SE.kachi(true);if(navigator.vibrate)try{navigator.vibrate([40,30,25]);}catch(e){}
+ const f=$('flash');f.style.transition='none';f.style.opacity=0.9;requestAnimationFrame(()=>{f.style.transition='opacity .3s';f.style.opacity=0;});
+ const bt=$('bigtxt');bt.style.transition='none';bt.style.opacity=1;bt.style.transform='scale(1.6)';requestAnimationFrame(()=>{bt.style.transition='transform .22s cubic-bezier(.2,1.6,.4,1), opacity .5s .6s';bt.style.transform='scale(1)';bt.style.opacity=0;});
+ burst(PORT.x,PORT.y-0.05,30,[0xffffff,0xffe27a,0x5df2a0],4.2,0.055,0.55,4);waveT=0;setFrame();for(let i=0;i<3;i++)cam.o[i]*=0.88;}
+function clickIn(){clicked=true;
+ hitstop=P.hitstop;shake=0.25*P.shake;SE.kachi(false);if(navigator.vibrate)try{navigator.vibrate([35,30,20]);}catch(e){}
+ burst(PORT.x,PORT.y-0.05,10,[0xffffff,0xffe27a],2.6,0.04,0.4,4);
+ setFrame();}
+
+function finishResult(){state='result';const r=result,c=CH[r.ch];
+ const prev=best[c.id];const isNew=prev==null||r.t<prev;if(isNew){best[c.id]=r.t;LS.set('best',best);}
+ r.title=rankOf(r.t);r.style=styleOf(r.misses,r.slaps,r.spd);r.detail=detailOf(r.misses,r.slaps);r.cmp=cmpOf(r.t);r.isNew=isNew;
+ $('rNew').classList.toggle('hide',!(isNew&&prev!=null));
+ $('rTime').innerHTML=r.t.toFixed(2)+'<small>秒</small>';$('rTitle').textContent='「'+r.title+'」';$('rStyle').textContent=r.style;$('rCmp').textContent=r.detail+'｜'+r.cmp;
+ renderRecs();setFrame();
+ setTimeout(()=>{if(state==='result'){captureShot();$('result').classList.remove('hide');$('card').scrollTop=0;}},60);}
+
+/* ===== シェア ===== */
+let shot=null;
+function captureShot(){try{renderer.render(scene,camera);const src=renderer.domElement;const c=document.createElement('canvas');c.width=src.width;c.height=src.height;c.getContext('2d').drawImage(src,0,0);shot=c;}catch(e){shot=null;}}
+function shareText(){const r=result;return `ぐにゃぐにゃ充電器を ${r.t.toFixed(2)}秒 で刺した！\n鑑定結果「${r.title}」\n${r.style}（${r.detail}）\n#ぐにゃぐにゃ充電器`;}
+function makeImage(){const W=1080,H=1350,cv=document.createElement('canvas');cv.width=W;cv.height=H;const g=cv.getContext('2d');const r=result;
+ const gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,'#1b1d3d');gr.addColorStop(1,'#090a18');g.fillStyle=gr;g.fillRect(0,0,W,H);
+ if(shot){// 上半分（スマホのあたり）を切り抜く
+  const sw=shot.width,sh=shot.height,dpr=sw/innerWidth;const tw=W,th=780;let cw=sw,ch=sw*th/tw;if(ch>sh*0.6){ch=sh*0.6;cw=ch*tw/th;}
+  const pc=new THREE.Vector3(0.9,0.8,0).project(camera);const cy=(1-pc.y)/2*sh,cx=(pc.x+1)/2*sw;
+  const y0=Math.max(0,Math.min(sh-ch,cy-ch*0.5)),x0=Math.max(0,Math.min(sw-cw,cx-cw/2));
+  g.drawImage(shot,x0,y0,cw,ch,0,70,tw,th);
+  const fade=g.createLinearGradient(0,790,0,850);fade.addColorStop(0,'rgba(9,10,24,0)');fade.addColorStop(1,'rgba(9,10,24,1)');g.fillStyle=fade;g.fillRect(0,790,W,60);}
+ g.textAlign='center';g.fillStyle='#ffe27a';g.font='900 46px "Hiragino Maru Gothic ProN","Hiragino Sans","Noto Sans JP",sans-serif';g.fillText('ぐにゃぐにゃ充電器、何秒で刺さる？',W/2,70);
+ g.fillStyle='rgba(255,255,255,.85)';g.font='700 36px "Hiragino Sans","Noto Sans JP",sans-serif';g.fillText('刺さるまで',W/2,895);
+ g.fillStyle='#5df2a0';g.shadowColor='rgba(93,242,160,.6)';g.shadowBlur=30;g.font='900 150px "Hiragino Sans","Noto Sans JP",sans-serif';g.fillText(r.t.toFixed(2)+'秒',W/2,1035);g.shadowBlur=0;
+ g.fillStyle='#ffe27a';g.font='700 30px sans-serif';g.fillText('鑑 定 結 果',W/2,1095);
+ let fs=78;const nm='「'+r.title+'」';const F=s=>`900 ${s}px "Hiragino Maru Gothic ProN","Hiragino Sans","Noto Sans JP",sans-serif`;g.font=F(fs);while(g.measureText(nm).width>1000&&fs>40){fs-=2;g.font=F(fs);}
+ g.fillStyle='#fff';g.fillText(nm,W/2,1185);
+ g.font='700 34px "Hiragino Sans","Noto Sans JP",sans-serif';g.fillStyle='#d6dbff';g.fillText(r.style+'（'+r.detail+'）',W/2,1245);
+ g.font='600 28px sans-serif';g.fillStyle='#8f9bd0';g.fillText('rickther1ck.com/gunya-charger',W/2,1310);
+ return cv;}
+async function doShare(){const cv=makeImage();const text=shareText();
+ if(!INAPP&&navigator.share&&navigator.canShare){try{const blob=await new Promise(r=>cv.toBlob(r,'image/png'));const file=new File([blob],'gunya-charger.png',{type:'image/png'});
+  if(navigator.canShare({files:[file]})){await navigator.share({files:[file],text:text+'\n'+URL_GAME});return;}}catch(e){if(e&&e.name==='AbortError')return;}}
+ showImage();}
+function shareX(){open('https://twitter.com/intent/tweet?text='+encodeURIComponent(shareText())+'&url='+encodeURIComponent(URL_GAME),'_blank');}
+function showImage(){const url=makeImage().toDataURL('image/png');$('mImg').src=url;$('dl').href=url;$('imgModal').classList.remove('hide');}
+
+/* ===== おすすめ ===== */
+const RECS=[{slug:'ichiman-lighter',title:'1万分の1ライター'},{slug:'warabimochi',title:'わらび餅職人',thumb:'og.jpg'},{slug:'unagi',title:'ぬめぬめうなぎ掴み'},{slug:'kintaro-ame',title:'どこを切っても金太郎？'},{slug:'chokokuto-chikyu',title:'彫刻刀で地球の中心まで、何秒で彫れる？'}];
+function renderRecs(){const box=$('recs');box.innerHTML='';RECS.slice().sort(()=>Math.random()-0.5).slice(0,3).forEach(g=>{const a=document.createElement('a');a.className='rec';a.href=`https://rickther1ck.com/${g.slug}/`;
+ a.innerHTML=`<img loading="lazy" src="https://rickther1ck.com/${g.slug}/${g.thumb||'og.png'}" alt=""><div>${g.title}</div>`;box.appendChild(a);});}
+
+/* ===== 入力 ===== */
+let drag=null;const keys={};
+const stopAll=el=>['pointerdown','pointerup','click','touchstart','touchend','touchmove','wheel'].forEach(ev=>el.addEventListener(ev,e=>e.stopPropagation()));
+canvas.addEventListener('pointerdown',e=>{audio();if(AC&&AC.state==='suspended')AC.resume();
+ if(state==='title'){startGame();}
+ else if(state==='result'){startGame();return;}
+ else if(state==='ending'){skipEnding();return;}
+ if(state==='play'){drag={id:e.pointerId,x:e.clientX,y:e.clientY};try{canvas.setPointerCapture(e.pointerId);}catch(_){}}});
+addEventListener('pointermove',e=>{if(!drag||e.pointerId!==drag.id||state!=='play')return;const a=screenToPlane(drag.x,drag.y),b=screenToPlane(e.clientX,e.clientY);if(a&&b){handX+=(b.x-a.x)*P.gain;handY+=(b.y-a.y)*P.gain;}drag.x=e.clientX;drag.y=e.clientY;if(!moved){moved=true;$('guide').classList.add('hide');}});
+addEventListener('pointerup',e=>{if(drag&&e.pointerId===drag.id)drag=null;});
+addEventListener('pointercancel',()=>{drag=null;});
+$('result').addEventListener('pointerdown',e=>{if(e.target===$('result')){startGame();}});
+stopAll($('card'));stopAll($('mute'));stopAll($('imgModal'));
+['howBtn'].forEach(id=>stopAll($(id)));
+document.querySelectorAll('.site').forEach(stopAll);
+$('mute').addEventListener('click',()=>{audio();setMute(!muted);});
+stopAll($('restart'));$('restart').addEventListener('click',()=>{if(state==='play'){SE.bounce();startGame();}});
+$('again').addEventListener('click',()=>startGame());
+$('shareImg').addEventListener('click',doShare);$('shareX').addEventListener('click',shareX);$('saveImg').addEventListener('click',showImage);
+$('mClose').addEventListener('click',()=>$('imgModal').classList.add('hide'));
+addEventListener('keydown',e=>{const k=e.key.toLowerCase();keys[k]=true;
+ if(['arrowup','arrowdown','arrowleft','arrowright',' '].includes(k))e.preventDefault();
+ if(state==='title'&&(k===' '||k==='enter')){startGame();return;}
+ if(state==='result'&&(k===' '||k==='r'||k==='enter')){startGame();return;}
+ if(state==='ending'&&(k===' '||k==='enter')){skipEnding();return;}
+ if(state==='play'&&k==='r'){startGame();return;}
+ if(state==='play'&&['arrowup','arrowdown','arrowleft','arrowright','w','a','s','d'].includes(k)&&!moved){moved=true;$('guide').classList.add('hide');}});
+addEventListener('keyup',e=>{keys[e.key.toLowerCase()]=false;});
+addEventListener('blur',()=>{for(const k in keys)keys[k]=false;drag=null;});
+
+function skipEnding(){if(!clicked)return;if(replaying){finishReplay();return;}if(!bigDone){startReplay();return;}if(bigT<1.95){bigT=1.95;endPhase=Math.max(endPhase,1);chargePct=99.9;}else if(bigT<2.65)bigT=2.65;}
+
+/* ===== メインループ ===== */
+let last=performance.now(),chargePct=1,fpsAcc=0,fpsN=0;
+function clampHand(){handX=Math.max(-3.4,Math.min(-0.32,handX));handY=Math.max(0.16,Math.min(2.6,handY));}
+function loop(now){requestAnimationFrame(loop);let dt=Math.min(0.05,(now-last)/1000);last=now;gt+=dt;
+ // 入力
+ if(state==='play'){let vx=0,vy=0;if(keys['arrowleft']||keys['a'])vx--;if(keys['arrowright']||keys['d'])vx++;if(keys['arrowup']||keys['w'])vy++;if(keys['arrowdown']||keys['s'])vy--;const sp=keys['shift']?9:5;handX+=vx*sp*dt;handY+=vy*sp*dt;}
+ if(state==='title'){demoT+=dt;const t=demoT;handX=-1.7+0.45*Math.sin(t*1.3)+0.2*Math.sin(t*3.7);handY=1.0+0.35*Math.sin(t*2.1)+(Math.sin(t*0.7)>0.6?0.3*Math.sin(t*9):0);}
+ clampHand();
+ // 物理
+ let simDt=dt;if(hitstop>0){hitstop-=dt;simDt=0;}
+ if(simDt>0&&cable){const steps=Math.max(1,Math.round(simDt*240));const h=simDt/steps;
+  for(let s=1;s<=steps;s++){const u=s/steps;const tr=P.tremor*(state==='play'?1:0);const tt=gt+u*simDt;
+   const hx=prevHX+(handX-prevHX)*u+tr*(Math.sin(tt*7.3)*0.006+Math.sin(tt*11.9)*0.004),hy=prevHY+(handY-prevHY)*u+tr*Math.sin(tt*8.7)*0.005;
+   cable.step(h,hx,hy);
+   if(state==='play'){if(cable.tipHit>1.2&&kotsuCD<=0){misses++;kotsuCD=0.28;SE.kotsu();burst(cable.x[cable.n],cable.y[cable.n],6,[0xffe27a,0xffffff],2.2,0.035,0.3,3);shake=Math.max(shake,0.03*P.shake);}
+    if(cable.slap>3.2&&slapCD<=0){slaps++;slapCD=0.3;SE.pechi();shake=Math.max(shake,0.05*P.shake);}
+    if(cable.canPlug()){plugSpeed=cable.tipSpeed(h);plugIn();break;}}}
+  if(state==='play'){kotsuCD-=simDt;slapCD-=simDt;}}
+ prevHX=handX;prevHY=handY;
+ if(state==='play')recFrame();
+ if(state==='play'){playT+=dt;ring.material.opacity=Math.max(0,1-playT/4)*(0.6+0.4*Math.sin(gt*6));
+  if(hintStage===0&&playT>20){hintStage=1;showHint('コツ：スマホのほうへ勢いよく動かして、ピタッと止める');}
+  if(hintStage===1&&playT>45){hintStage=2;showHint('先っぽが真横を向いた一瞬がチャンス');}}
+ else{ring.material.opacity=0;}
+ // ぐにょ音
+ if(wobG&&cable){let sp=0;if(state==='play'){const n=cable.n,m=n>>1;sp=(Math.hypot(cable.x[n]-cable.ox[n],cable.y[n]-cable.oy[n])+Math.hypot(cable.x[m]-cable.ox[m],cable.y[m]-cable.oy[m]))*120;}
+  wobG.gain.setTargetAtTime(Math.min(0.022,Math.max(0,sp-1.0)*0.0035),AC.currentTime,0.06);wobF.frequency.setTargetAtTime(800+Math.min(sp,14)*90,AC.currentTime,0.06);}
+ // 演出（刺さったあと）
+ if(state==='ending'){const SL=0.07;
+  if(!bigDone&&!replaying){endT+=dt;if(endT<SL){const u=endT/SL;cable.ins=-0.1*(1-u*u);}else{if(!clicked)clickIn();cable.ins=0;}
+   phone.position.y=PHONE.cy+(clicked?0.02*Math.exp(-(endT-SL)*14)*Math.cos((endT-SL)*45):0);
+   if(endT>=0.55)startReplay();}
+  else if(replaying){repT+=dt;const p=Math.min(1,repT/P.repDur);sampleReplay(p);if(p>=1)finishReplay();}
+  if(bigDone){bigT+=dt;const q=bigT;cable.ins=q<0.06?-0.05*(1-q/0.06):0.016*Math.exp(-(q-0.06)*26)*Math.cos((q-0.06)*70);
+   phone.position.y=PHONE.cy+0.04*Math.exp(-q*12)*Math.cos(q*45);
+   if(q>0.3&&endPhase===0){endPhase=1;SE.charge();}
+   if(endPhase>=1&&q<1.95){chargePct=Math.min(100,1+Math.pow(Math.max(0,q-0.3)/1.6,1.6)*99);}
+   if(q>=1.95&&endPhase<2){endPhase=2;chargePct=100;SE.kiran();shake=0.15*P.shake;burst(0,PHONE.cy,70,[0xff4d8d,0xffe27a,0x5df2a0,0x5d9bff,0xffffff],5,0.12,2.2,5,true);}
+   glow.material.opacity=endPhase>=2?Math.min(1,(q-1.95)*4):Math.min(0.5,q*0.4);const gs=endPhase>=2?4.5+Math.sin(gt*3)*0.2:2+q;glow.scale.set(gs,gs,1);glow.material.rotation+=dt*0.3;
+   screenLight.color.setHex(0x5df2a0);screenLight.intensity=1.2+chargePct/60;
+   if(q>=2.65){finishResult();}}
+  else{glow.material.opacity=0;screenLight.color.setHex(0xff4d5e);screenLight.intensity=0.6+0.4*Math.max(0,Math.sin(gt*6));chargePct=1;}}
+ else if(state==='result'){glow.material.opacity=0.8+Math.sin(gt*2)*0.15;glow.material.rotation+=dt*0.2;}
+ else{screenLight.color.setHex(0xff4d5e);screenLight.intensity=0.6+0.4*Math.max(0,Math.sin(gt*6));chargePct=1;}
+ drawScreen((state==='ending'&&bigDone)||state==='result'?'charge':'low',state==='result'?100:chargePct,gt);
+ updParts(dt);
+ if(waveT<0.45){waveT+=dt;const u=waveT/0.45;const sc=0.25+u*2.2;wave.scale.set(sc,sc,1);wave.material.opacity=(1-u)*0.9;}else wave.material.opacity=0;
+ if(state!=='ending')phone.position.y=PHONE.cy;
+ if(cable)updateCableMesh();
+ // カメラ
+ const a=1-Math.pow(0.02,dt);if(cam===camT)cam={t:camT.t.slice(),o:camT.o.slice()};for(let i=0;i<3;i++){cam.t[i]+=(camT.t[i]-cam.t[i])*a;cam.o[i]+=(camT.o[i]-cam.o[i])*a;}
+ shake*=Math.pow(0.004,dt);const sx=(Math.random()-.5)*shake,sy=(Math.random()-.5)*shake;
+ camera.position.set(cam.t[0]+cam.o[0]+sx,cam.t[1]+cam.o[1]+sy,cam.t[2]+cam.o[2]);camera.lookAt(cam.t[0]+sx*0.5,cam.t[1]+sy*0.5,cam.t[2]);
+ renderer.render(scene,camera);
+ fpsAcc+=dt;fpsN++;if(fpsAcc>1){window.__fps=fpsN/fpsAcc;fpsAcc=0;fpsN=0;}
+}
+function showHint(s){const h=$('hint');h.textContent=s;h.classList.remove('hide');h.style.opacity=1;clearTimeout(showHint.t);showHint.t=setTimeout(()=>{h.style.opacity=0;},6000);}
+
+/* ===== 調整パネル（rickther1ck.com 以外、または #debug / ?debug のときだけ） ===== */
+const DEV=Q.has('debug')||location.hash==='#debug';
+if(DEV){const d=$('dbg'),btn=$('dbgBtn');btn.classList.remove('hide');
+ const DEF=Object.assign({},P,CH[0].p);const KEYS=['k','kHead','g','damp','snapAng','snapX','assist','assistR','gain','shake','hitstop','repDur'];
+ const deg=v=>v*180/Math.PI,rad=v=>v*Math.PI/180;
+ const defs=[
+  ['sec','ぐにゃぐにゃ具合'],
+  ['k','やわらかさ',0.01,0.4,0.005,'小さいほどぐにゃぐにゃ'],
+  ['kHead','先っぽの硬さ',0.05,1,0.01,'小さいほど先っぽも曲がる'],
+  ['g','重力',2,30,0.5,'大きいほど早く垂れる'],
+  ['damp','揺れの残りやすさ',0.95,0.999,0.001,'大きいほどブラブラが続く'],
+  ['sec','刺さりやすさ'],
+  ['snapAng','入る角度のゆるさ（度）',2,40,0.5,'小さいほどまっすぐ向けないと入らない',true],
+  ['snapX','入る高さのゆるさ',0.01,0.2,0.002,'小さいほど高さをぴったり合わせる必要'],
+  ['assist','吸い込む強さ',0,0.08,0.001,'0なら吸い込みなし'],
+  ['assistR','吸い込む範囲',0,0.8,0.01,''],
+  ['sec','操作と演出'],
+  ['gain','手の動きの倍率',0.5,2.5,0.05,'指の移動量に対する手の動き'],
+  ['shake','画面の揺れ',0,3,0.1,''],
+  ['hitstop','カチッの一時停止（秒）',0,0.3,0.01,''],
+  ['repDur','スローリプレイの長さ（秒）',1,6,0.1,'']];
+ const fmt=(k,v)=>k==='snapAng'?deg(v).toFixed(1):(Math.abs(v)<1?(+v).toFixed(3):(+v).toFixed(2));
+ d.innerHTML='<h4>調整パネル</h4><small style="opacity:.6">ここで変えた数値はすぐ反映されます（このブラウザに保存）</small>'+defs.map(x=>x[0]==='sec'?`<div class="sec">${x[1]}</div>`:
+  `<div class="row"><div class="lb"><span>${x[1]}</span><b id="dv_${x[0]}"></b></div><input type="range" min="${x[2]}" max="${x[3]}" step="${x[4]}" data-k="${x[0]}" ${x[6]?'data-deg="1"':''}>${x[5]?`<small>${x[5]}</small>`:''}</div>`).join('')+
+  '<div id="dbgInfo"></div><div class="bt"><button class="cp" id="dbgCopy" type="button">数値をコピー</button><button id="dbgReset" type="button">初期値に戻す</button><button id="dbgClose" type="button">閉じる</button></div><textarea id="dbgOut" class="hide" readonly></textarea>';
+ const sync=()=>d.querySelectorAll('input[type=range]').forEach(i=>{const k=i.dataset.k;i.value=i.dataset.deg?deg(P[k]):P[k];$('dv_'+k).textContent=fmt(k,P[k]);});window.syncDbg=sync;
+ const save=()=>{const o={};KEYS.forEach(k=>o[k]=P[k]);LS.set('dbg',o);};
+ const saved=LS.get('dbg',null);if(saved){Object.assign(P,saved);window.DBG_SET=true;}
+ d.querySelectorAll('input[type=range]').forEach(i=>i.addEventListener('input',()=>{const k=i.dataset.k;P[k]=i.dataset.deg?rad(+i.value):+i.value;$('dv_'+k).textContent=fmt(k,P[k]);window.DBG_SET=true;save();}));
+ $('dbgReset').addEventListener('click',()=>{Object.assign(P,DEF);window.DBG_SET=false;LS.set('dbg',null);sync();});
+ $('dbgClose').addEventListener('click',()=>d.classList.add('hide'));
+ btn.addEventListener('click',()=>{d.classList.toggle('hide');sync();});
+ $('dbgCopy').addEventListener('click',()=>{const o={};KEYS.forEach(k=>o[k]=+(+P[k]).toFixed(4));const t=JSON.stringify(o);const out=$('dbgOut');out.value=t;out.classList.remove('hide');out.select();
+  try{navigator.clipboard.writeText(t).then(()=>{$('dbgCopy').textContent='コピーしました！';setTimeout(()=>$('dbgCopy').textContent='数値をコピー',1500);}).catch(()=>{});}catch(e){}});
+ [d,btn].forEach(stopAll);d.addEventListener('keydown',e=>e.stopPropagation());
+ setInterval(()=>{if(d.classList.contains('hide'))return;$('dbgInfo').textContent=`前回：${result?result.t.toFixed(2)+'秒':'—'}　コツン ${misses}回　fps ${(window.__fps||0).toFixed(0)}`;},300);
+ sync();}
+
+resize();resetCable();refreshSel();cam={t:camT.t.slice(),o:camT.o.slice()};requestAnimationFrame(loop);
+</script>
+<script>
+/* 遊び方・コツ（開いている間はゲームの操作を止める） */
+(()=>{const m=document.getElementById('howto'),c=document.getElementById('howClose');if(!m)return;
+const evs=['pointerdown','pointerup','click','touchstart','touchend','touchmove','wheel'];
+const open=e=>{if(e)e.stopPropagation();m.classList.remove('hide');m.querySelector('.howbody').scrollTop=0;c.focus({preventScroll:true});};
+const close=e=>{if(e)e.stopPropagation();m.classList.add('hide');};
+['howBtn','howBtn2'].forEach(id=>{const b=document.getElementById(id);if(b){evs.forEach(ev=>b.addEventListener(ev,e=>e.stopPropagation()));b.addEventListener('click',open);}});
+c.addEventListener('click',close);
+evs.forEach(ev=>m.addEventListener(ev,e=>e.stopPropagation()));
+m.addEventListener('pointerdown',e=>{if(e.target===m)close();});
+addEventListener('keydown',e=>{if(m.classList.contains('hide'))return;e.stopImmediatePropagation();if(e.key===' '||e.key==='Spacebar'||e.key.toLowerCase()==='r')e.preventDefault();if(e.key==='Escape')close();},true);
+})();
+</script>
+</body>
+</html>
