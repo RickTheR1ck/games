@@ -60,6 +60,7 @@ button{font-family:inherit;cursor:pointer}
 @keyframes rb{50%{opacity:0}}
 #replayOv .spd{position:absolute;right:14px;top:calc(9vh + 12px);font-weight:900;font-size:16px;color:#ffe27a;text-shadow:0 2px 4px #000}
 #replayOv .skip{position:absolute;left:0;right:0;bottom:calc(9vh + 12px);text-align:center;font-size:12px;color:rgba(255,255,255,.75)}
+@media (min-aspect-ratio:1/1){#result{align-items:flex-end!important;justify-content:center!important;padding:16px 4vw!important}#result .card{max-height:88vh!important;width:400px}}
 #bigtxt{position:fixed;z-index:5;left:0;right:0;top:20%;text-align:center;font-weight:900;font-size:clamp(44px,15vw,96px);color:#fff;text-shadow:0 0 24px var(--acc),0 4px 0 #1a6b43;pointer-events:none;opacity:0}
 /* result */
 #result{position:fixed;inset:0;z-index:5;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;padding:0 10px calc(env(safe-area-inset-bottom) + 10px + var(--ib))}
@@ -160,7 +161,6 @@ button{font-family:inherit;cursor:pointer}
   <div class="time" id="rTime">0.00<small>秒</small></div>
   <div class="kan">鑑 定 結 果</div>
   <div class="ttl" id="rTitle">「ふつうの人類」</div>
-  <div class="sty" id="rStyle"></div>
   <div class="cmp" id="rCmp"></div>
   <div class="btns"><button class="main" id="again" type="button">もう一回</button></div>
   <div class="btns"><button id="shareImg" type="button">📷 画像でシェア</button><button class="x" id="shareX" type="button">𝕏 でシェア</button></div>
@@ -205,7 +205,6 @@ button{font-family:inherit;cursor:pointer}
    <div><dt>60秒未満</dt><dd>充電1%の焦り</dd></div>
    <div><dt>60秒以上</dt><dd>明日の朝、0%</dd></div>
   </dl>
-  <p>称号の下には、刺し方のタイプ（一発ノールック派、ポートの周りをノックしまくる派、勢いでねじ込む派など）も出ます。</p>
 
   <p><a href="https://rickther1ck.com/">ゲーム一覧</a> ・ <a href="https://rickther1ck.com/about/">このサイトについて</a></p>
  </div>
@@ -478,12 +477,12 @@ const VIEWS={
  title:{t:[-0.6,0.8,0],o:[-3.2,2.0,3.1]},
  ending:{t:[0.1,0.78,0],o:[-1.35,0.75,1.5]},
  replay:{t:[-0.45,0.75,0],o:[-1.75,0.85,2.15]},
- result:{t:[0.7,0.75,0],o:[-2.6,3.3,2.7]}
+ result:{t:[0.55,0.7,0],o:[-3.4,3.7,3.4]}
 };
 let cam={t:[-0.95,0.75,0],o:[-1.5,1.75,3.6]},camT=cam;let shake=0;
 function setFrame(){const v=VIEWS[state==='title'?'title':state==='result'?'result':state==='ending'?(replaying?'replay':'ending'):'play'];const asp=innerWidth/innerHeight;
  const m=asp<1?Math.min(1.5,Math.max(1,0.62/asp)):1;camT={t:v.t.slice(),o:v.o.map(x=>x*m)};
- if(state==='title'&&asp<1){camT.t[1]-=0.2;camT.t[0]+=0.35;camT.o=camT.o.map(x=>x*1.35);}if(state==='result'&&asp<1){camT.t[1]-=1.6;camT.t[0]-=0.1;}}
+ if(state==='title'&&asp<1){camT.t[1]-=0.2;camT.t[0]+=0.35;camT.o=camT.o.map(x=>x*1.35);}if(state==='result'&&asp<1){camT.t[1]-=2.0;camT.t[0]-=0.15;}if(state==='result'&&asp>=1){camT={t:[2.3,0.4,0.3],o:[-3.1,3.0,3.2]};}}
 const ray=new THREE.Raycaster(),plane0=new THREE.Plane(new THREE.Vector3(0,0,1),0),v2=new THREE.Vector2(),hitP=new THREE.Vector3();
 function screenToPlane(cx,cy){v2.set(cx/innerWidth*2-1,-(cy/innerHeight)*2+1);ray.setFromCamera(v2,camera);return ray.ray.intersectPlane(plane0,hitP)?hitP.clone():null;}
 function resize(){renderer.setSize(innerWidth,innerHeight,false);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();setFrame();}
@@ -533,14 +532,14 @@ function finishResult(){state='result';const r=result,c=CH[r.ch];
  const prev=best[c.id];const isNew=prev==null||r.t<prev;if(isNew){best[c.id]=r.t;LS.set('best',best);}
  r.title=rankOf(r.t);r.style=styleOf(r.misses,r.slaps,r.spd);r.detail=detailOf(r.misses,r.slaps);r.cmp=cmpOf(r.t);r.isNew=isNew;
  $('rNew').classList.toggle('hide',!(isNew&&prev!=null));
- $('rTime').innerHTML=r.t.toFixed(2)+'<small>秒</small>';$('rTitle').textContent='「'+r.title+'」';$('rStyle').textContent=r.style;$('rCmp').textContent=r.detail+'｜'+r.cmp;
+ $('rTime').innerHTML=r.t.toFixed(2)+'<small>秒</small>';$('rTitle').textContent='「'+r.title+'」';$('rCmp').textContent=r.detail+'｜'+r.cmp;
  renderRecs();setFrame();
  setTimeout(()=>{if(state==='result'){captureShot();$('result').classList.remove('hide');$('card').scrollTop=0;}},60);}
 
 /* ===== シェア ===== */
 let shot=null;
 function captureShot(){try{renderer.render(scene,camera);const src=renderer.domElement;const c=document.createElement('canvas');c.width=src.width;c.height=src.height;c.getContext('2d').drawImage(src,0,0);shot=c;}catch(e){shot=null;}}
-function shareText(){const r=result;return `ぐにゃぐにゃ充電器を ${r.t.toFixed(2)}秒 で刺した！\n鑑定結果「${r.title}」\n${r.style}（${r.detail}）\n#ぐにゃぐにゃ充電器`;}
+function shareText(){const r=result;return `ぐにゃぐにゃ充電器を ${r.t.toFixed(2)}秒 で刺した！\n鑑定結果「${r.title}」\n${r.detail}\n#ぐにゃぐにゃ充電器`;}
 function makeImage(){const W=1080,H=1350,cv=document.createElement('canvas');cv.width=W;cv.height=H;const g=cv.getContext('2d');const r=result;
  const gr=g.createLinearGradient(0,0,0,H);gr.addColorStop(0,'#1b1d3d');gr.addColorStop(1,'#090a18');g.fillStyle=gr;g.fillRect(0,0,W,H);
  if(shot){// 上半分（スマホのあたり）を切り抜く
@@ -555,7 +554,7 @@ function makeImage(){const W=1080,H=1350,cv=document.createElement('canvas');cv.
  g.fillStyle='#ffe27a';g.font='700 30px sans-serif';g.fillText('鑑 定 結 果',W/2,1095);
  let fs=78;const nm='「'+r.title+'」';const F=s=>`900 ${s}px "Hiragino Maru Gothic ProN","Hiragino Sans","Noto Sans JP",sans-serif`;g.font=F(fs);while(g.measureText(nm).width>1000&&fs>40){fs-=2;g.font=F(fs);}
  g.fillStyle='#fff';g.fillText(nm,W/2,1185);
- g.font='700 34px "Hiragino Sans","Noto Sans JP",sans-serif';g.fillStyle='#d6dbff';g.fillText(r.style+'（'+r.detail+'）',W/2,1245);
+ g.font='700 34px "Hiragino Sans","Noto Sans JP",sans-serif';g.fillStyle='#d6dbff';g.fillText(r.detail,W/2,1245);
  g.font='600 28px sans-serif';g.fillStyle='#8f9bd0';g.fillText('rickther1ck.com/gunya-charger',W/2,1310);
  return cv;}
 async function doShare(){const cv=makeImage();const text=shareText();
